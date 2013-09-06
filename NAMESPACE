@@ -1,0 +1,34 @@
+import(ROC)
+import(DESeq)
+import(baySeq)
+import(edgeR)
+import(EBSeq)
+import(samr)
+
+exportClasses(
+    "TCC" 
+)
+
+export(
+  show,
+  names,
+  length,
+  "[",
+  TCC,
+  calcAUCValue,
+  calcNormFactors,
+  do_TbT,
+  estimateDE,
+  exactTestafterTbT,
+  filterLowCountGenes,
+  simulateReadCounts,
+  getNormalizedData,
+  getResult,
+  MAplot,
+  NBsample,
+  plotFCPseudocolor,
+  plot.TCC,
+  WAD,
+  ROKU
+)
+

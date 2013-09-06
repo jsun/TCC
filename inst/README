@@ -1,0 +1,14 @@
+This package contains methods required for the TbT method.
+For comparison of tag count data, including RNA-seq and ChIP-seq
+analysis, removal of differentially represented tags before normalization.
+This package provides a code base to do such analysis by using
+edgeR, baySeq, and DESeq packages. In addition, differential gene expression
+data from Arabidopsis thaliana is taken from NBPSeq package for
+simulation data generation.
+
+edgeR and baySeq are available from bioconductor and can be installed by
+source("http://bioconductor.org/biocLite.R") 
+biocLite("edgeR")
+biocLite("baySeq")
+biocLite("DESeq")
+biocLite("ROC")
