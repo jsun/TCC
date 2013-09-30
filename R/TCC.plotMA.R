@@ -4,6 +4,7 @@ TCC$methods(plotMA = function (FDR = NULL,
                        median.lines = FALSE,
                        floor = 0,
                        groups = NULL,
+                       col = NULL,
                        col.tag = NULL,
                        normalize = TRUE, ...) {
     arglist <- list(...)
@@ -24,7 +25,7 @@ TCC$methods(plotMA = function (FDR = NULL,
     if (is.null(groups)) {
         groups <- c(gru[1], gru[2])
     }
-    if (is.null(arglist$col)) {
+    if (is.null(col)) {
         if (private$estimated == TRUE) {
             arglist$col <- c(1, rep(6, length = length(gru)))
         } else if (private$simulation == TRUE) {
@@ -32,6 +33,8 @@ TCC$methods(plotMA = function (FDR = NULL,
         } else {
             arglist$col <- rep(1, length = length(gru))
         }
+    } else {
+        arglist$col <- col
     }
     if (normalize)
       count.normed <- .self$getNormalizedData()  

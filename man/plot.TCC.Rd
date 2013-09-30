@@ -11,7 +11,7 @@
  log2(G2)) / 2} on the \eqn{x}-axis) using normalized count data.}
 \usage{
 \method{plot}{TCC}(x, FDR = NULL, median.lines = FALSE, floor = 0,
-     groups = NULL, col.tag = NULL, normalize = TRUE, ...)
+     groups = NULL, col = NULL, col.tag = NULL, normalize = TRUE, ...)
 }
 \arguments{
     \item{x}{\link{TCC-class} object.}
@@ -27,6 +27,7 @@
     \item{groups}{numeric vector consists two elements for specifying what 
                   two groups should be drawn when data contains more than 
                   three groups.}
+    \item{col}{vector specifying plotting color.}
     \item{col.tag}{numeric vector spacifying the index of \code{col} 
                    for coloring the points of the genes.}
     \item{normalize}{logical. If \code{FALSE}, the coordinates of M-A plot

@@ -1,7 +1,8 @@
 plot.TCC <- function(x, FDR = NULL, median.lines = FALSE, floor = 0, 
-                     groups = NULL, col.tag = NULL, normalize = TRUE, ...) {
+                     groups = NULL, col = NULL, col.tag = NULL,
+                     normalize = TRUE, ...) {
     invisible(x$plotMA(FDR = FDR, median.lines = median.lines, floor = floor,
-                       groups = groups, col.tag = col.tag,
+                       groups = groups, col = col, col.tag = col.tag,
                        normalize = normalize, ...))
 }
 
@@ -135,4 +136,11 @@ setMethod(
     signature(object = "TCC"),
     definition = show.TCC
 )
+
+
+#setMethod(
+#    f = "plot",
+#    signature(x = "TCC"),
+#    definition = plot.TCC
+#)
 
