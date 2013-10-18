@@ -86,14 +86,14 @@ A list containing following fields:
           vector.
           Both matrix or vector consist of 1, -1, and 0: 1 for over-expressed
           outliers, -1 for under-expressed outliers, and 0 for non-outliers.}
-    \item{modH}{A numeric vector when the input \code{data} are data frame or
-          matrix. A numeric scalar when the input \code{data} are numeric
-          vector. Both vector or scalar consist of modified entropy (\eqn{H'})
-          score(s) calculated from a processed gene expression vector.}
     \item{H}{A numeric vector when the input \code{data} are data frame or
           matrix. A numeric scalar when the input \code{data} are numeric
           vector. Both vector or scalar consist of original entropy (\eqn{H})
           score(s) calculated from an original gene expression vector.}
+    \item{modH}{A numeric vector when the input \code{data} are data frame or
+          matrix. A numeric scalar when the input \code{data} are numeric
+          vector. Both vector or scalar consist of modified entropy (\eqn{H'})
+          score(s) calculated from a processed gene expression vector.}
     \item{rank}{A numeric vector or scalar consisting of the rank(s) of
           \code{modH}.}
     \item{Tbw}{a numeric vector or scalar consisting of one-step Tukey's
