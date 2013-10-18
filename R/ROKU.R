@@ -90,7 +90,7 @@ ROKU <- function(data, upper.limit = 0.25, sort = FALSE) {
     } else {
         data <- as.matrix(data)
     }
-    rs$outliers <- t(apply(t(scale(t(data))), 1,
+    rs$outlier <- t(apply(t(scale(t(data))), 1,
                           function (y, upper.limit = upper.limit) {
                           .outval(y, upper.limit = upper.limit)
                      }, upper.limit))
@@ -108,11 +108,11 @@ ROKU <- function(data, upper.limit = 0.25, sort = FALSE) {
     } else {
         r <- 1:nrow(data)
     }
-    colnames(rs$outliers) <- l
-    rownames(rs$outliers) <- r
+    colnames(rs$outlier) <- l
+    rownames(rs$outlier) <- r
     if (sort) {
         reindex <- order(rs$rank)
-        rs$outliers <- rs$outliers[reindex, ]
+        rs$outlier <- rs$outlier[reindex, ]
         rs$H <- rs$H[reindex]
         rs$modH <- rs$modH[reindex]
         rs$rank <- rs$rank[reindex]
