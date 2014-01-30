@@ -378,6 +378,16 @@ dim(tcc$count)
 
 \section{Normalization}
 
+This chapter describes the details of our robust normalization strategy
+(i.e., DEGES) implemented in TCC. Alternative DEGES procedures consisting
+of functions in other packages (edgeR, DESeq, and baySeq) are also provided,
+enabling advanced users familiar with the existing packages can easily learn
+what is done in TCC. Note that end users, who just want to perform robust
+differential expression analysis using TCC,
+can skip this chapter (3 Normalization) and move from here to ,
+for example, the next chapter (4 Differential expression).
+
+
 \subsection{Normalization of two-group count data with replicates}
 \label{section-3-1}
 
@@ -444,8 +454,8 @@ tcc$DEGES$execution.time
 
 Of course, the procedure can be performed by using functions 
 in \Rpackage{edgeR} and \Rpackage{baySeq}, 
-instead of using the \Rfunction{calcNormFators} 
-function in \Rpackage{TCC}. The \Rfunction{calcNormFators} function 
+instead of using the \Rfunction{calcNormFactors} 
+function in \Rpackage{TCC}. The \Rfunction{calcNormFactors} function 
 together with the above parameter settings can be regarded as a wrapper 
 function for the following commands.
 
@@ -513,7 +523,7 @@ are very similar to those of DEGES/TbT with the default parameter
 settings (i.e., \Robject{samplesize = 10000}). For \Rpackage{edgeR} 
 users, we provide commands, consisting of functions in \Rpackage{edgeR}, 
 to perform the DEGES/\Rpackage{edgeR} pipeline without \Rpackage{TCC}. 
-The \Rfunction{calcNormFators} function together 
+The \Rfunction{calcNormFactors} function together 
 with the above parameter settings 
 can be regarded as a wrapper function for the following commands.
 
@@ -594,7 +604,7 @@ tcc$DEGES$execution.time
 
 For \Rpackage{DESeq} users, we also provide commands, consisting of 
 functions in \Rpackage{DESeq}, to perform the DEGES/\Rpackage{DESeq} 
-pipeline without \Rpackage{TCC}. The \Rfunction{calcNormFators} function 
+pipeline without \Rpackage{TCC}. The \Rfunction{calcNormFactors} function 
 together with the above arguments can be regarded as a wrapper function for 
 the following commands.
 
@@ -650,7 +660,7 @@ replicates, users can select a total of four combinations
 (two normalization methods $\times$ two DEG identification methods) 
 coupled with an arbitrary number 
 of iterations ($n = 0, 1, 2, \dots, 100$) in our DEGES-based normalization 
-pipeline. That is, the \Rfunction{calcNormFators} function with the 
+pipeline. That is, the \Rfunction{calcNormFactors} function with the 
 \Robject{norm.method = "deseq"} or \Robject{"tmm"} and 
 \Robject{test.method = "deseq"} or \Robject{"bayseq"} can be indicated. 
 Let us explain the procedure by retrieving the data of the first and the 
@@ -795,7 +805,7 @@ tcc$norm.factors
 
 For \Rpackage{edgeR} users, we provide commands, consisting of functions in 
 \Rpackage{edgeR}, to perform the DEGES/\Rpackage{edgeR} pipeline without 
-\Rpackage{TCC}. The \Rfunction{calcNormFators} function together with the 
+\Rpackage{TCC}. The \Rfunction{calcNormFactors} function together with the 
 above parameter settings can be regarded as a wrapper function for the 
 following commands.
 
@@ -864,7 +874,7 @@ tcc$norm.factors
 
 For \Rpackage{DESeq} users, we provide commands, consisting of functions 
 in \Rpackage{DESeq}, to perform the DEGES/ \Rpackage{DESeq} pipeline without 
-\Rpackage{TCC}. The \Rfunction{calcNormFators} function together with the 
+\Rpackage{TCC}. The \Rfunction{calcNormFactors} function together with the 
 above parameter settings can be regarded as a wrapper function for the 
 following commands.
 
@@ -906,7 +916,7 @@ norm.factors
 \label{section-3-4}
 
 Similar functions for calculating normalization factors are the 
-\Rfunction{calcNormFators} function in \Rpackage{edgeR} and the 
+\Rfunction{calcNormFactors} function in \Rpackage{edgeR} and the 
 \Rfunction{estimateSizeFactors} function in \Rpackage{DESeq}. Note that the 
 terminology used in \Rpackage{DESeq} (i.e., size factors) is 
 different from that used in \Rpackage{edgeR} (i.e., effective 
@@ -1275,7 +1285,7 @@ Specifically, the function internally uses the corresponding functions
 implemented in three packages: \Rfunction{exactTest} in \Rpackage{edgeR}, 
 \Rfunction{nbinomTest} in \Rpackage{DESeq}, 
 and \Rfunction{getLikelihoods.NB} in \Rpackage{baySeq}. 
-Similar to the usage in the \Rfunction{calcNormFators} function 
+Similar to the usage in the \Rfunction{calcNormFactors} function 
 with the \Rfunction{test.method} argument in \Rpackage{TCC}, 
 those DE methods in \Rpackage{edgeR}, \Rpackage{DESeq}, 
 and \Rpackage{baySeq} can be performed 
@@ -2202,10 +2212,11 @@ sessionInfo()
 \renewcommand\refname{\vskip -1cm}
 
 \begin{thebibliography}{99}
-\bibitem{robinson} Robinson MD, McCarthy DJ, and Smyth GK. edgeR: 
-                   a Bioconductor package for differential expression 
-                   analysis of digital gene expression data. Bioinformatics 
-                   2010, 26(1): 139-140
+\bibitem{anders} Anders S and Huber W. Differential expression analysis 
+                 for sequence count data. Genome Biol. 2010, 11(10): R106
+\bibitem{di} Di Y, Schafer DW, Cumbie JS, and Chang JH. The NBP negative 
+             binomial model for assessing differential gene expression from
+             RNA-Seq. Stat Appl Genet Mol Biol. 2011, 10: art24
 \bibitem{dillies} Dillies MA, Rau A, Aubert J, Hennequet-Antier C, 
                   Jeanmougin M, Servant N, Keime C, Marot G, Castel D, 
                   Estelle J, Guernec G, Jagla B, Jouneau L, Lalo\"e D, 
@@ -2214,47 +2225,46 @@ sessionInfo()
                   Consortium. A comprehensive evaluation of normalization 
                   methods for Illumina high-throughput RNA sequencing data 
                   analysis. Brief Bioinform, in press
-\bibitem{kadota} Kadota K, Nishiyama T, and Shimizu K. A normalization 
-                 strategy for comparing tag count data. Algorithms Mol 
-                 Biol. 2012, 7:5
-\bibitem{robinson2} Robinson MD and Oshlack A. A scaling normalization method
-                    for differential expression analysis of RNA-seq data. 
-                    Genome Biol. 2010, 11: R25
-\bibitem{wad} Kadota K, Nakai Y, Shimizu K: A weighted average difference
-              method for detecting differentially expressed genes from 
-              microarray data. Algorithms Mol Biol. 208, 3: 8
+\bibitem{glaus} Glaus P, Honkela A, and Rattray M. Identifying differentially
+                expressed transcripts from RNA-seq data with biological 
+                variation. Bioinformatics 2012, 28(13): 1721-1728
 \bibitem{hardcastle} Hardcastle TJ and Kelly KA. baySeq: 
                      empirical Bayesian methods for identifying differential
                      expression in sequence count data. BMC Bioinformatics 
                      2010, 11: 422
+\bibitem{wad} Kadota K, Nakai Y, Shimizu K: A weighted average difference
+              method for detecting differentially expressed genes from 
+              microarray data. Algorithms Mol Biol. 208, 3: 8
 \bibitem{aicentropy} Kadota K, Nishimura SI, Bono H, Nakamura S, 
                      Hayashizaki Y, Okazaki Y, Takahashi K: 
                      Detection of genes with tissue-specific expression 
                      patterns using Akaike's Information Criterion (AIC) 
                      procedure. Physiol Genomics 2003, 12: 251-259
-\bibitem{anders} Anders S and Huber W. Differential expression analysis 
-                 for sequence count data. Genome Biol. 2010, 11(10): R106
+\bibitem{kadota} Kadota K, Nishiyama T, and Shimizu K. A normalization 
+                 strategy for comparing tag count data. Algorithms Mol 
+                 Biol. 2012, 7:5
+\bibitem{roku} Kadota K, Ye J, Nakai Y, Terada T, Shimizu K: ROKU: a novel
+               method for identification of tissue-specific genes. 
+               BMC Bioinformatics 2006, 7: 294
 \bibitem{mccarthy} McCarthy DJ, Chen Y, Smyth GK. Differential expression 
                    analysis of multifactor RNA-Seq experiments with respect
                    to biological variation. Nucleic Acids Res. 2012, 40(10): 
                    4288-4297
-\bibitem{glaus} Glaus P, Honkela A, and Rattray M. Identifying differentially
-                expressed transcripts from RNA-seq data with biological 
-                variation. Bioinformatics 2012, 28(13): 1721-1728
-\bibitem{roku} Kadota K, Ye J, Nakai Y, Terada T, Shimizu K: ROKU: a novel
-               method for identification of tissue-specific genes. 
-               BMC Bioinformatics 2006, 7: 294
-\bibitem{ueda} Ueda T. Simple method for the detection of outliers.
-               Japanese J Appl Stat 1996, 25: 17-26
+\bibitem{robinson} Robinson MD, McCarthy DJ, and Smyth GK. edgeR: 
+                   a Bioconductor package for differential expression 
+                   analysis of digital gene expression data. Bioinformatics 
+                   2010, 26(1): 139-140
+\bibitem{robinson2} Robinson MD and Oshlack A. A scaling normalization method
+                    for differential expression analysis of RNA-seq data. 
+                    Genome Biol. 2010, 11: R25
 \bibitem{robinson3} Robinson MD and Smyth GK. Small-sample estimation of 
                     negative binomial dispersion, with applications to SAGE 
                     data. Biostatistics 2008, 9: 321-332
 \bibitem{sun} Sun J, Nishiyama T, Shimizu K, and Kadota K. TCC: an R package
               for comparing tag count data with robust normalization 
               strategies. BMC Bioinformatics 2013, 14: 219
-\bibitem{di} Di Y, Schafer DW, Cumbie JS, and Chang JH. The NBP negative 
-             binomial model for assessing differential gene expression from
-             RNA-Seq. Stat Appl Genet Mol Biol. 2011, 10: art24
+\bibitem{ueda} Ueda T. Simple method for the detection of outliers.
+               Japanese J Appl Stat 1996, 25: 17-26
 \end{thebibliography}
 \end{document}
 
