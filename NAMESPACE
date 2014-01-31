@@ -1,16 +1,21 @@
+import(methods)
 import(ROC)
 import(DESeq)
-import(baySeq)
 import(edgeR)
 import(EBSeq)
 import(samr)
+importFrom(baySeq, getPriors.BB)
+importFrom(baySeq, getLikelihoods.BB)
+importFrom(baySeq, getPriors.NB)
+importFrom(baySeq, getLikelihoods.NB)
+importFrom(baySeq, topCounts)
 
 exportClasses(
     "TCC" 
 )
 
 export(
-  show,
+  show.TCC,
   names,
   length,
   "[",

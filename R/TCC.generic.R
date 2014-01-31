@@ -125,11 +125,12 @@ setMethod(
     }
 )
 
-setMethod(
-    f = "subset",
-    signature(x = "TCC"),
-    definition = subset.TCC
-)
+#setMethod(
+#    f = "subset",
+#    signature(x = "TCC"),
+#    definition = subset.TCC
+#)
+
 
 setMethod(
     f = "show",
