@@ -1,6 +1,6 @@
 test_estimateDE_EBSeq_1 <- function() {
     library(EBSeq)
-    tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3))
+    tcc <- simulateReadCounts(Ngene = 5000, replicates = c(3, 3))
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     set.seed(1)
     tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 10)
@@ -24,7 +24,7 @@ test_estimateDE_EBSeq_1 <- function() {
 
 test_estimateDE_EBSeq_2 <- function() {
     library(EBSeq)
-    tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))
+    tcc <- simulateReadCounts(Ngene = 5000, replicates = c(3, 3, 3))
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     set.seed(1)
     tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 10)
