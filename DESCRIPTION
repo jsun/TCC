@@ -20,7 +20,7 @@ Description: This package provides a series of functions for performing
     of functions in other sophisticated packages (especially edgeR, DESeq, 
     and baySeq).
 Depends: R (>= 2.15), methods, DESeq, edgeR, baySeq, ROC
-Imports: EBSeq, samr
+Imports: samr
 Suggests: RUnit, BiocGenerics
 Enhances: snow
 biocViews: HighThroughputSequencing, DifferentialExpression, RNAseq

@@ -1,58 +1,58 @@
-test_estimateDE_EBSeq_1 <- function() {
-    library(EBSeq)
-    tcc <- simulateReadCounts(Ngene = 5000, replicates = c(3, 3))
-    tcc <- calcNormFactors(tcc, iteration = FALSE)
-    set.seed(1)
-    tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 10)
-    auc <- calcAUCValue(tcc)
- 
-    set.seed(1)
-    x <- EBTest(Data = tcc$count,
-                Conditions = as.factor(tcc$group[, 1]),
-                sizeFactors = tcc$norm.factors * colSums(tcc$count),
-                maxround = 10)
-    PP <- GetPPMat(x)
-    df <- matrix(1, ncol = 2, nrow = nrow(tcc$count))
-    rownames(df) <- rownames(tcc$count)
-    df[rownames(PP), 1] <- PP[, 1]
-    df[rownames(PP), 2] <- PP[, 2]
-    df[is.na(df)] <- 0
+##test_estimateDE_EBSeq_1 <- function() {
+##    library(EBSeq)
+##    tcc <- simulateReadCounts(Ngene = 10000, replicates = c(3, 3))
+##    tcc <- calcNormFactors(tcc, iteration = FALSE)
+##    set.seed(1)
+##    tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 100)
+##    auc <- calcAUCValue(tcc)
+## 
+##    set.seed(1)
+##    x <- EBTest(Data = tcc$count,
+##                Conditions = as.factor(tcc$group[, 1]),
+##                sizeFactors = tcc$norm.factors * colSums(tcc$count),
+##                maxround = 100)
+##    PP <- GetPPMat(x)
+##    df <- matrix(1, ncol = 2, nrow = nrow(tcc$count))
+##    rownames(df) <- rownames(tcc$count)
+##    df[rownames(PP), 1] <- PP[, 1]
+##    df[rownames(PP), 2] <- PP[, 2]
+##    df[is.na(df)] <- 0
+##
+##    checkEqualsNumeric(df[, 2], tcc$stat$prob)
+##    checkTrue(auc > 0.80)
+##}
 
-    checkEqualsNumeric(df[, 2], tcc$stat$prob)
-    checkTrue(auc > 0.80)
-}
-
-test_estimateDE_EBSeq_2 <- function() {
-    library(EBSeq)
-    tcc <- simulateReadCounts(Ngene = 5000, replicates = c(3, 3, 3))
-    tcc <- calcNormFactors(tcc, iteration = FALSE)
-    set.seed(1)
-    tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 10)
-    auc <- calcAUCValue(tcc)
-
-    g <- tcc$group[, 1]
-    ug <- unique(g)
-    gp <- matrix(c(rep(1, length = length(ug)), 1:length(ug)),
-                 nrow = 2, byrow = TRUE)
-    colnames(gp) <- ug
-    rownames(gp) <- c("Pattern1", "Pattern2")
-    set.seed(1)
-    x <- EBMultiTest(Data = tcc$count,
-                NgVector = NULL,
-                Conditions = g,
-                AllParti = gp,
-                sizeFactors = tcc$norm.factors * colSums(tcc$count),
-                maxround = 10)
-    PP <- GetMultiPP(x)
-    df <- matrix(1, ncol = 2, nrow = nrow(tcc$count))
-    rownames(df) <- rownames(tcc$count)
-    df[rownames(PP$PP), 1] <- PP$PP[, 1]
-    df[rownames(PP$PP), 2] <- PP$PP[, 2]
-    df[is.na(df)] <- 0
-
-    checkEqualsNumeric(df[, 2], tcc$stat$prob)
-    checkTrue(auc > 0.80)
-}
+##test_estimateDE_EBSeq_2 <- function() {
+##    library(EBSeq)
+##    tcc <- simulateReadCounts(Ngene = 5000, replicates = c(3, 3, 3))
+##    tcc <- calcNormFactors(tcc, iteration = FALSE)
+##    set.seed(1)
+##    tcc <- estimateDE(tcc, test.method = "ebseq", samplesize = 10)
+##    auc <- calcAUCValue(tcc)
+##
+##    g <- tcc$group[, 1]
+##    ug <- unique(g)
+##    gp <- matrix(c(rep(1, length = length(ug)), 1:length(ug)),
+##                 nrow = 2, byrow = TRUE)
+##    colnames(gp) <- ug
+##    rownames(gp) <- c("Pattern1", "Pattern2")
+##    set.seed(1)
+##    x <- EBMultiTest(Data = tcc$count,
+##                NgVector = NULL,
+##                Conditions = g,
+##                AllParti = gp,
+##                sizeFactors = tcc$norm.factors * colSums(tcc$count),
+##                maxround = 10)
+##    PP <- GetMultiPP(x)
+##    df <- matrix(1, ncol = 2, nrow = nrow(tcc$count))
+##    rownames(df) <- rownames(tcc$count)
+##    df[rownames(PP$PP), 1] <- PP$PP[, 1]
+##    df[rownames(PP$PP), 2] <- PP$PP[, 2]
+##    df[is.na(df)] <- 0
+##
+##    checkEqualsNumeric(df[, 2], tcc$stat$prob)
+##    checkTrue(auc > 0.80)
+##}
 
 
 test_estimateDE_SAMseq_1 <- function() {

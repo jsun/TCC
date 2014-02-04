@@ -17,7 +17,7 @@ implemented in other R packages.
     \item{tcc}{\link{TCC-class} object.}
     \item{test.method}{character string specifying a method for identifying
           DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"bayseq"},
-          \code{"ebseq"}, \code{"samseq"}, and \code{"wad"}.
+          \code{"samseq"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
           replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), 
@@ -52,9 +52,7 @@ implemented in other R packages.
           in \code{\link[baySeq]{topCounts}} for details.}
     \item{samplesize}{integer specifying (i) the sample size for estimating the
           prior parameters if \code{test.method = "bayseq"} (defaults to 10000),
-          (ii) the iteration number used in EM algorithm in EBSeq if 
-          \code{test.method = "ebseq"} (defaults to 5),
-          and (iii) the number of permutation in samr if
+          and (ii) the number of permutation in samr if
           \code{test.method = "samseq"} (defaults to 10).}
     \item{floor.value}{numeric scalar (>= 0) to replace the values higher
           than the \code{floor.value} if \code{test.method = "wad"}
@@ -121,13 +119,13 @@ packages are internally called according to the specified
           \eqn{p}-values, the \eqn{(1 - likelihood)} values are
           stored in the corersponding field
           (i.e., \code{tcc$stat$p.value}).
-    \item \code{test.method = "ebseq"}\cr
-          \code{\link[EBSeq]{EBTest}} and \code{\link[EBSeq]{EBMultiTest}}
-          are internally called for two-group and multi-group data with
-          replicates, respectively. Currently, both functions does not
-          support data without replicates.
-          Since EBSeq only outputs \eqn{q}-value,
-          the all values in \code{tcc$stat$p.value} are \code{NA}.
+    %\item \code{test.method = "ebseq"}\cr
+    %      \code{\link[EBSeq]{EBTest}} and \code{\link[EBSeq]{EBMultiTest}}
+    %      are internally called for two-group and multi-group data with
+    %      replicates, respectively. Currently, both functions does not
+    %      support data without replicates.
+    %      Since EBSeq only outputs \eqn{q}-value,
+    %      the all values in \code{tcc$stat$p.value} are \code{NA}.
     \item \code{test.method = "samseq"}\cr
           \code{\link[samr]{SAMseq}} with
           \code{resp.type = "Two class unpaired"} arugment
