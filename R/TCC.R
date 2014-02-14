@@ -26,6 +26,7 @@ TCC <- setRefClass(
                         .self$group <<- data.frame(group = group)
                     else 
                         .self$group <<- group
+                    .self$group <- data.frame(lapply(.self$group, as.factor))
                 }
                 ## Set up count data.
                 if (!is.matrix(count))
@@ -72,14 +73,13 @@ TCC <- setRefClass(
             private$normalized <<- FALSE
             private$available$norm.method <<- c("tmm", "deseq")
             private$available$test.method <<- data.frame(
-                    TwoGroup_NonRep = c(T, T, F, F),
-                    TwoGroup        = c(T, T, T, T),
-                    TwoGroup_Paired = c(F, F, F, F),
-                    MultiGroup      = c(T, T, T, T),
-                    MultiFactor     = c(T, T, T, F),
-                    row.names = c("bayseq", "deseq", 
-                                  "edger", "samseq")
-                   )
+                TG_Y   = c(T, T, T, T),  # two-group with replicates
+                TG_N   = c(T, T, F, F),  # two-group without replicates
+                TG_N_P = c(F, T, T, F),  # paired two-group without replicates
+                MG_Y   = c(T, T, T, T),  # multi-group with replicates
+                MG_N   = c(T, T, F, F),  # multi-gruop without replicates
+                row.names = c("bayseq", "deseq", "edger", "samseq")
+            )
         }
     )
 )

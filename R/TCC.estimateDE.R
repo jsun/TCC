@@ -1,23 +1,59 @@
-TCC$methods(.testStrategy = function () {
-    fc <- .self$group
-    og <- fc[, 1]
-    ug <- unique(og)
-    ts <- -1    
-    if (ncol(fc) > 1) {
-        ##  Multi-factors
-        ts <- 3
-    } else if (ncol(fc) == 1 & length(ug) > 2) {
-        ##  Multi-groups & One-factor
-        ts <- 2
-    } else if (ncol(fc) == 1 & length(ug) == 2) {
-        ##  Two-groups & One-factor
-        ts <- 1
+TCC$methods(.testApproach = function (paired = NULL) {
+##
+##  This method decides the default test approach for data.
+##  The decision information is the given arguments ('paired' and 'group').
+##  Returning values:
+##     1  :  two-group       & one-factor
+##     2  :  multi-group     & one-factor
+##     3  :                    multi-factors
+##     4  :  two,multi-group & two-factor (paired)
+##
+    if (is.null(paired)) {
+        paired <- FALSE
     }
-    return (ts)
+    sample.design <- .self$group
+    sample.condition <- sample.design[, 1]
+    unique.condition <- unique(sample.condition)
+ 
+    ## default to 1   
+    test.approach <- 1
+    if (paired) {
+      test.approach <- 4
+    } else {
+      if (ncol(sample.design) > 1) {
+          test.approach <- 3
+      } 
+      if (ncol(sample.design) == 1) {
+          if (length(unique.condition) == 2) {
+              test.approach <- 1
+          } else {
+              test.approach <- 2
+          }
+      }
+    }
+
+    return (test.approach)
 })
+
+
+
+
 
 TCC$methods(.exactTest = function (FDR = NULL, significance.level = NULL,
                                    PDEG = NULL) {
+##
+## Return the DEGs label with the given threshold.
+## The order of priority of threhold is:
+##    significance.level > FDR > PDEG > others (TbT)
+## 'significance.level' is the threshold for p-value.
+## 'FDR' is the threshold for q-value.
+## 'PDEG' is the threhold for others. Some methods only outputs the
+## probabiligy for DEGs, statistics, or somethings. Those methods
+## cannot be able to use p-/q-value, thus we choose top-xx% ranked
+## genes as DEGs.
+## Because (Kadota original) TbT gives the DEGs label, we used it
+## directly.
+##
     deg.flg <- rep(0, length = nrow(count))
     if (!is.null(significance.level)) {
         deg.flg <- as.numeric(private$stat$p.value < significance.level)
@@ -30,31 +66,37 @@ TCC$methods(.exactTest = function (FDR = NULL, significance.level = NULL,
     }
     return (deg.flg)
 })
- 
+
+
+
+
 
 TCC$methods(estimateDE = function (test.method = NULL,
                                    FDR = NULL, 
-#                                   paired = FALSE,
+                                   paired = NULL,
                                    PDEG = NULL,
                                    significance.level = NULL,
-                                   dispersion = NULL,
-                                   fit0 = NULL, fit1 = NULL,
-                                   design = NULL,
-                                   contrast = NULL, coef = NULL,
-                                   comparison = NULL,
-                                   samplesize = NULL,
-                                   floor.value = 1,
-                                   cl = NULL) {
-    paired <- FALSE
+                                   dispersion = NULL,            # edgeR(exactTest)
+                                   fit0 = NULL, fit1 = NULL,     # DESeq(GLM)
+                                   design = NULL,                # edgeR(GLM)
+                                   contrast = NULL, coef = NULL, # edgeR(GLM)
+                                   comparison = NULL,            # baySeq('group')
+                                   samplesize = NULL,            # baySeq, SAMseq
+                                   floor.value = 1,              # WAD
+                                   cl = NULL) {                  # baySeq
+##
+## Indentify DEGs from data with given method, i.e., 'test.method'.
+##
+    ## Initialize 'test.method'.
     if (is.null(test.method)) {
-        if (paired)
-            test.method = "bayseq"
-        else if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1)) 
+        if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1)) {
             test.method = "deseq"
-        else 
+        } else {
             test.method = "edger"
+        }
     }
-    pdeg.method <- c("wad", "noiseq", "samseq")
+    ## Initialize threshold for identifying DEGs.
+    pdeg.method <- c("wad", "samseq")
     if (length(grep(test.method, pdeg.method)) > 0) {
         PDEG <- 0.05
     } else if (test.method != "bayseq" && is.null(FDR) && 
@@ -62,7 +104,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
         FDR <- 0.1
     }
     message(paste("TCC::INFO: Identifying DE genes using", test.method, "..."))
-    ## calculate statistics values related DE gene.
+    ## Calculate statistics.
     private$stat <<- list()
     stat <<- list()
     switch(test.method,
@@ -78,20 +120,17 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                           cl = cl, 
                                           comparison = comparison,
                                           paired = paired),
-           #"noiseq" = .self$.testByNoiseq(paired = paired),
-           #"ebseq"  = .self$.testByEbseq(samplesize = samplesize,
-           #                              paired = paired),
            "samseq" = .self$.testBySamseq(samplesize = samplesize,
                                          paired = paired),
-           ##"nbpseq"  = .self$.testByNbpseq(),
            "wad" = .self$.testByWad(floor.value = floor.value),
            stop(paste("\nTCC::ERROR: The identifying method of ", 
                       test.method, " doesn't supported.\n"))
     )
-    ## identify DE genes with the results of exact test.
+    ## Identify DEGs with the threshold.
     estimatedDEG <<- .self$.exactTest(FDR = FDR, 
                                       significance.level = significance.level,
                                       PDEG = PDEG)
+    ## Set up the statistics to TCC class obejct.
     if (!is.null(private$stat$testStat))
         stat$testStat <<- private$stat$testStat
     if (!is.null(private$stat$prob))

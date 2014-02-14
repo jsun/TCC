@@ -1,4 +1,9 @@
-TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL, ...) {
+TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
+                                    paired = NULL,...) {
+
+
+
+
 
 .testByDeseq.1 = function() {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
@@ -43,6 +48,11 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL, ...) {
     private$stat$q.value <<- d$padj
     private$stat$rank <<- rank(d$pval)
 }
+
+
+
+
+
 .testByDeseq.2 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(count), 
                                               conditions = group[, 1]))
@@ -95,6 +105,10 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL, ...) {
     private$stat$rank <<- rank(private$stat$p.value)
 }
 
+
+
+
+
 .testByDeseq.3 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                               conditions = .self$group))
@@ -129,15 +143,64 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL, ...) {
     private$stat$rank <<- rank(private$stat$p.value)
 }
 
-ts <- .self$.testStrategy()
-if (ts == 1) {
-    .testByDeseq.1()
-} else if (ts == 2) {
-    .testByDeseq.2(fit1 = fit1, fit0 = fit0)
-} else if (ts == 3) {
-    .testByDeseq.3(fit1 = fit1, fit0 = fit0)
-} else {
-    stop()
+
+
+
+
+.testByDeseq.4 <- function(fit1 = NULL, fit0 = NULL) {
+    suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
+                                          conditions = .self$group))
+    sizeFactors(d) <- .self$norm.factors * colSums(.self$count)
+    ## try default
+    e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
+    ## try blind method
+    if (class(e) == "try-error") {
+        message("TCC::WARN: 'estimateDispersions' with method=\"pooled\" in DESeq could not be performed.")
+        message("TCC::WARN: 'estimateDispersions' with method=\"blind\" in DESeq was used instead.")
+        e <- try(suppressMessages(d <- estimateDispersions(d, 
+                                  method = "blind", sharingMode = "fit-only")), 
+                     silent = TRUE)
+        ## try local mode
+        if (class(e) == "try-error") {
+            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
+            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
+            suppressMessages(d <- estimateDispersions(d, 
+                             method = "blind", sharingMode = "fit-only", 
+                             fitType = "local"))
+        }
+    }
+    if (is.null(fit0)) {
+        fit0 <- paste("count ~ ", colnames(.self$group)[-1], sep = "")
+    }
+    if (is.null(fit1)) {
+        fit1 <- paste("count ~ ",
+                      paste(colnames(.self$group), collapse = " + "),
+                      sep = "")
+    }
+    capture.output(f0 <- fitNbinomGLMs(d, eval(parse(text = fit0))))
+    capture.output(f1 <- fitNbinomGLMs(d, eval(parse(text = fit1))))
+    private$stat$p.value <<- nbinomGLMTest(f1, f0)
+    private$stat$p.value[is.na(private$stat$p.value)] <<- 1
+    private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
 }
+
+
+
+
+
+##
+## main process
+##
+test.approach <- .self$.testApproach(paired = paired)
+
+switch(test.approach,
+    "1" = .testByDeseq.1(),
+    "2" = .testByDeseq.2(fit1 = fit1, fit0 = fit0),
+    "3" = .testByDeseq.3(fit1 = fit1, fit0 = fit0),
+    "4" = .testByDeseq.4(fit1 = fit1, fit0 = fit0),
+    stop("TCC::ERROR: TCC kernel error.")
+)
+
+
 })
 

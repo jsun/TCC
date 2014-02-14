@@ -9,18 +9,19 @@ setMethod(
                             test.method = test.method, 
                             iteration = iteration, FDR = FDR, 
                             floorPDEG = floorPDEG, increment = increment,
+                            #paired = paired,
                             ...)
         return(obj)
     }
 )
 
-estimateDE <- function(tcc, test.method = NULL, FDR = NULL,
+estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
                        dispersion = NULL,
                        fit0 = NULL, fit1 = NULL, design = NULL, contrast=NULL,
                        coef = NULL, comparison = NULL, samplesize = NULL,
                        floor.value = 1, cl = NULL) {
     obj <- tcc$copy()
-    obj$estimateDE(test.method=test.method, FDR=FDR,
+    obj$estimateDE(test.method=test.method, FDR=FDR, paired = paired,
                    dispersion=dispersion,
                    fit0=fit0, fit1=fit1,
                    design=design, contrast=contrast, coef=coef,
@@ -36,7 +37,8 @@ getResult <- function(tcc, sort = FALSE, floor = 0) {
     gru <- unique(tcc$group[, 1])
     m.value <- rep(NA, length = nrow(tcc$count))
     a.value <- rep(NA, length = nrow(tcc$count))
-    if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
+    if (length(gru) == 2) {
+    ##if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
         count.normed <- tcc$getNormalizedData()
         mean.exp <- matrix(0, ncol = length(gru), nrow = nrow(tcc$count))
         gru <- unique(as.vector(tcc$group[, 1]))

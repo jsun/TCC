@@ -1,5 +1,9 @@
 TCC$methods(.testByBayseq = function(...) {
 
+
+
+
+
 .testByBayseq.1p = function(samplesize = NULL, cl = NULL, comparison = NULL) {
     if (is.null(comparison)) {
         comparison <- 1
@@ -36,6 +40,10 @@ TCC$methods(.testByBayseq = function(...) {
     private$tbt$estProps <<- d@estProps[2]
 }
 
+
+
+
+
 .testByBayseq.2 = function(samplesize = NULL, cl = NULL) {
     capture.output(suppressMessages(d <- new("countData",
              data = round(.self$count),
@@ -52,11 +60,15 @@ TCC$methods(.testByBayseq = function(...) {
     private$stat$rank <<- rank(- d@posteriors[, "DE"])
     private$stat$likelihood <<- stat.bayseq$Likelihood
     private$stat$p.value <<- 1 - stat.bayseq$Likelihood
-    private$stat$q.value <<- stat.bayseq$FDR
+    private$stat$q.value <<- stat.bayseq$FDR.DE
     private$estimatedDEG <<- as.numeric(.self$private$stat$rank < 
                                   (nrow(.self$count) * d@estProps[2]))
     private$tbt$estProps <<- d@estProps[2]
 }
+
+
+
+
 
 .testByBayseq.3 = function(samplesize = NULL, cl = NULL,
                                        comparison = NULL) {
@@ -84,27 +96,33 @@ TCC$methods(.testByBayseq = function(...) {
     private$tbt$estProps <<- d@estProps[2]
 }
 
-al <- list(...)
-if (is.null(al$samplesize)) samplesize <- 10000
-else samplesize <- al$samplesize
-if (is.null(al$paired)) al$paired <- FALSE
 
-cl <- al$cl
-comparison <- al$comparison
-ts <- .self$.testStrategy()
-if (al$paired) {
-    .testByBayseq.1p(samplesize = samplesize, cl = cl,
-                     comparison = comparison)
-} else if (ts == 1) {
-    .testByBayseq.2(samplesize = samplesize, cl = cl)
-} else if (ts == 2) {
-    .testByBayseq.2(samplesize = samplesize, cl = cl)
-} else if (ts == 3) {
-    .testByBayseq.3(samplesize = samplesize, cl = cl,
-                    comparison = comparison)
+
+
+
+##
+## main process
+##
+add.args <- list(...)
+if (is.null(add.args$samplesize)) {
+    samplesize <- 10000
 } else {
-   stop()
+    samplesize <- add.args$samplesize
 }
+
+cl <- add.args$cl
+comparison <- add.args$comparison
+
+test.approach <- .self$.testApproach()
+
+switch(test.approach, 
+    "1" = .testByBayseq.2(samplesize = samplesize, cl = cl),
+    "2" = .testByBayseq.2(samplesize = samplesize, cl = cl),
+    "3" = .testByBayseq.3(samplesize = samplesize, cl = cl,
+                          comparison = comparison),
+    stop("TCC::ERROR: TCC kernel error.")
+)
+
 
 })
 

@@ -2,7 +2,7 @@
 \alias{estimateDE}
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
-estimateDE(tcc, test.method, FDR, 
+estimateDE(tcc, test.method, FDR, paired,
            dispersion, fit0, fit1, design,
            contrast, coef, comparison, samplesize, floor.value = 1, cl)
 }
@@ -26,7 +26,9 @@ implemented in other R packages.
           %, and \code{"bayseq"} when the \code{paired = TRUE} is specified.}
     \item{FDR}{numeric value (between 0 and 1) specifying the threshold
           for determining DEGs.}
-    %\item{paired}{logical. If \code{TRUE}, the data is treated as paired data.}
+    \item{paired}{logical. If \code{TRUE}, the input data are regarded as
+          (two-group) paired samples. If \code{FALSE}, the input data are
+          regarded as unpaired samples. The default is \code{FALSE}.}
     \item{dispersion}{numeric vector giving the dispersion of all genes 
           for analyzing the count data without replicates when  the
           \code{test.method = "edger"} is specified.
