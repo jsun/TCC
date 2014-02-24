@@ -1,4 +1,4 @@
-## Kadota original code
+## Kadota original code.
 kadota_WAD <- function(data = NULL, data.cl = NULL){ 
     x <- data
     cl <- data.cl
@@ -11,32 +11,27 @@ kadota_WAD <- function(data = NULL, data.cl = NULL){
 }
 
 test_WAD_value <- function() {
-    g <- c(1, 1, 2, 2)
-    h <- c("A", "A", "B", "B")
     x <- matrix(rnorm(100, 10, 2), ncol = 4)
-    ef <- colSums(x)
-    x <- sweep(x, 2, mean(ef) / ef, "*")
+    g.num <- c(1, 1, 2, 2)
+    g.str <- c("A", "A", "B", "B")
+    ## y is the logged x.
     y <- x
     y[y < 1] <- 1
     y <- log2(y)
-
-    kdt <- kadota_WAD(y, g)
-    wad.x <- WAD(x, g, log.scale = TRUE, floor.value = 1)
-    wad.y <- WAD(y, g)
-
+    ## execute WAD test.
+    kdt <- kadota_WAD(y, g.num)
+    wad.x <- WAD(x, g.num)
+    wad.y <- WAD(y, g.num, logged = TRUE)
+    wad.z <- WAD(y, g.str, logged = TRUE)
+    ## check the numeric.
     checkEqualsNumeric(as.matrix(kdt), as.matrix(wad.x[, 1]))
     checkEqualsNumeric(as.matrix(kdt), as.matrix(wad.y[, 1]))
-
-    wad.h <- WAD(y, h)
-    checkEqualsNumeric(as.matrix(kdt), as.matrix(wad.h[, 1]))
-
-
-    tcc.g <- new("TCC", x, g)
-    tcc.g <- estimateDE(tcc.g, test.method = "wad")
-    tcc.h <- new("TCC", x, h)
-    tcc.h <- estimateDE(tcc.h, test.method = "wad")
-    checkEqualsNumeric(kdt, tcc.g$stat$testStat)
-    checkEqualsNumeric(kdt, tcc.h$stat$testStat)
+    checkEqualsNumeric(as.matrix(kdt), as.matrix(wad.z[, 1]))
+    ## check the WAD in TCC class.
+    tcc.num <- new("TCC", x, g.num)
+    tcc.num <- estimateDE(tcc.num, test.method = "wad")
+    tcc.str <- new("TCC", y, g.str)
+    tcc.str <- estimateDE(tcc.str, test.method = "wad", logged = TRUE)
+    checkEqualsNumeric(kdt, tcc.num$stat$testStat)
+    checkEqualsNumeric(kdt, tcc.str$stat$testStat)
 }
-
-

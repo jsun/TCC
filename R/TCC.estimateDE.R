@@ -82,7 +82,8 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                    contrast = NULL, coef = NULL, # edgeR(GLM)
                                    comparison = NULL,            # baySeq('group')
                                    samplesize = NULL,            # baySeq, SAMseq
-                                   floor.value = 1,              # WAD
+                                   logged = NULL,                # WAD
+                                   floor = NULL,                 # WAD
                                    cl = NULL) {                  # baySeq
 ##
 ## Indentify DEGs from data with given method, i.e., 'test.method'.
@@ -122,7 +123,8 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                           paired = paired),
            "samseq" = .self$.testBySamseq(samplesize = samplesize,
                                          paired = paired),
-           "wad" = .self$.testByWad(floor.value = floor.value),
+           "wad" = .self$.testByWad(logged = logged,
+                                    floor = floor),
            stop(paste("\nTCC::ERROR: The identifying method of ", 
                       test.method, " doesn't supported.\n"))
     )

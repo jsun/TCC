@@ -4,7 +4,8 @@
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
            dispersion, fit0, fit1, design,
-           contrast, coef, comparison, samplesize, floor.value = 1, cl)
+           contrast, coef, comparison, samplesize,
+           logged, floor, cl)
 }
 \description{
 This function calculates \eqn{p}-values (or the related statistics) for
@@ -56,9 +57,14 @@ implemented in other R packages.
           prior parameters if \code{test.method = "bayseq"} (defaults to 10000),
           and (ii) the number of permutation in samr if
           \code{test.method = "samseq"} (defaults to 10).}
-    \item{floor.value}{numeric scalar (>= 0) to replace the values higher
-          than the \code{floor.value} if \code{test.method = "wad"}
-          (defaults to 1).}
+    \item{logged}{logical. If \code{TRUE}, the input data are regarded as 
+          log2-transformed. If \code{FALSE}, the log2-transformation is
+          performed after the floor setting. The default is 
+          \code{logged = FALSE}.}
+    \item{floor}{numeric scalar (> 0) specifying the floor value for
+          taking logarithm. The default is \code{floor = 1}, indicating that
+          values less than 1 are replaced by 1. Ignored if
+          \code{logged = TRUE}.}
     \item{cl}{\code{snow} object when using multi processors if
           \code{test.method = "bayseq"} is specified.
           See the \code{\link[baySeq]{getPriors.NB}} function in baySeq

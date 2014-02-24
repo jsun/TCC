@@ -19,14 +19,14 @@ estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
                        dispersion = NULL,
                        fit0 = NULL, fit1 = NULL, design = NULL, contrast=NULL,
                        coef = NULL, comparison = NULL, samplesize = NULL,
-                       floor.value = 1, cl = NULL) {
+                       logged = NULL, floor = NULL, cl = NULL) {
     obj <- tcc$copy()
-    obj$estimateDE(test.method=test.method, FDR=FDR, paired = paired,
-                   dispersion=dispersion,
-                   fit0=fit0, fit1=fit1,
-                   design=design, contrast=contrast, coef=coef,
-                   comparison=comparison, samplesize=samplesize,
-                   floor.value = floor.value, cl=cl)
+    obj$estimateDE(test.method = test.method, FDR = FDR, paired = paired,
+                   dispersion = dispersion,
+                   fit0 = fit0, fit1 = fit1,
+                   design = design, contrast = contrast, coef = coef,
+                   comparison = comparison, samplesize = samplesize,
+                   logged = logged, floor = floor, cl = cl)
     return(obj)
 }
 

@@ -1,12 +1,27 @@
+##
+## The generic functions used in TCC package are defined in this file.
+##
+
+
+
+
+
 plot.TCC <- function(x, FDR = NULL, median.lines = FALSE, floor = 0, 
                      groups = NULL, col = NULL, col.tag = NULL,
                      normalize = TRUE, ...) {
+## The function for plotting M-A plot links to TCC class object. The
+## function calls the method implemented in TCC class. It plots M-A 
+## plot and output (but no show) the coordinates of M-A plot as 
+## data.frame class object.
     invisible(x$plotMA(FDR = FDR, median.lines = median.lines, floor = floor,
                        groups = groups, col = col, col.tag = col.tag,
                        normalize = normalize, ...))
 }
 
 subset.TCC <- function(x, subset, ...){
+## The function return the subset of count filed of TCC class object.
+## Note that, it does not change the normalization factors when it slices
+## the subsect.
     if(!is.logical(subset)){
         if(is.numeric(subset)){
             new_v = logical(length(x))
@@ -45,6 +60,11 @@ subset.TCC <- function(x, subset, ...){
 }
 
 show.TCC <- function(object) {
+## The function for showing the conttents of TCC class object clearly.
+## The function shows the head of count data and normalization factors,
+## shows the normalization pipeline if normalized, and shows the results
+## if the identification was performed.
+
     ## Counts.
     cat("Count:\n")
     print(head(object$count))

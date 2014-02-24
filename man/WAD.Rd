@@ -7,7 +7,7 @@ This function performs WAD method to identify differentially expressed genes
 statistic is evident of a high degree of differential expression.
 }
 \usage{
-WAD(data, group, log.scale = FALSE, floor.value = 1, sort = FALSE)
+WAD(data, group, logged = FALSE, floor = 1, sort = FALSE)
 }
 \arguments{
     \item{data}{numeric matrix or data frame containing count data or
@@ -17,12 +17,14 @@ WAD(data, group, log.scale = FALSE, floor.value = 1, sort = FALSE)
           or signal intensity) of the gene in the sample.}
     \item{group}{numeric vector indicating the experimental group for each
           sample (or library).}
-    \item{log.scale}{logical. If \code{TRUE}, the data are log scaled (base = 2)
-          after performing the \code{floor.value} setting. The default is
-          \code{log.scale = FALSE}.}
-    \item{floor.value}{numeric scalar specifying a floor value for the data.
-          The default is \code{floor.value = 1}, i.e., values less than 1 are
-          replaced by 1. Ignored if \code{log.scale = FALSE}.}
+    \item{logged}{logical. If \code{TRUE}, the input data are regarded as 
+          log2-transformed. If \code{FALSE}, the log2-transformation is
+          performed after the floor setting. The default is 
+          \code{logged = FALSE}.}
+    \item{floor}{numeric scalar (> 0) specifying the floor value for
+          taking logarithm. The default is \code{floor = 1}, indicating that
+          values less than 1 are replaced by 1. Ignored if
+          \code{logged = TRUE}.}
     \item{sort}{logical. If \code{TRUE}, the retrieved results are sorted
           in order of the rank of absolute WAD statistic.
           If \code{FALSE}, the results are retrieved by the original order.}
@@ -39,6 +41,5 @@ Algorithms Mol Biol. 2008, 3: 8.
 data(nakai)
 group <- c(1, 1, 1, 1, 2, 2, 2, 2)
 
-wad <- WAD(nakai, group,
-           log.scale = TRUE, floor.value = 1, sort = TRUE)
+wad <- WAD(nakai, group, sort = TRUE)
 }
