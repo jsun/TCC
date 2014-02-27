@@ -9,38 +9,38 @@ differential expression (DE) results from \link{TCC-class} object.
 The retrieved information includes \eqn{p}-values, \eqn{q}-values,
 coordinates of M-A plot (i.e., M and A values), and so on.
 }
-\usage{getResult(tcc, sort = FALSE, floor = 0)}
+\usage{getResult(tcc, sort = FALSE, ...)}
 \arguments{
     \item{tcc}{\link{TCC-class} object}
     \item{sort}{logical. If \code{TRUE}, the retrieved results are
-                sorted in order of the \code{stat$rank} field in the
-                \link{TCC-class} object. If \code{FALSE}, the results
-                are retrieved by the original order.}
-     \item{floor}{numeric scalar specifying a threshold for adjusting
-                  low count data.}
+          sorted in order of the \code{stat$rank} field in the
+          \link{TCC-class} object. If \code{FALSE}, the results
+          are retrieved by the original order.}
+    \item{...}{further arguments for calculating the coordinates of
+          M-A plot. See \code{\link[TCC]{plot}} for details.}
 }
 \value{
 A data frame object containing following fields:
     \item{gene_id}{character vector indicating the id of the count unit,
-                   usually gene.}
+          usually gene.}
     \item{a.value}{numeric vector of average expression level on log2
-                   scale (i.e., A-value) for each gene across the compared
-                   two groups. It corresponds to the \eqn{x} coordinate 
-                   in the M-A plot.}
+          scale (i.e., A-value) for each gene across the compared
+          two groups. It corresponds to the \eqn{x} coordinate 
+          in the M-A plot.}
     \item{m.value}{numeric vector of fold-change on \eqn{\log_2} scale
-                   (i.e., M-value) for each gene between the two groups
-                   compared. It corresponds to the \eqn{y} coordinate in
-                   the M-A plot.}
+          (i.e., M-value) for each gene between the two groups
+          compared. It corresponds to the \eqn{y} coordinate in
+          the M-A plot.}
     \item{p.value}{numeric vector of \eqn{p}-values.}
     \item{q.value}{numeric vector of \eqn{q}-values calculated
-                   based on the \eqn{p}-values using the \code{p.adjust}
-                   function with default parameter settings.}
+          based on the \eqn{p}-values using the \code{p.adjust}
+          function with default parameter settings.}
     \item{rank}{numeric vector of gene rank in order of the \eqn{p}-values.}
     \item{estimatedDEG}{numeric vector consisting of 0 or 1
-                        depending on whether each gene is classified 
-                        as non-DEG or DEG. The threshold for classifying 
-                        DEGs or non-DEGs is preliminarily 
-                        given when performing \code{\link{estimateDE}}.}
+          depending on whether each gene is classified 
+          as non-DEG or DEG. The threshold for classifying 
+          DEGs or non-DEGs is preliminarily 
+          given when performing \code{\link{estimateDE}}.}
 }
 \examples{
 # Obtaining DE results by an exact test in edgeR coupled with

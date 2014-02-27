@@ -32,7 +32,7 @@
                    for coloring the points of the genes.}
     \item{normalize}{logical. If \code{FALSE}, the coordinates of M-A plot
                      are calculated from the raw data.}
-    \item{\dots}{further graphical arguments, see \code{\link{plot.default}}.}
+    \item{...}{further graphical arguments, see \code{\link{plot.default}}.}
 }
 \details{
 This function generates roughly three different M-A plots 

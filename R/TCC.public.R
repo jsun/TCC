@@ -9,7 +9,6 @@ setMethod(
                             test.method = test.method, 
                             iteration = iteration, FDR = FDR, 
                             floorPDEG = floorPDEG, increment = increment,
-                            #paired = paired,
                             ...)
         return(obj)
     }
@@ -30,24 +29,14 @@ estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
     return(obj)
 }
 
-getResult <- function(tcc, sort = FALSE, floor = 0) {
+getResult <- function(tcc, sort = FALSE, ...) {
     if (length(tcc$stat) == 0)
         stop("\nTCC::ERROR: There are no statistics in stat fields of TCC class tcc. Execute TCC.estiamteDE for calculating them.\n")
     ## calculate M-A coordinates
-    gru <- unique(tcc$group[, 1])
-    m.value <- rep(NA, length = nrow(tcc$count))
-    a.value <- rep(NA, length = nrow(tcc$count))
-    if (length(gru) == 2) {
-    ##if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
-        count.normed <- tcc$getNormalizedData()
-        mean.exp <- matrix(0, ncol = length(gru), nrow = nrow(tcc$count))
-        gru <- unique(as.vector(tcc$group[, 1]))
-        mean.i <- rowMeans(as.matrix(count.normed[, tcc$group[, 1] == gru[1]]))
-        mean.j <- rowMeans(as.matrix(count.normed[, tcc$group[, 1] == gru[2]]))
-        ma.axes <- tcc$.getMACoordinates(mean.i, mean.j, floor)
-        m.value <- ma.axes$m.value
-        a.value <- ma.axes$a.value
-    }
+    ma <- tcc$plotMA(showfig = FALSE, ...)
+    m.value <- ma$m.value
+    a.value <- ma$a.value
+    ## merge statistics to data frame
     if (!is.null(tcc$stat$p.value)) {
         ## show p-values if existed
         df <- data.frame(
