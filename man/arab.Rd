@@ -14,6 +14,8 @@ RNA-Seq reads mapped to genes in a reference database. Rows
 correspond to genes and columns correspond to independent
 biological samples.
 }
+\usage{data(arab)}
+\format{A 26222 by 6 matrix of RNA-Seq read frequencies.}
 \details{
 This dataset was imported from NBPSeq package and the following
 explanation is verbatim copy of their explanation:
@@ -33,8 +35,6 @@ used an in-house computational pipeline to process, align, and
 assign RNA-Seq reads to genes according to a reference database
 we developed for \emph{Arabidopsis}.
 }
-\usage{data(arab)}
-\format{A 26222 by 6 matrix of RNA-Seq read frequencies.}
 \examples{
 data(arab)
 }
