@@ -3,7 +3,7 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           dispersion, fit0, fit1, design,
+           dispersion, fit0, fit1, design,   # for test
            contrast, coef, comparison, samplesize,
            logged, floor, cl)
 }
@@ -52,15 +52,16 @@ implemented in other R packages.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
     \item{comparison}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
-          in \code{\link[baySeq]{topCounts}} for details.}
+          of\code{\link[baySeq]{topCounts}} function in baySeq for details.}
     \item{samplesize}{integer specifying (i) the sample size for estimating the
           prior parameters if \code{test.method = "bayseq"} (defaults to 10000),
           and (ii) the number of permutation in samr if
-          \code{test.method = "samseq"} (defaults to 10).}
+          \code{test.method = "samseq"} (defaults to 100).}
     \item{logged}{logical. If \code{TRUE}, the input data are regarded as 
           log2-transformed. If \code{FALSE}, the log2-transformation is
           performed after the floor setting. The default is 
-          \code{logged = FALSE}.}
+          \code{logged = FALSE}.
+          Ignored if \code{test.method} is not \code{"wad"}.}
     \item{floor}{numeric scalar (> 0) specifying the floor value for
           taking logarithm. The default is \code{floor = 1}, indicating that
           values less than 1 are replaced by 1. Ignored if

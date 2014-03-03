@@ -76,7 +76,7 @@ A \link{TCC-class} object containing following fields:
 \examples{
 # Generating a simulation data for comparing two groups
 # (G1 vs. G2) without replicates (single-factor experimental design). 
-# the levels of DE are 3-fold in G1 and 7-fold in G2
+# the levels of DE are 3-fold in G1 and 7-fold in G2.
 tcc <- simulateReadCounts(Ngene = 10000, PDEG = 0.2, 
                          DEG.assign = c(0.9, 0.1),
                          DEG.foldchange = c(3, 7),
@@ -117,13 +117,13 @@ head(tcc$simulation$trueDEG)
 # 5-fold up-regulation at "10h" in "B".
 
 group <- data.frame(
-   GROUP = c("A", "A", "A", "A", "B", "B", "B", "B"),
+   GROUP = c( "A",  "A",   "A",   "A",  "B",  "B",   "B",   "B"),
    TIME  = c("2h", "2h", "10h", "10h", "2h", "2h", "10h", "10h")
 )
 DEG.foldchange <- data.frame(
-   FACTOR1.1 = c(2, 2, 2, 2, 1, 1, 1, 1),
-   FACTOR1.2 = c(1, 1, 1, 1, 4, 4, 4, 4),
-   FACTOR2   = c(1, 1, 0.4, 0.6, 1, 1, 5, 5)
+   FACTOR1 = c(2, 2,   2,   2, 1, 1, 1, 1),
+   FACTOR1 = c(1, 1,   1,   1, 4, 4, 4, 4),
+   FACTOR2 = c(1, 1, 0.4, 0.6, 1, 1, 5, 5)
 )
 tcc <- simulateReadCounts(Ngene = 10000, PDEG = 0.3,
                           DEG.assign = c(0.4, 0.4, 0.2),

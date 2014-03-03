@@ -31,9 +31,9 @@ A data frame object containing following fields:
           (i.e., M-value) for each gene between the two groups
           compared. It corresponds to the \eqn{y} coordinate in
           the M-A plot.}
-    \item{p.value}{numeric vector of \eqn{p}-values.}
-    \item{q.value}{numeric vector of \eqn{q}-values calculated
-          based on the \eqn{p}-values using the \code{p.adjust}
+    \item{p.value}{numeric vector of \eqn{p}-value.}
+    \item{q.value}{numeric vector of \eqn{q}-value calculated
+          based on the \eqn{p}-value using the \code{\link[stats]{p.adjust}}
           function with default parameter settings.}
     \item{rank}{numeric vector of gene rank in order of the \eqn{p}-values.}
     \item{estimatedDEG}{numeric vector consisting of 0 or 1
@@ -44,7 +44,7 @@ A data frame object containing following fields:
 }
 \examples{
 # Obtaining DE results by an exact test in edgeR coupled with
-# the DEGES/edgeR normalization factors
+# the DEGES/edgeR normalization factors.
 data(hypoData)
 group <- c(1, 1, 1, 2, 2, 2)
 tcc <- new("TCC", hypoData, group)
@@ -55,7 +55,7 @@ result <- getResult(tcc, sort = TRUE)
 head(result)
 
 # Obtaining DE results by an negative binomial test in DESeq
-# coupled with the iterative DEGES/DESeq normalization method
+# coupled with the iterative DEGES/DESeq normalization method.
 tcc <- new("TCC", hypoData, group)
 tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
                        iteration = 1, FDR = 0.1, floorPDEG = 0.05)

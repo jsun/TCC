@@ -32,13 +32,13 @@ numeric scalar.
 \examples{
 # Analyzing a simulation data for comparing two groups
 # (G1 vs. G2) with biological replicates.
-# the first 200 genes are DEGs, where 180 are up in G1.
+# the first 200 genes are DEGs, where 180 are up-regulated in G1.
 # The DE analysis is performed by an exact test in edgeR coupled
 # with the DEGES/edgeR normalization factors.
 tcc <- simulateReadCounts(Ngene = 1000, PDEG = 0.2,
-                         DEG.assign = c(0.9, 0.1),
-                         DEG.foldchange = c(4, 4), 
-                         replicates = c(3, 3))
+                          DEG.assign = c(0.9, 0.1),
+                          DEG.foldchange = c(4, 4), 
+                          replicates = c(3, 3))
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 1, FDR = 0.1, floorPDEG = 0.05)
 tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
@@ -51,9 +51,9 @@ calcAUCValue(tcc)
 # The DE analysis is performed by an negative binomial test in
 # DESeq coupled with the DEGES/DESeq normalization factors.
 tcc <- simulateReadCounts(Ngene = 1000, PDEG = 0.2,
-                         DEG.assign = c(0.9, 0.1),
-                         DEG.foldchange = c(3, 7), 
-                         replicates = c(1, 1))
+                          DEG.assign = c(0.9, 0.1),
+                          DEG.foldchange = c(3, 7), 
+                          replicates = c(1, 1))
 tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
                        iteration = 1, FDR = 0.1, floorPDEG = 0.05)
 tcc <- estimateDE(tcc, test.method = "deseq", FDR = 0.1)

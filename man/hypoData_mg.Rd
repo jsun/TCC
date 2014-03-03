@@ -5,7 +5,7 @@
  data, focusing on RNA-seq}
 \description{
 A simulation dataset, consisting of 1,000 rows (or genes) and
- 9 columns (or independent biological samples).
+ 9 columns (or independent biological samples)
 }
 \usage{data(hypoData_mg)}
 \format{\code{hypoData_mg} is a matrix of dimension 1,000 times 9.}

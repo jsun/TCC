@@ -16,22 +16,22 @@
 \arguments{
     \item{x}{\link{TCC-class} object.}
     \item{FDR}{numeric scalar specifying a false discovery rate (FDR)
-               threshold for determining differentially expressed genes 
-               (DEGs)}
+          threshold for determining differentially expressed genes 
+          (DEGs)}
     \item{median.lines}{logical. If \code{TRUE}, horizontal lines
-                        specifying the median M values for non-DEGs (black), 
-                        DEGs up-regulated in Group 1 (G1; blue), 
-                        and G2 (red) are drawn.}
+          specifying the median M values for non-DEGs (black), 
+          DEGs up-regulated in Group 1 (G1; blue), 
+          and G2 (red) are drawn.}
     \item{floor}{numeric scalar specifying a threshold for adjusting 
-                 low count data.}
+          low count data.}
     \item{groups}{numeric vector consists two elements for specifying what 
-                  two groups should be drawn when data contains more than 
-                  three groups.}
+          two groups should be drawn when data contains more than 
+          three groups.}
     \item{col}{vector specifying plotting color.}
     \item{col.tag}{numeric vector spacifying the index of \code{col} 
-                   for coloring the points of the genes.}
+          for coloring the points of the genes.}
     \item{normalize}{logical. If \code{FALSE}, the coordinates of M-A plot
-                     are calculated from the raw data.}
+          are calculated from the raw data.}
     \item{...}{further graphical arguments, see \code{\link{plot.default}}.}
 }
 \details{
@@ -52,18 +52,17 @@ and the remaining \emph{estimated} non-DEGs (black).
 Genes with normalized counts of 0 in any one group
 cannot be plotted on the M-A plot because those M and A values 
 cannot be calculated (as \eqn{\log 0} is undefined).  
-Similar to the \code{\link[edgeR]{plotSmear}} function in edgeR package, 
-\code{\link{plot}} function plots those points at the left side 
-of the minimum A (i.e., log average expression) value. 
-The \eqn{x} coordinate of those points is the minimum A value minus 1.
-The \eqn{y} coordinate is calculated as if the 0 count was 
-the minimum observed non-0 count in each group.
+Those points are plotted at the left side of the M-A plot,
+depending on the minimum A (i.e., log average expression) value. 
+The \eqn{x} coordinate of those points is the minimum A value minus one.
+The \eqn{y} coordinate is calculated as if the zero count was 
+the minimum observed non zero count in each group.
 }
 \value{
 A scatter plot to the current graphic device. 
 }
 \examples{
-# 1. 
+# Example 1. 
 # M-A plotting just after constructing the TCC class object from
 # hypoData. In this case, the plot is generated from hypoData
 # that has been scaled in such a way that the library sizes of 
@@ -82,7 +81,7 @@ colSums(hypoData)
 mean(colSums(hypoData))
 
 
-# 2. 
+# Example 2. 
 # M-A plotting of DEGES/edgeR-normalized simulation data.
 # It can be seen that the median M value for non-DEGs approaches
 # zero. Note that non-DEGs are in black, DEGs up-regulated in 
@@ -93,7 +92,7 @@ tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
 plot(tcc, median.lines = TRUE)
 
 
-# 3. 
+# Example 3. 
 # M-A plotting of DEGES/edgeR-normalized hypoData after performing
 # DE analysis.
 data(hypoData)

@@ -36,12 +36,12 @@ produced by the clustering process. See \code{\link[stats]{hclust}} for
 details.
 }
 \examples{
-# 1. Perform sample clustering with default options.
+# Perform sample clustering with default options.
 data(hypoData)
 hc <- clusterSample(hypoData)
 plot(hc)
 
-# 2. Obtain the same result using the 'unique.pattern = FALSE' option.
+# Obtain the same result using the 'unique.pattern = FALSE' option.
 data(hypoData)
 keep <- as.logical(rowSums(hypoData) > 0)
 data <- unique(hypoData[keep, ])

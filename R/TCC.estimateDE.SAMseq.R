@@ -54,7 +54,7 @@ TCC$methods(.testBySamseq = function(...) {
 ##
 add.args <- list(...)
 if (is.null(add.args$samplesize)) {
-    samplesize <- 10
+    samplesize <- 100
 } else {
     samplesize <- add.args$samplesize
 }
