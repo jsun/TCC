@@ -1,8 +1,9 @@
 %\VignetteIndexEntry{TCC}
 %\VignettePackage{TCC}
 
-\documentclass{article}
-\usepackage[a4paper]{geometry}
+\documentclass[oneside,12pt]{article}
+\usepackage[a4paper,left=2.2cm,top=2.6cm,bottom=2.3cm,right=2.2cm]{geometry}
+\usepackage{cite}
 \usepackage{color}
 \usepackage{Sweave}
 \SweaveOpts{pdf=TRUE}
@@ -16,7 +17,7 @@
 \renewcommand{\floatpagefraction}{0.9}
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rfunction}[1]{{\Robject{#1}}}
-\newcommand{\Rpackage}[1]{\textbf{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{\textbf{#1}}
 \newcommand{\Rclass}[1]{{\texttt{#1}}}
 
 \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=n,formatcom=\color{TccRed}}
@@ -172,7 +173,7 @@ when you publish your results.
 \subsection{Quick start}
 \label{section-1-3}
 
-Let us begin by showing two examples (Cases1 and 2) of identifying DEGs 
+Let us begin by showing two examples (Cases 1 and 2) of identifying DEGs 
 between two groups from tag count data consisting of $1,000$ 
 genes and a total of six samples 
 (each group has three biological replicates). The hypothetical 
@@ -183,7 +184,7 @@ using the data of the first and the fourth
 column of \Robject{hypoData} (Case 3). We recommend the use of commands in 
 Cases 2 and 3.
 
-Case 1: DE analysis of two-group count data with replicates by 
+\textbf{Case 1}: DE analysis of two-group count data with replicates by 
 using the exact test (Robinson and Smyth, 2008 \cite{robinson3}) 
 in \Rpackage{edgeR} coupled with TbT normalization 
 (termed the TbT-\Rpackage{edgeR} combination). 
@@ -214,7 +215,7 @@ result <- getResult(tcc, sort = TRUE)
 head(result)
 @
 
-Case 2: DE analysis for two-group count data with replicates by using 
+\textbf{Case 2}: DE analysis for two-group count data with replicates by using 
 the exact test coupled with iterative DEGES/\Rpackage{edgeR} 
 normalization (i.e., the iDEGES/\Rpackage{edgeR}-\Rpackage{edgeR} 
 combination). This is an alternative pipeline designed to reduce 
@@ -242,7 +243,7 @@ result <- getResult(tcc, sort = TRUE)
 head(result)
 @
 
-Case 3: DE analysis for two-group count data without replicates by using 
+\textbf{Case 3}: DE analysis for two-group count data without replicates by using 
 the negative binomial (NB) test in \Rpackage{DESeq} coupled with 
 iDEGES/\Rpackage{DESeq} normalization 
 (i.e., the iDEGES/\Rpackage{DESeq}-\Rpackage{DESeq} combination). 
@@ -330,17 +331,17 @@ head(tcc$count)
 tcc$group
 @
 
-The subset of \Rpackage{TCC} class object can be taken by the 
-\Rfunction{subset} or \Rfunction{"["} functions.
-
-
-<<subset_tcc>>=
-dim(tcc$count)
-tcc.sub1 <- subset(tcc, c(rep(TRUE, 20), rep(FALSE, 980)))
-dim(tcc.sub1$count)
-tcc.sub2 <- tcc[1:20]
-dim(tcc.sub2$count)
-@
+%The subset of \Rpackage{TCC} class object can be taken by the 
+%\Rfunction{subset} or \Rfunction{"["} functions.
+%
+%
+%<<subset_tcc>>=
+%dim(tcc$count)
+%tcc.sub1 <- subset(tcc, c(rep(TRUE, 20), rep(FALSE, 980)))
+%dim(tcc.sub1$count)
+%tcc.sub2 <- tcc[1:20]
+%dim(tcc.sub2$count)
+%@
 
 
 \subsection{Filtering low-count genes (optional)}
@@ -360,8 +361,8 @@ tcc <- filterLowCountGenes(tcc)
 dim(tcc$count)
 @
 
-It can be seen that $\Sexpr{nrow(hypoData) - nrow(tcc$count)} 
-(= \Sexpr{nrow(hypoData)} -\Sexpr{ nrow(tcc$count)})$ 
+It can be seen that $\Sexpr{nrow(hypoData) - nrow(tcc$count)}
+ (= \Sexpr{nrow(hypoData)} -\Sexpr{ nrow(tcc$count)})$ 
 genes were filtered as non-expressed. 
 The same procedure can be performed without 
 the \Rfunction{filterLowCountGenes} function, in which case the 
@@ -379,11 +380,12 @@ dim(tcc$count)
 \section{Normalization}
 
 This chapter describes the details of our robust normalization strategy
-(i.e., DEGES) implemented in TCC. Alternative DEGES procedures consisting
-of functions in other packages (edgeR, DESeq, and baySeq) are also provided,
+(i.e., DEGES) implemented in \Rpackage{TCC}. Alternative DEGES procedures
+consisting of functions in other packages (\Rpackage{edgeR}, \Rpackage{DESeq}
+, and \Rpackage{baySeq}) are also provided,
 enabling advanced users familiar with the existing packages can easily learn
-what is done in TCC. Note that end users, who just want to perform robust
-differential expression analysis using TCC,
+what is done in \Rpackage{TCC}. Note that end users, who just want to perform robust
+differential expression analysis using \Rpackage{TCC},
 can skip this chapter (3 Normalization) and move from here to ,
 for example, the next chapter (4 Differential expression).
 
@@ -411,7 +413,7 @@ three shorter alternatives (\ref{section-3-1-2} DEGES/\Rpackage{edgeR},
 DEGES/\Rpackage{DESeq}). Note that the purpose here is to obtain 
 accurate normalization factors to be used with statistical models 
 (e.g., the exact test or empirical Bayes) for the DE analysis described 
-in the next section (\ref{section-4} \textbf{Differential expression}).
+in the next section (\ref{section-4} Differential expression).
 
 \subsubsection{DEGES/TbT}
 \label{section-3-1-1}
@@ -719,6 +721,148 @@ norm.factors
 @
 
 
+\subsection{Normalization of two-group count data without replicates (paired)}
+\label{norm_twogroup_without_reps}
+
+
+\subsubsection{DEGES/edgeR}
+\label{norm_twogroup_without_reps_degesedger}
+
+\Rpackage{edgeR} employs generalized linear models (GLMs) which can apply
+to detect DEGs from paired two-group count data.
+Since GLMs approach, packaged in \Rpackage{edgeR}, requires the arguments
+for creating experiment design to perform DE analysis.
+\Rpackage{TCC} supports such analysis and creates those
+paramenters automatically.
+User only should create the group information for \Robject{TCC} object,
+and just execute the \Rfunction{calcNormFactors} with \Robject{paired = TRUE}
+argument.
+
+Let us explain the first approach for normalizing paired two-group count data.
+We treate \Robject{hypoData} as paired two-group data for explaining the
+approach here.
+
+<<2394782901>>=
+library(TCC)
+data(hypoData)
+group <- data.frame(
+           group = c(1, 1, 1, 2, 2, 2),
+           pair  = c(1, 2, 3, 1, 2, 3)
+         )
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
+                       iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+tcc$norm.factors
+@
+
+An advantage of this DEGES/\Rfunction{edgeR} pipeline is that the multi-step
+normalization strategy only needs the methods in the \Rpackage{edgeR}.
+These factors should be the same as those produced by the following
+procedure consisting of functions implemented in \Rpackage{edgeR}.
+
+<<8939487592>>=
+library(TCC)
+data(hypoData)
+group = factor(c(1, 1, 1, 2, 2, 2))
+pair  = factor(c(1, 2, 3, 1, 2, 3))
+
+design <- model.matrix(~ group + pair)
+coef <- 2
+FDR <- 0.1
+floorPDEG <- 0.05
+
+d <- DGEList(counts = hypoData, group = group)
+### STEP 1 ###
+d <- calcNormFactors(d)
+### STEP 2 ###
+d <- estimateGLMCommonDisp(d, design)
+d <- estimateGLMTrendedDisp(d, design)
+d <- estimateGLMTagwiseDisp(d, design)
+fit <- glmFit(d, design)
+lrt <- glmLRT(fit, coef = coef)
+result <- topTags(lrt, n = nrow(hypoData))
+result <- result$table[rownames(hypoData), ]
+
+if (sum(result$FDR < FDR) > (floorPDEG * nrow(hypoData))){
+  is.DEG <- as.logical(result$FDR < FDR)
+} else {
+  is.DEG <- as.logical(rank(result$table$PValue,ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
+}
+
+### STEP 3 ###
+d <- DGEList(counts = hypoData[!is.DEG, ], group = group)
+d <- calcNormFactors(d)
+norm.factors <- d$samples$norm.factors * colSums(hypoData[!is.DEG, ]) /
+colSums(hypoData)
+norm.factors <- norm.factors / mean(norm.factors)
+norm.factors
+@
+
+
+
+\subsubsection{DEGES/DESeq}
+\label{nrom_twogroup_without_reps_degesdeseq}
+
+Similer to \Rpackage{edgeR}, \Rpackage{DESeq} also employs GLMs approach
+to perform DE analysis for paired two-group count data.
+User performs GLMs approach only should execute the
+\Rfunction{calcNormFactors} function with \Robject{paired = TRUE} argument.
+
+<<7573490899>>=
+library(TCC)
+data(hypoData)
+group <- data.frame(
+           group = c(1, 1, 1, 2, 2, 2),
+           pair  = c(1, 2, 3, 1, 2, 3)
+         )
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
+                       iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+tcc$norm.factors
+@
+
+These factors should be same as those produced by the following
+procedure consisting of functions implemented in \Rpackage{DESeq}.
+
+<<3489438904>>=
+library(TCC)
+data(hypoData)
+group = factor(c(1, 1, 1, 2, 2, 2))
+pair  = factor(c(1, 2, 3, 1, 2, 3))
+
+FDR <- 0.1
+floorPDEG <- 0.05
+
+group <- data.frame(group = group, pair = pair)
+fit1 <- count ~ group + pair
+fit0 <- count ~ pair
+
+### STEP 1 ###
+cds <- newCountDataSet(hypoData, group)
+### STEP 2 ###
+cds <- estimateSizeFactors(cds)
+cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
+reduced.model <- fitNbinomGLMs(cds, fit0)
+full.model <- fitNbinomGLMs(cds, fit1)
+
+p.value <- nbinomGLMTest(full.model, reduced.model)
+p.value[is.na(p.value)] <- 1
+q.value <- p.adjust(p.value, method = "BH")
+if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(q.value < FDR)
+} else {
+  is.DEG <- as.logical(rank(p.value, ties.method = "min") <=
+  nrow(hypoData) * floorPDEG)
+}
+### STEP 3 ###
+cds <- newCountDataSet(hypoData[!is.DEG, ], group)
+cds <- estimateSizeFactors(cds)
+norm.factors <- sizeFactors(cds) / colSums(hypoData)
+norm.factors <- norm.factors / mean(norm.factors)
+norm.factors
+@
+
 
 \subsection{Normalization of multi-group count data with replicates}
 \label{section-3-3}
@@ -873,7 +1017,7 @@ tcc$norm.factors
 @
 
 For \Rpackage{DESeq} users, we provide commands, consisting of functions 
-in \Rpackage{DESeq}, to perform the DEGES/ \Rpackage{DESeq} pipeline without 
+in \Rpackage{DESeq}, to perform the DEGES/\Rpackage{DESeq} pipeline without 
 \Rpackage{TCC}. The \Rfunction{calcNormFactors} function together with the 
 above parameter settings can be regarded as a wrapper function for the 
 following commands.
@@ -940,9 +1084,9 @@ replicates for G2); i.e., \{G1\_rep1, G1\_rep2, G1\_rep3\} vs.
 \{G2\_rep1, G2\_rep2, G2\_rep3\}. These simulation data have basically 
 the same conditions as shown in Fig. 1 of the TbT paper (Kadota et 
 al., 2012 \cite{kadota}); i.e., (i) the first $200$ genes are 
-DEGs ($P_{\mbox{\small DEG}} = 200/1000 = 20\%$), 
+DEGs ($P_{\mbox{\tiny DEG}} = 200/1000 = 20\%$), 
 (ii) the first $180$ genes of the $200$ DEGs are higher in G1 
-($P_{\mbox{\small G1}} = 180/200 = 90\%$), 
+($P_{\mbox{\tiny G1}} = 180/200 = 90\%$), 
 and the remaining $20$ DEGs are higher in G2, and (iii) the level of 
 DE is four-fold. The last $800$ genes were designed to be non-DEGs. 
 The different normalization strategies can roughly be evaluated in terms 
@@ -1196,6 +1340,52 @@ normalized.count <- counts(cds, normalized = TRUE)
 apply(normalized.count[nonDEG, ], 2, median)
 @
 
+
+\subsubsection{Retrieving two-group DEGES/edgeR-normalized data without replicates (paired)}
+\label{retriev_twogroup_paired_withoutreps}
+
+
+We treate \Robject{hypoData} as the data of paired two-group experiment
+for explaining to retrieve paired two-group DEGES/\Rpackage{edgeR}-normalized
+data. The normalized data can be retrieved as follows by functions of
+\Rpackage{TCC} package.
+
+<<9308479922>>=
+library(TCC)
+data(hypoData)
+nonDEG <- 201:1000
+group <- data.frame(
+           group = c(1, 1, 1, 2, 2, 2),
+           pair  = c(1, 2, 3, 1, 2, 3)
+         )
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
+                       iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+normalized.count <- getNormalizedData(tcc)
+apply(normalized.count[nonDEG, ], 2, median)
+range(apply(normalized.count[nonDEG, ], 2, median))
+@
+
+For comparison, the summary statistics for TMM-normalized data produced using the
+original normalization method (i.e., TMM) in \Rpackage{edgeR} are obtained as follows:
+
+<<9210930342>>=
+library(TCC)
+data(hypoData)
+nonDEG <- 201:1000
+group <- data.frame(
+           group = c(1, 1, 1, 2, 2, 2),
+           pair  = c(1, 2, 3, 1, 2, 3)
+         )
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = FALSE)
+normalized.count <- getNormalizedData(tcc)
+apply(normalized.count[nonDEG, ], 2, median)
+range(apply(normalized.count[nonDEG, ], 2, median))
+@
+
+
+
 \subsubsection{Retrieving multi-group iDEGES/edgeR-normalized data with replicates}
 \label{section-3-4-4}
 
@@ -1294,6 +1484,7 @@ by using the \Rfunction{estimateDE} function with
 and \Rfunction{"bayseq"}, respectively. Here, we show some 
 examples of DE analysis for two-group data with replicates 
 (\ref{section-4-1}), two-group data without replicates (\ref{section-4-2}), 
+paired two-group data without replicates (\ref{faefljifeaf}), 
 and multi-group data with replicates (\ref{section-4-3}).
 
 \subsection{DE analysis for two-group data with replicates}
@@ -1420,7 +1611,7 @@ head(result)
 \label{section-4-2}
 
 As described previously, the functions for the DEG identification 
-method implemented in \Rpackage{edgeR} (i.e., the exact test; ver. 3.0.4) 
+method implemented in \Rpackage{edgeR} (i.e., the exact test; ver. 3.4) 
 do not allow analysis without replicates. Currently, 
 the \Rfunction{estimateDE} function only allows the \Robject{"deseq"} or 
 \Robject{"bayseq"} options for the \Robject{test.method} argument. 
@@ -1451,6 +1642,33 @@ table(tcc$estimatedDEG)
 @
 
 It can be seen that there is no DEG having FDR $< 0.1$.
+
+
+
+\subsection{DE analysis for two-group data without replicates (paired)}
+\label{faefljifeaf}
+
+We show a procedure for DE analysis using the GLM aproach implemented in
+\Rpackage{edgeR} together with iDEGES/\Rpackage{edgeR} normalization 
+factors for paired two-group count data without replicates.
+
+<<9384718934>>=
+library(TCC)
+data(hypoData)
+group <- data.frame(
+           group = c(1, 1, 1, 2, 2, 2),
+           pair  = c(1, 2, 3, 1, 2, 3)
+         )
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
+                       iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1, paired = TRUE)
+result <- getResult(tcc, sort = TRUE)
+head(result)
+table(tcc$estimatedDEG)
+@
+
+
 
 \subsection{DE analysis for multi-group data with replicates}
 \label{section-4-3}
@@ -1695,8 +1913,7 @@ as a \Rpackage{TCC} class object and is therefore ready-to-analyze.
 
 Note that different trials of simulation analysis generally yield 
 different count data even under the same simulation conditions. 
-As mentioned in section \ref{section-3-1-1}, 
-we can call the \Rfunction{set.seed} 
+We can call the \Rfunction{set.seed} 
 function in order to obtain reproducible results 
 (i.e., the \Robject{tcc\$count}) with the 
 \Rfunction{simulateReadCounts} function. 
