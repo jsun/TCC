@@ -1,13 +1,35 @@
 import(methods)
 import(ROC)
-import(DESeq)
+#import(DESeq)
 import(edgeR)
 import(samr)
+
+
+# import methods from baySeq
 importFrom(baySeq, getPriors.BB)
 importFrom(baySeq, getLikelihoods.BB)
 importFrom(baySeq, getPriors.NB)
 importFrom(baySeq, getLikelihoods.NB)
 importFrom(baySeq, topCounts)
+
+# import methods from DESeq
+importFrom(DESeq, newCountDataSet)
+importFrom(DESeq, sizeFactors)
+importFrom(DESeq, estimateDispersions)
+importFrom(DESeq, estimateSizeFactors)
+importFrom(DESeq, nbinomTest)
+importFrom(DESeq, fitNbinomGLMs)
+importFrom(DESeq, nbinomGLMTest)
+
+# import methods from DESeq2
+importFrom(DESeq2, DESeqDataSetFromMatrix)
+importFrom(DESeq2, sizeFactors)
+importFrom(DESeq2, estimateDispersions)
+importFrom(DESeq2, nbinomWaldTest)
+importFrom(DESeq2, nbinomLRT)
+importFrom(DESeq2, results)
+
+
 
 exportClasses(
     "TCC" 

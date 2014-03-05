@@ -3,7 +3,7 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           dispersion, fit0, fit1, design,   # for test
+           dispersion, fit0, fit1, DESeq2.test, design,   # for test
            contrast, coef, comparison, samplesize,
            logged, floor, cl)
 }
@@ -17,8 +17,8 @@ implemented in other R packages.
 \arguments{
     \item{tcc}{\link{TCC-class} object.}
     \item{test.method}{character string specifying a method for identifying
-          DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"bayseq"},
-          \code{"samseq"}, and \code{"wad"}.
+          DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
+          \code{"bayseq"}, \code{"samseq"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
           replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), 
@@ -42,7 +42,7 @@ implemented in other R packages.
     \item{coef}{integer or character vector indicating which coefficients
           of the linear model are to be tested equal to zero.
           See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
-    \item{fit0}{a formula for creating reduced model described in DESeq. 
+    \item{fit0}{a formula for creating reduced model described in DESeq and DESeq2. 
           The left hand side must be \code{count}, the right hand side can
           involve any column of \code{tcc$group} is used as the model frame.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
@@ -50,6 +50,8 @@ implemented in other R packages.
           The left hand side must be \code{count}, the right hand side can
           involve any column of \code{tcc$group} is used as the model frame.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
+    \item{DESeq2.test}{either \code{"Wald"} or \code{"LRT"} to specify the method
+          using in DESeq2.}
     \item{comparison}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
           of\code{\link[baySeq]{topCounts}} function in baySeq for details.}
@@ -116,6 +118,11 @@ packages are internally called according to the specified
           \code{\link[DESeq]{fitNbinomGLMs}}, and
           \code{\link[DESeq]{nbinomGLMTest}}
           are internally called.
+    \item \code{test.method = "deseq2"}\cr
+          \code{\link[DESeq2]{estimateDispersions}},
+          \code{\link[DESeq2]{nbinomWaldTest}}(when \code{"DESeq2.test = "Wald""}),
+          and \code{\link[DESeq2]{nbinomLRT}}(when \code{"DESeq2.test = "LRT""}) in
+          DESeq2 are internally collaed for identifying DEGs.
     \item \code{test.method = "bayseq"}\cr
           \code{\link[baySeq]{getPriors.NB}} and
           \code{\link[baySeq]{getLikelihoods.NB}} in baySeq are internally

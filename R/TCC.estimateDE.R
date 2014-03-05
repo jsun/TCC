@@ -78,6 +78,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                    significance.level = NULL,
                                    dispersion = NULL,            # edgeR(exactTest)
                                    fit0 = NULL, fit1 = NULL,     # DESeq(GLM)
+                                   DESeq2.test = NULL,           # DESeq2
                                    design = NULL,                # edgeR(GLM)
                                    contrast = NULL, coef = NULL, # edgeR(GLM)
                                    comparison = NULL,            # baySeq('group')
@@ -117,6 +118,10 @@ TCC$methods(estimateDE = function (test.method = NULL,
            "deseq" = .self$.testByDeseq(fit1 = fit1, 
                                         fit0 = fit0,
                                         paired = paired),
+           "deseq2" = .self$.testByDeseq(design = design, 
+                                         fit0 = fit0, 
+                                         DESeq2.test = DESeq2.test,
+                                         paired = paired),
            "bayseq" = .self$.testByBayseq(samplesize = samplesize, 
                                           cl = cl, 
                                           comparison = comparison,
