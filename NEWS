@@ -1,43 +1,41 @@
+CHANGES IN VERSION 1.3.2
+------------------------
+
+  - DESeq2 was implemented in TCC for identifying DEGs.
+  - EBSeq was removed from TCC.
+  - arguments of 'WAD' function were changed.
+  - fixed bug in '.testByDeseq' that missing to treat size factors.
+  - the strategies for DE analysis of paired two-group dataset were implemented.
+  - add the section for describing DE analysis of paired two-group dataset
+    into vignette.
+
+
+
 CHANGES IN VERSION 1.2.0
 ------------------------
 
-NEW FEATURES
-
-    o This package was released as a Bioconductor package (previously CRAN).
-    o WAD method for identifying DEGs was added.
-    o ROKU method for identifying tissue-specific genes was added.
-    o 'increment' argument of 'calcNormFactor' function was added.
-
-
-SIGNIFICANT USER-VISIBLE CHANGES
-
-    o 'replicates' field of TCC class was deleted.
-
+  - this package was released as a Bioconductor package (previously CRAN).
+  - WAD method for identifying DEGs was added.
+  - ROKU method for identifying tissue-specific genes was added.
+  - 'increment' argument of 'calcNormFactor' function was added.
+  - 'replicates' field of TCC class was deleted.
 
 
 
 CHANGES IN VERSION 1.1.3
 ------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
-    o 'generateSimulationData' function was renamed to 'simulateReadCount'.
-
-    o 'names' field of TCC class was changed to 'gene_id'.
-
-    o 'hypoData' was reduced to a smaller data set.
-
-    o 'hypoData_mg' was created. This is the simulation dataset which consists
+  - 'generateSimulationData' function was renamed to 'simulateReadCount'.
+  - 'names' field of TCC class was changed to 'gene_id'.
+  - 'hypoData' was reduced to a smaller data set.
+  - 'hypoData_mg' was created. This is the simulation dataset which consists
     of 1,000 genes and 9 samples.
-
 
 
 
 CHANGES IN VERSION 1.0.0
 ------------------------
 
-SIGNIFICANT USER-VISIBLE CHANGES
-
-    o 'TCC' class was implemented as a R5 reference class. Wrapper functions
+  - 'TCC' class was implemented as a R5 reference class. Wrapper functions
     with functional programming semantics were proviede.
 
