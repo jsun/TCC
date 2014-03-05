@@ -73,12 +73,12 @@ TCC <- setRefClass(
             private$normalized <<- FALSE
             private$available$norm.method <<- c("tmm", "deseq")
             private$available$test.method <<- data.frame(
-                TG_Y   = c(T, T, T, T),  # two-group with replicates
-                TG_N   = c(T, T, F, F),  # two-group without replicates
-                TG_N_P = c(F, T, T, F),  # paired two-group without replicates
-                MG_Y   = c(T, T, T, T),  # multi-group with replicates
-                MG_N   = c(T, T, F, F),  # multi-gruop without replicates
-                row.names = c("bayseq", "deseq", "edger", "samseq")
+                TG_Y   = c(T, T, T, T, T),  # two-group with replicates
+                TG_N   = c(T, T, T, F, F),  # two-group without replicates
+                TG_N_P = c(F, T, F, T, F),  # paired two-group without replicates
+                MG_Y   = c(T, T, T, T, T),  # multi-group with replicates
+                MG_N   = c(T, T, T, F, F),  # multi-gruop without replicates
+                row.names = c("bayseq", "deseq", "deseq2", "edger", "samseq")
             )
         }
     )

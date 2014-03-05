@@ -48,6 +48,14 @@ TCC$methods(.testByDeseq2 = function(fit0 = NULL, design = NULL,
     if (is.null(fit0)) {
         fit0 <- formula(~ 1)
     }
+    ## check the reduced model (fit0) fotmat.
+    ## if it is DESeq format, change it to DESeq2 format.
+    formulatxt <- as.character(fit0)
+    if (formulatxt[2] == "count") {
+        fit0 <- formula(eval(parse(text =
+                  paste("~", formulatxt[3], sep = " ")
+                )))
+    }
     suppressMessages(d <- DESeq2::DESeqDataSetFromMatrix(
                                   countData = round(.self$count),
                                   colData = .self$group,

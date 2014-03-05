@@ -3,9 +3,14 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           dispersion, fit0, fit1, DESeq2.test, design,   # for test
-           contrast, coef, comparison, samplesize,
-           logged, floor, cl)
+           fit0, fit1,                # for DESeq
+           DESeq2.test,                # for DESeq2
+           design,                     # for DESeq2, edgeR
+           contrast, coef, dispersion, # for edgeR
+           comparison, cl,             # for baySeq
+           samplesize,                 # for baySeq, SAMseq
+           logged, floor               # for WAD
+)
 }
 \description{
 This function calculates \eqn{p}-values (or the related statistics) for
@@ -16,6 +21,7 @@ implemented in other R packages.
 }
 \arguments{
     \item{tcc}{\link{TCC-class} object.}
+
     \item{test.method}{character string specifying a method for identifying
           DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
           \code{"bayseq"}, \code{"samseq"}, and \code{"wad"}.
@@ -24,54 +30,74 @@ implemented in other R packages.
           replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), 
           \code{"deseq"} when analyzing the count data without replicates 
           (i.e., \code{min(table(tcc$group[, 1])) == 1)}).}
-          %, and \code{"bayseq"} when the \code{paired = TRUE} is specified.}
+
     \item{FDR}{numeric value (between 0 and 1) specifying the threshold
           for determining DEGs.}
+
     \item{paired}{logical. If \code{TRUE}, the input data are regarded as
           (two-group) paired samples. If \code{FALSE}, the input data are
           regarded as unpaired samples. The default is \code{FALSE}.}
-    \item{dispersion}{numeric vector giving the dispersion of all genes 
-          for analyzing the count data without replicates when  the
-          \code{test.method = "edger"} is specified.
-          See the \code{\link[edgeR]{exactTest}} function in edgeR for details.}
-    \item{design}{numeric matrix giving the design matrix for the linear model.
-          See the \code{\link[edgeR]{glmFit}} function in edgeR for details.}
-    \item{contrast}{numeric vector specifying a contrast of the linear model
-          coefficients to be tested equal to zero.
-          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
-    \item{coef}{integer or character vector indicating which coefficients
-          of the linear model are to be tested equal to zero.
-          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
-    \item{fit0}{a formula for creating reduced model described in DESeq and DESeq2. 
-          The left hand side must be \code{count}, the right hand side can
-          involve any column of \code{tcc$group} is used as the model frame.
-          See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
+
+    \item{fit0}{a formula for creating reduced model described in DESeq and
+          DESeq2. 
+          For DESeq, the left hand side must be \code{count},
+          the right hand side can involve any column of \code{tcc$group}
+          is used as the model frame.
+          See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
+          for details, or \code{\link[DESeq2]{nbinomLRT}} function in DESeq2.}
+
     \item{fit1}{a formula for creating full model described in DESeq.
           The left hand side must be \code{count}, the right hand side can
           involve any column of \code{tcc$group} is used as the model frame.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
-    \item{DESeq2.test}{either \code{"Wald"} or \code{"LRT"} to specify the method
-          using in DESeq2.}
+
+    \item{DESeq2.test}{either \code{"Wald"} or \code{"LRT"} to specify the
+          approach using in DESeq2 for identifying DEGs.}
+
+    \item{design}{the argument is used in edgeR or DESeq2.
+          For edgeR, it should be the numeric matrix giving the design matrix
+          for the generalized linear model.
+          See the \code{\link[edgeR]{glmFit}} function in edgeR for details.
+          For DESeq2, it should be a formula which specifies the design of the
+          experiment. See the \code{\link[DESeq2]{DESeqDataSet}}}
+
+    \item{contrast}{numeric vector specifying a contrast of the linear model
+          coefficients to be tested equal to zero.
+          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
+
+    \item{coef}{integer or character vector indicating which coefficients
+          of the linear model are to be tested equal to zero.
+          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
+
+    \item{dispersion}{numeric vector giving the dispersion of all genes 
+          for analyzing the count data without replicates when  the
+          \code{test.method = "edger"} is specified.
+          See the \code{\link[edgeR]{exactTest}} function in edgeR for details.}
+
     \item{comparison}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
           of\code{\link[baySeq]{topCounts}} function in baySeq for details.}
+
+    \item{cl}{\code{snow} object when using multi processors if
+          \code{test.method = "bayseq"} is specified.
+          See the \code{\link[baySeq]{getPriors.NB}} function in baySeq
+          for details.}
+
     \item{samplesize}{integer specifying (i) the sample size for estimating the
           prior parameters if \code{test.method = "bayseq"} (defaults to 10000),
           and (ii) the number of permutation in samr if
-          \code{test.method = "samseq"} (defaults to 100).}
+          \code{test.method = "samseq"} (defaults to 20).}
+
     \item{logged}{logical. If \code{TRUE}, the input data are regarded as 
           log2-transformed. If \code{FALSE}, the log2-transformation is
           performed after the floor setting. The default is 
           \code{logged = FALSE}.
           Ignored if \code{test.method} is not \code{"wad"}.}
+
     \item{floor}{numeric scalar (> 0) specifying the floor value for
           taking logarithm. The default is \code{floor = 1}, indicating that
           values less than 1 are replaced by 1. Ignored if
           \code{logged = TRUE}.}
-    \item{cl}{\code{snow} object when using multi processors if
-          \code{test.method = "bayseq"} is specified.
-          See the \code{\link[baySeq]{getPriors.NB}} function in baySeq
-          for details.}
 }
 \details{
 \code{estimaetDE} function is generally used after performing the

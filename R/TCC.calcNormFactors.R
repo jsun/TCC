@@ -86,6 +86,9 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     if (norm.method == "edger") {
         norm.method <- "tmm" 
     }
+    if (norm.method == "deseq2") {
+        norm.method <- "deseq" 
+    }
     ## Initialize 'test.method'.
     add.args <- list(...)
     if (is.null(test.method)) {
