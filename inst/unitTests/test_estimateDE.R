@@ -258,6 +258,32 @@ test_estimateDE_baySeq_3 <- function() {
 }
 
 
+
+
+test_estimateDE_DESeq2_1 <- function() {
+    tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
+    tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq2")
+    tcc <- estimateDE(tcc, test.method = "deseq2")
+    auc <- calcAUCValue(tcc)
+    checkTrue(auc > 0.80)
+}
+
+
+
+
+
+test_estimateDE_DESeq2_1 <- function() {
+    tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))
+    tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq2")
+    tcc <- estimateDE(tcc, test.method = "deseq2")
+    auc <- calcAUCValue(tcc)
+    checkTrue(auc > 0.80)
+}
+
+
+
+
+
 test_estimateDE_DESeq_1 <- function() {
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
     tcc <- calcNormFactors(tcc, iteration = FALSE)
@@ -265,7 +291,9 @@ test_estimateDE_DESeq_1 <- function() {
     auc <- calcAUCValue(tcc)
 
     d <- newCountDataSet(tcc$count, tcc$group[, 1])
-    sizeFactors(d) <- tcc$norm.factors * colSums(tcc$count)
+    sz <- tcc$norm.factors * colSums(tcc$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     d <- estimateDispersions(d)
     r <- nbinomTest(d, 1, 2)
     r$pval[is.na(r$pval)] <- 1
@@ -285,7 +313,9 @@ test_estimateDE_DESeq_2 <- function() {
     auc <- calcAUCValue(t1)
     
     d <- newCountDataSet(tcc$count, tcc$group[, 1])
-    sizeFactors(d) <- tcc$norm.factors * colSums(tcc$count)
+    sz <- tcc$norm.factors * colSums(tcc$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     d <- estimateDispersions(d)
     f0 <- fitNbinomGLMs(d, fit0)
     f1 <- fitNbinomGLMs(d, fit1)
@@ -312,7 +342,9 @@ test_estimateDE_DESeq_3 <- function() {
     auc <- calcAUCValue(tcc)
     
     d <- newCountDataSet(tcc$count, tcc$group)
-    sizeFactors(d) <- tcc$norm.factors * colSums(tcc$count)
+    sz <- tcc$norm.factors * colSums(tcc$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     d <- estimateDispersions(d)
     f0 <- fitNbinomGLMs(d, fit0)
     f1 <- fitNbinomGLMs(d, fit1)

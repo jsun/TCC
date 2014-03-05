@@ -8,7 +8,9 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.1 = function() {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group[, 1]))
-    sizeFactors(d) <- .self$norm.factors * colSums(.self$count)
+    sz <- .self$norm.factors * colSums(.self$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     if (min(as.numeric(table(.self$group[, 1]))) == 1) {
         ## Single replicates
         e <- try(suppressMessages(d <- estimateDispersions(d, 
@@ -56,7 +58,9 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.2 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(count), 
                                               conditions = group[, 1]))
-    sizeFactors(d) <- .self$norm.factors * colSums(.self$count)
+    sz <- .self$norm.factors * colSums(.self$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     if (min(as.numeric(table(.self$group[, 1]))) == 1) {
         ## single replicates
         e <- try(suppressMessages(d <- estimateDispersions(d, 
@@ -112,7 +116,9 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.3 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                               conditions = .self$group))
-    sizeFactors(d) <- .self$norm.factors * colSums(.self$count)
+    sz <- .self$norm.factors * colSums(.self$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     ## try default
     e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
     ## try blind method
@@ -150,7 +156,9 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.4 <- function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group))
-    sizeFactors(d) <- .self$norm.factors * colSums(.self$count)
+    sz <- .self$norm.factors * colSums(.self$count)
+    sz <- sz / mean(sz)
+    sizeFactors(d) <- sz
     ## try default
     e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
     ## try blind method
