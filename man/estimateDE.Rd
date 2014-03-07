@@ -3,13 +3,13 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           fit0, fit1,                # for DESeq
+           fit0, fit1,                      # for DESeq
            DESeq2.test,                # for DESeq2
-           design,                     # for DESeq2, edgeR
+           design,                       # for DESeq2, edgeR
            contrast, coef, dispersion, # for edgeR
-           comparison, cl,             # for baySeq
-           samplesize,                 # for baySeq, SAMseq
-           logged, floor               # for WAD
+           comparison, cl,              # for baySeq
+           samplesize,                   # for baySeq, SAMseq
+           logged, floor                 # for WAD
 )
 }
 \description{
@@ -40,7 +40,7 @@ implemented in other R packages.
 
     \item{fit0}{a formula for creating reduced model described in DESeq and
           DESeq2. 
-          For DESeq, the left hand side must be \code{count},
+          The left hand side must be \code{count},
           the right hand side can involve any column of \code{tcc$group}
           is used as the model frame.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
@@ -52,14 +52,16 @@ implemented in other R packages.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
 
     \item{DESeq2.test}{either \code{"Wald"} or \code{"LRT"} to specify the
-          approach using in DESeq2 for identifying DEGs.}
+          approach using in DESeq2 for identifying DEGs. The default is
+          \code{"LRT"}.}
 
     \item{design}{the argument is used in edgeR or DESeq2.
           For edgeR, it should be the numeric matrix giving the design matrix
           for the generalized linear model.
           See the \code{\link[edgeR]{glmFit}} function in edgeR for details.
           For DESeq2, it should be a formula which specifies the design of the
-          experiment. See the \code{\link[DESeq2]{DESeqDataSet}}}
+          experiment. See the \code{\link[DESeq2]{DESeqDataSet}} function
+          in DESeq2 for details.}
 
     \item{contrast}{numeric vector specifying a contrast of the linear model
           coefficients to be tested equal to zero.
@@ -76,7 +78,7 @@ implemented in other R packages.
 
     \item{comparison}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
-          of\code{\link[baySeq]{topCounts}} function in baySeq for details.}
+          of \code{\link[baySeq]{topCounts}} function in baySeq for details.}
 
     \item{cl}{\code{snow} object when using multi processors if
           \code{test.method = "bayseq"} is specified.
@@ -97,7 +99,8 @@ implemented in other R packages.
     \item{floor}{numeric scalar (> 0) specifying the floor value for
           taking logarithm. The default is \code{floor = 1}, indicating that
           values less than 1 are replaced by 1. Ignored if
-          \code{logged = TRUE}.}
+          \code{logged = TRUE}.
+          Ignored if \code{test.method} is not \code{"wad"}.}
 }
 \details{
 \code{estimaetDE} function is generally used after performing the
@@ -146,9 +149,9 @@ packages are internally called according to the specified
           are internally called.
     \item \code{test.method = "deseq2"}\cr
           \code{\link[DESeq2]{estimateDispersions}},
-          \code{\link[DESeq2]{nbinomWaldTest}}(when \code{"DESeq2.test = "Wald""}),
-          and \code{\link[DESeq2]{nbinomLRT}}(when \code{"DESeq2.test = "LRT""}) in
-          DESeq2 are internally collaed for identifying DEGs.
+          \code{\link[DESeq2]{nbinomWaldTest}} (when \code{DESeq2.test = "Wald"}),
+          and \code{\link[DESeq2]{nbinomLRT}} (when \code{DESeq2.test = "LRT"}) in
+          DESeq2 are internally called for identifying DEGs.
     \item \code{test.method = "bayseq"}\cr
           \code{\link[baySeq]{getPriors.NB}} and
           \code{\link[baySeq]{getLikelihoods.NB}} in baySeq are internally

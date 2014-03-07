@@ -36,9 +36,14 @@ getResult <- function(tcc, sort = FALSE, ...) {
     if (length(tcc$stat) == 0)
         stop("\nTCC::ERROR: There are no statistics in stat fields of TCC class tcc. Execute TCC.estiamteDE for calculating them.\n")
     ## calculate M-A coordinates
-    ma <- tcc$plotMA(showfig = FALSE, ...)
-    m.value <- ma$m.value
-    a.value <- ma$a.value
+    gru <- unique(tcc$group[, 1])
+    m.value <- rep(NA, length = nrow(tcc$count))
+    a.value <- rep(NA, length = nrow(tcc$count))
+    if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
+      ma <- tcc$plotMA(showfig = FALSE, ...)
+      m.value <- ma$m.value
+      a.value <- ma$a.value
+    }
     ## merge statistics to data frame
     if (!is.null(tcc$stat$p.value)) {
         ## show p-values if existed

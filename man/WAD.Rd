@@ -41,5 +41,5 @@ Algorithms Mol Biol. 2008, 3: 8.
 data(nakai)
 group <- c(1, 1, 1, 1, 2, 2, 2, 2)
 
-wad <- WAD(nakai, group, sort = TRUE)
+wad <- WAD(nakai, group, logged = TRUE, sort = TRUE)
 }

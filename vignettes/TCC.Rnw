@@ -40,7 +40,7 @@ with robust normalization strategies}
 The R/Bioconductor package, \Rpackage{TCC}, provides users with a
 robust and accurate framework to perform differential expression (DE)
 analysis of tag count data. We recently developed a multi-step
-normalization method  (TbT; Kadota et al., 2012 \cite{kadota}) for
+normalization method  (TbT; Kadota et al., 2012) for
 two-group RNA-seq data. The strategy (called DEGES) is to remove data
 that are potential differentially expressed genes (DEGs) before
 performing the data normalization. DEGES in \Rpackage{TCC} is essential
@@ -68,7 +68,7 @@ unified interface to perform the robust normalization.
 Differential expression analysis based on tag count data has become a 
 fundamental task for identifying differentially expressed genes or 
 transcripts (DEGs). The \Rpackage{TCC} package (Tag Count Comparison; 
-Sun et al., 2013 \cite{sun}) provides users with a robust and accurate 
+Sun et al., 2013) provides users with a robust and accurate 
 framework to perform differential expression analysis of tag count data. 
 \Rpackage{TCC} provides integrated analysis pipelines with improved 
 data normalization steps, compared with other packages such as 
@@ -78,11 +78,11 @@ The package incorporates multi-step normalization methods whose strategy is
 to remove data that are potential DEGs before performing 
 the data normalization.
 
-Kadota et al. (2012) \cite{kadota} recently reported that 
+Kadota et al. (2012) recently reported that 
 the normalization methods implemented in R packages 
-(such as \Rpackage{edgeR} (Robinson et al., 2010 \cite{robinson}), 
-\Rpackage{DESeq} (Anders and Huber, 2010 \cite{anders}), 
-and \Rpackage{baySeq} (Hardcastle and Kelly, 2010 \cite{hardcastle})) for 
+(such as \Rpackage{edgeR} (Robinson et al., 2010), 
+\Rpackage{DESeq} (Anders and Huber, 2010), 
+and \Rpackage{baySeq} (Hardcastle and Kelly, 2010)) for 
 differential expression (DE) analysis between samples 
 are inadequate when the up- and down-regulated DEGs in one of the samples 
 are extremely biased in their number (i.e., biased DE). This is because the 
@@ -100,11 +100,11 @@ data normalization.
 To normalize data that potentially has various scenarios (including unbiased 
 and biased DE), we recently proposed a multi-step normalization strategy 
 (called TbT, an acronym for the TMM-\Rpackage{baySeq}-TMM pipeline; Kadota 
-et al., 2012 \cite{kadota}), in which the TMM normalization method 
-(Robinson and Oshlack, 2010 \cite{robinson2}) is used in steps 1 and 3 
+et al., 2012), in which the TMM normalization method 
+(Robinson and Oshlack, 2010) is used in steps 1 and 3 
 and an empirical Bayesian method implemented 
 in the \Rpackage{baySeq} package 
-(Hardcastle and Kelly, 2010 \cite{hardcastle}) is used in 
+(Hardcastle and Kelly, 2010) is used in 
 step 2. Although this multi-step DEG elimination strategy (called "DEGES" 
 for short) can successfully remove potential DE entities identified in 
 step 2 prior to the estimation of the normalization factors using the TMM 
@@ -151,15 +151,15 @@ combinations of existing normalization methods and differential expression
 (DE) methods. 
 
 For example, the TbT normalization method 
-(Kadota et al., 2012 \cite{kadota}), which is 
+(Kadota et al., 2012), which is 
 a particular functionality of the \Rpackage{TCC} package 
-(Sun et al., 2013 \cite{sun}), 
+(Sun et al., 2013), 
 consists of the TMM normalization method 
-(Robinson and Oshlack, 2010 \cite{robinson2}) implemented 
+(Robinson and Oshlack, 2010) implemented 
 in the \Rpackage{edgeR} package 
-(Robinson et al., 2010 \cite{robinson}) and the empirical Bayesian 
+(Robinson et al., 2010) and the empirical Bayesian 
 method implemented in the \Rpackage{baySeq} package 
-(Hardcastle and Kelly, 2010 \cite{hardcastle}). 
+(Hardcastle and Kelly, 2010). 
 Therefore, please cite the appropriate references 
 when you publish your results.
 
@@ -185,21 +185,21 @@ column of \Robject{hypoData} (Case 3). We recommend the use of commands in
 Cases 2 and 3.
 
 \textbf{Case 1}: DE analysis of two-group count data with replicates by 
-using the exact test (Robinson and Smyth, 2008 \cite{robinson3}) 
+using the exact test (Robinson and Smyth, 2008) 
 in \Rpackage{edgeR} coupled with TbT normalization 
 (termed the TbT-\Rpackage{edgeR} combination). 
 The \Rpackage{TCC} package was originally designed with the TbT 
-normalization method, and the original study (Kadota et al., 2012 
-\cite{kadota}) recommended this analysis pipeline. 
+normalization method, and the original study (Kadota et al., 2012)
+recommended this analysis pipeline. 
 Note that a smaller sampling size (i.e., \Robject{samplesize = 100}) 
 is used here to reduce the computation time, but a larger sampling size of 
 around $10,000$ (i.e., \Robject{samplesize = 10000}) 
-is recommended (Hardcastle and Kelly, 2010 \cite{hardcastle}). 
-Suggested citations are as follows: \Rpackage{TCC} (Sun et al., 
-2013 \cite{sun}), TbT (Kadota et al., 2012 \cite{kadota}), 
-TMM (Robinson and Oshlack, 2010 \cite{robinson2}), 
-\Rpackage{baySeq} (Hardcastle and Kelly, 2010 \cite{hardcastle}), 
-and \Rpackage{edgeR} (Robinson et al., 2010 \cite{robinson}). 
+is recommended (Hardcastle and Kelly, 2010). 
+Suggested citations are as follows: \Rpackage{TCC} (Sun et al., 2013),
+TbT (Kadota et al., 2012), 
+TMM (Robinson and Oshlack, 2010), 
+\Rpackage{baySeq} (Hardcastle and Kelly, 2010), 
+and \Rpackage{edgeR} (Robinson et al., 2010). 
 For details, see section \ref{section-3-1-1}.
 
 <<quick_start_case_1>>=
@@ -225,10 +225,10 @@ a default when analyzing tag count data with replicates.
 A notable advantage of this pipeline is that the multi-step 
 normalization strategy only needs the methods 
 implemented in the \Rpackage{edgeR} package. The suggested citations are as 
-follows: \Rpackage{TCC} (Sun et al., 2013 \cite{sun}), 
-TMM (Robinson and Oshlack, 2010 \cite{robinson2}), 
-the exact test (Robinson and Smyth, 2008 \cite{robinson3}), 
-and \Rpackage{edgeR} (Robinson et al., 2010 \cite{robinson}). 
+follows: \Rpackage{TCC} (Sun et al., 2013), 
+TMM (Robinson and Oshlack, 2010), 
+the exact test (Robinson and Smyth, 2008), 
+and \Rpackage{edgeR} (Robinson et al., 2010). 
 For details, see section \ref{section-3-1-3}.
 
 <<quick_start_case_2>>=
@@ -250,8 +250,8 @@ iDEGES/\Rpackage{DESeq} normalization
 A procedure using the data of the first and fourth columns of 
 \Robject{hypoData} is shown here. Similar to Case 2, this pipeline entirely 
 consists of methods implemented in the \Rpackage{DESeq} package. Suggested 
-citations are as follows: \Rpackage{TCC} (Sun et al., 2013 \cite{sun}) 
-and \Rpackage{DESeq} (Anders and Huber, 2010 \cite{anders}). For details, 
+citations are as follows: \Rpackage{TCC} (Sun et al., 2013) 
+and \Rpackage{DESeq} (Anders and Huber, 2010). For details, 
 see section \ref{section-3-2}.
 
 <<quick_start_case_3>>=
@@ -383,10 +383,11 @@ This chapter describes the details of our robust normalization strategy
 (i.e., DEGES) implemented in \Rpackage{TCC}. Alternative DEGES procedures
 consisting of functions in other packages (\Rpackage{edgeR}, \Rpackage{DESeq}
 , and \Rpackage{baySeq}) are also provided,
-enabling advanced users familiar with the existing packages can easily learn
-what is done in \Rpackage{TCC}. Note that end users, who just want to perform robust
+enabling {\it advanced} users familiar with the existing packages can easily
+learn what is done in \Rpackage{TCC}.
+Note that end users, who just want to perform robust
 differential expression analysis using \Rpackage{TCC},
-can skip this chapter (3 Normalization) and move from here to ,
+can skip this chapter (3 Normalization) and move from here to,
 for example, the next chapter (4 Differential expression).
 
 
@@ -394,7 +395,7 @@ for example, the next chapter (4 Differential expression).
 \label{section-3-1}
 
 This package provides robust normalization methods based on DEGES 
-proposed by Kadota et al. (2012) \cite{kadota}. When obtaining normalization 
+proposed by Kadota et al. (2012). When obtaining normalization 
 factors from two-group data with replicates, users can select 
 a total of six combinations (two normalization methods $\times$ 
 three DEG identification methods) coupled with an arbitrary number 
@@ -418,7 +419,7 @@ in the next section (\ref{section-4} Differential expression).
 \subsubsection{DEGES/TbT}
 \label{section-3-1-1}
 
-The DEGES/TbT (Kadota et al., 2012 \cite{kadota}) with default parameter 
+The DEGES/TbT (Kadota et al., 2012) with default parameter 
 settings can be performed as follows.
 
 <<run_tbt_tcc>>=
@@ -437,7 +438,7 @@ is used here to reduce the computation time when performing
 the empirical Bayesian method in step 2, 
 but a larger sampling size of around $10,000$ 
 (i.e., \Robject{samplesize = 10000}) is recommended 
-(Hardcastle and Kelly, 2010 \cite{hardcastle}). 
+(Hardcastle and Kelly, 2010). 
 This method estimates an empirical distribution of the parameters 
 of the NB distribution by bootstrapping from the input data. 
 While the sampling size can be made smaller to reduce the 
@@ -563,7 +564,7 @@ norm.factors
 \label{section-3-1-3}
 
 Our multi-step normalization can be repeated until the calculated 
-normalization factors converge (Kadota et al., 2012 \cite{kadota}). 
+normalization factors converge (Kadota et al., 2012). 
 An iterative version of DEGES/TbT (i.e., iDEGES/TbT) can be described 
 as the TMM-(\Rpackage{baySeq}-TMM)$_{n}$ pipeline with $n \ge 2$. 
 Although the iDEGES/TbT would not be practical in terms of 
@@ -648,7 +649,7 @@ It is important to keep in mind that most R packages
  \Rpackage{DESeq}, and \Rpackage{baySeq}) are primarily for analyzing data 
 including biological replications because the biological variability has 
 to be accurately estimated to avoid spurious DE calls 
-(Glaus et al., 2012 \cite{glaus}). 
+(Glaus et al., 2012). 
 In fact, the functions for the DEG identification method implemented in 
 \Rpackage{edgeR} (i.e., the exact test; ver. 3.0.4) do not allow analysis 
 without replicates, though the TMM normalization method in the package can 
@@ -730,7 +731,7 @@ norm.factors
 
 \Rpackage{edgeR} employs generalized linear models (GLMs) which can apply
 to detect DEGs from paired two-group count data.
-Since GLMs approach, packaged in \Rpackage{edgeR}, requires the arguments
+The GLMs approach, packaged in \Rpackage{edgeR}, requires the arguments
 for creating experiment design to perform DE analysis.
 \Rpackage{TCC} supports such analysis and creates those
 paramenters automatically.
@@ -738,7 +739,7 @@ User only should create the group information for \Robject{TCC} object,
 and just execute the \Rfunction{calcNormFactors} with \Robject{paired = TRUE}
 argument.
 
-Let us explain the first approach for normalizing paired two-group count data.
+We here explain the approach for normalizing paired two-group count data.
 We treate \Robject{hypoData} as paired two-group data for explaining the
 approach here.
 
@@ -899,7 +900,7 @@ those for two-group data with/without replicates. Note that a smaller
 sampling size (i.e., \Robject{samplesize = 100}) is used here to reduce 
 the computation time, but a larger sampling size of around $10,000$ (i.e., 
 \Robject{samplesize = 10000}) is recommended 
-(Hardcastle and Kelly, 2010 \cite{hardcastle}).
+(Hardcastle and Kelly, 2010).
 
 <<degesTbt_multigroup_tcc>>=
 set.seed(1000)
@@ -1074,7 +1075,7 @@ have the same names as those in \Rpackage{edgeR}. Accordingly, the
 normalization factors calculated from \Rpackage{TCC} with arbitrary 
 options should be manipulated together with the library sizes when 
 normalized read counts are to be obtained. Since biologists are often 
-interested in such information (Dillies et al., 2012 \cite{dillies}), 
+interested in such information (Dillies et al., 2012), 
 we provide the \Rfunction{getNormalizedData} function 
 for retrieving normalized data. 
 
@@ -1083,7 +1084,7 @@ of six samples (three biological replicates for G1 and three biological
 replicates for G2); i.e., \{G1\_rep1, G1\_rep2, G1\_rep3\} vs. 
 \{G2\_rep1, G2\_rep2, G2\_rep3\}. These simulation data have basically 
 the same conditions as shown in Fig. 1 of the TbT paper (Kadota et 
-al., 2012 \cite{kadota}); i.e., (i) the first $200$ genes are 
+al., 2012); i.e., (i) the first $200$ genes are 
 DEGs ($P_{\mbox{\tiny DEG}} = 200/1000 = 20\%$), 
 (ii) the first $180$ genes of the $200$ DEGs are higher in G1 
 ($P_{\mbox{\tiny G1}} = 180/200 = 90\%$), 
@@ -1571,7 +1572,7 @@ Note that a smaller sampling size (i.e., \Robject{samplesize = 100}) is
 used here to reduce the computation time,
 but a larger sampling size of around 
 $10,000$ (i.e., \Robject{samplesize = 10000}) is recommended (Hardcastle 
-and Kelly, 2010 \cite{hardcastle}). 
+and Kelly, 2010). 
 Note also that \Rpackage{baySeq} outputs posterior 
 likelihoods instead of the $p$-values obtained from \Rpackage{edgeR} 
 and \Rpackage{DESeq}. The $p$-value column stores the ($1 - likelihood$) 
@@ -1871,7 +1872,9 @@ tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
 fit1 <- count ~ condition
 fit0 <- count ~ 1
 cds <- newCountDataSet(tcc$count, group)
-sizeFactors(cds) <- tcc$norm.factors * colSums(tcc$count)
+size.factors <- tcc$norm.factors * colSums(tcc$count)
+size.factors <- size.factors / mean(size.factors)
+sizeFactors(cds) <- size.factors
 cds <- estimateDispersions(cds)
 reduced.model <- fitNbinomGLMs(cds, fit0)
 full.model <- fitNbinomGLMs(cds, fit1)
@@ -1892,18 +1895,18 @@ sum(q.value < 0.2)
 \subsection{Introduction and basic usage}
 \label{section-5-1}
 
-As demonstrated in our previous study (Kadota et al., 2012 \cite{kadota}), 
+As demonstrated in our previous study (Kadota et al., 2012), 
 the DEGES-based normalization methods implemented in \Rpackage{TCC} 
 theoretically outperform the other normalization methods when the numbers 
 of DEGs (G1 vs. G2) in the tag count data are biased. However, 
 it is difficult to determine whether the up- and down-regulated DEGs in 
 one of the groups are actually biased in their number when analyzing 
-real data (Dillies et al., 2012 \cite{dillies}). 
+real data (Dillies et al., 2012). 
 This means we have to evaluate the 
 potential performance of our DEGES-based methods using mainly simulation 
 data. The \Rfunction{simulateReadCounts} function generates simulation 
 data under various conditions. This function can generate simulation 
-data analyzed in the TbT paper (Kadota et al., 2012 \cite{kadota}), 
+data analyzed in the TbT paper (Kadota et al., 2012), 
 and that means it enables other 
 researchers to compare the methods they develop with our DEGES-based 
 methods. For example, the \Robject{hypoData} object, a hypothetical 
@@ -1947,7 +1950,7 @@ The empirical distribution of the read counts for producing
 the mean ($\mu$) and dispersion ($\phi$) parameters of the 
 model was obtained from {\it Arabidopsis} data (three biological 
 replicates for each of the treated and non-treated groups) 
-in \Rpackage{NBPSeq} (Di et al., 2011 \cite{di}).
+in \Rpackage{NBPSeq} (Di et al., 2011).
 
 The \Robject{tcc\$count} object is essentially the same as 
 the \Robject{hypoData} object of \Rpackage{TCC}. 
@@ -1972,7 +1975,7 @@ This information can be used to evaluate the performance of the DEGES-based
 normalization methods in terms of the sensitivity and specificity of the 
 results of their DE analysis. A good normalization method coupled with a 
 DE method such as the exact test 
-(Robinson and Smyth, 2008 \cite{robinson3}) and the 
+(Robinson and Smyth, 2008) and the 
 empirical Bayes (Hardcastle and Kelly, 2010) should produce well-ranked 
 gene lists in which the true DEGs are top-ranked and non-DEGs are 
 bottom-ranked when all genes are ranked according to the degree of DE. 
@@ -2128,7 +2131,9 @@ cds <- newCountDataSet(tcc$count, tcc$group$group)
 cds <- estimateSizeFactors(cds)
 norm.factors <- sizeFactors(cds) / colSums(tcc$count)
 norm.factors <- norm.factors / mean(norm.factors)
-sizeFactors(cds) <- colSums(tcc$count) * norm.factors
+size.factors <- norm.factors * colSums(tcc$count)
+size.factors <- size.factors / mean(size.factors)
+sizeFactors(cds) <- size.factors
 cds <- estimateDispersions(cds, method="blind", sharingMode="fit-only")
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
@@ -2345,9 +2350,9 @@ replicates for G2) (\Robject{replicates = c(2, 2)}).
 set.seed(1000)
 library(TCC)
 tcc <- simulateReadCounts(Ngene = 20000, PDEG = 0.30, 
-                              DEG.assign = c(0.85, 0.15),
-                              DEG.foldchange = c(8, 16), 
-                              replicates = c(2, 2))
+               DEG.assign = c(0.85, 0.15),
+               DEG.foldchange = c(8, 16), 
+               replicates = c(2, 2))
 head(tcc$count)
 @
 
