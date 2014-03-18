@@ -18,8 +18,8 @@ TCC$methods(.testByDeseq2 = function(fit0 = NULL, design = NULL,
                                   colData = .self$group,
                                   design = design))
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
-    ef.libsizes <- ef.libsizes / mean(ef.libsizes)
-    suppressMessages(DESeq2::sizeFactors(d) <- ef.libsizes)
+    sz <- ef.libsizes / mean(ef.libsizes)
+    suppressMessages(DESeq2::sizeFactors(d) <- sz)
     suppressMessages(d <- DESeq2::estimateDispersions(d))
     if (DESeq2.test == "Wald") {
         suppressMessages(d <- DESeq2::nbinomWaldTest(d))
@@ -61,8 +61,8 @@ TCC$methods(.testByDeseq2 = function(fit0 = NULL, design = NULL,
                                   colData = .self$group,
                                   design = design))
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
-    ef.libsizes <- ef.libsizes / mean(ef.libsizes)
-    suppressMessages(DESeq2::sizeFactors(d) <- ef.libsizes)
+    sz <- ef.libsizes / mean(ef.libsizes)
+    suppressMessages(DESeq2::sizeFactors(d) <- sz)
     suppressMessages(d <- DESeq2::estimateDispersions(d))
     suppressMessages(d <- DESeq2::nbinomLRT(d, reduced = ~ fit0))
     res <- results(d)

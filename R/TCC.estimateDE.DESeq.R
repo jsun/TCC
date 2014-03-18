@@ -8,8 +8,8 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.1 = function() {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group[, 1]))
-    sz <- .self$norm.factors * colSums(.self$count)
-    sz <- sz / mean(sz)
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     if (min(as.numeric(table(.self$group[, 1]))) == 1) {
         ## Single replicates
@@ -58,8 +58,8 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.2 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(count), 
                                               conditions = group[, 1]))
-    sz <- .self$norm.factors * colSums(.self$count)
-    sz <- sz / mean(sz)
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     if (min(as.numeric(table(.self$group[, 1]))) == 1) {
         ## single replicates
@@ -116,8 +116,8 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.3 = function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                               conditions = .self$group))
-    sz <- .self$norm.factors * colSums(.self$count)
-    sz <- sz / mean(sz)
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     ## try default
     e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
@@ -156,8 +156,8 @@ TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
 .testByDeseq.4 <- function(fit1 = NULL, fit0 = NULL) {
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group))
-    sz <- .self$norm.factors * colSums(.self$count)
-    sz <- sz / mean(sz)
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     ## try default
     e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
