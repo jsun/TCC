@@ -6,7 +6,7 @@
 \usepackage{cite}
 \usepackage{color}
 \usepackage{Sweave}
-\usepackage{here}
+%%\usepackage{here}
 \SweaveOpts{pdf=TRUE}
 
 
@@ -423,7 +423,7 @@ section (\ref{s_differential_expression} Differential expression).
 Followings are some examples for individual designs.
 Appropriate sections should be referred for your specific experimental designs.
 
-\begin{table}[H]
+\begin{table}[h]
   \begin{center}
   \caption{\ref{ss_norm_twogroup_reps} unpaired samples (two-group)}
     \begin{tabular}{|ccc|ccc|}
@@ -439,7 +439,7 @@ Appropriate sections should be referred for your specific experimental designs.
   \end{center}
 \end{table}
 
-\begin{table}[H]
+\begin{table}[h]
   \begin{center}
   \caption{\ref{ss_norm_twogroup_without_reps} paired samples (two-group)}
     \begin{tabular}{|ccc|ccc|}
@@ -455,7 +455,9 @@ Appropriate sections should be referred for your specific experimental designs.
   \end{center}
 \end{table}
 
-\begin{table}[H]
+\newpage
+
+\begin{table}[h]
   \begin{center}
   \caption{\ref{ss_norm_multifactor_reps} unpaired samples (multi-group)}
     \begin{tabular}{|ccc|ccc|}
