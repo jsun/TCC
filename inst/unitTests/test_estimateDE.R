@@ -261,10 +261,40 @@ test_estimateDE_baySeq_3 <- function() {
 
 
 test_estimateDE_DESeq2_1 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
-    tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq2")
+    tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = FALSE)
+
+    ## LRT
     tcc <- estimateDE(tcc, test.method = "deseq2")
     auc <- calcAUCValue(tcc)
+
+    d <- DESeqDataSetFromMatrix(tcc$count, tcc$group, design = formula(~ group))
+    ef <- tcc$norm.factors * colSums(tcc$count)
+    sz <- ef / mean(ef)
+    sizeFactors(d) <- sz
+    d <- estimateDispersions(d)
+    d <- nbinomLRT(d, reduced = ~ 1)
+    r <- results(d)
+    r$pvalue[is.na(r$pvalue)] <- 1
+
+    checkEqualsNumeric(r$pval, tcc$stat$p.value)
+    checkTrue(auc > 0.80)
+
+    ## Wald
+    tcc <- estimateDE(tcc, test.method = "deseq2", DESeq2.test = "Wald")
+    auc <- calcAUCValue(tcc)
+
+    d <- DESeqDataSetFromMatrix(tcc$count, tcc$group, design = formula(~ group))
+    ef <- tcc$norm.factors * colSums(tcc$count)
+    sz <- ef / mean(ef)
+    sizeFactors(d) <- sz
+    d <- estimateDispersions(d)
+    d <- nbinomWaldTest(d)
+    r <- results(d)
+    r$pvalue[is.na(r$pvalue)] <- 1
+
+    checkEqualsNumeric(r$pval, tcc$stat$p.value)
     checkTrue(auc > 0.80)
 }
 
@@ -272,11 +302,41 @@ test_estimateDE_DESeq2_1 <- function() {
 
 
 
-test_estimateDE_DESeq2_1 <- function() {
+test_estimateDE_DESeq2_2 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))
-    tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq2")
+    tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = FALSE)
+
+    ## LRT
     tcc <- estimateDE(tcc, test.method = "deseq2")
     auc <- calcAUCValue(tcc)
+
+    d <- DESeqDataSetFromMatrix(tcc$count, tcc$group, design = formula(~ group))
+    ef <- tcc$norm.factors * colSums(tcc$count)
+    sz <- ef / mean(ef)
+    sizeFactors(d) <- sz
+    d <- estimateDispersions(d)
+    d <- nbinomLRT(d, reduced = ~ 1)
+    r <- results(d)
+    r$pvalue[is.na(r$pvalue)] <- 1
+
+    checkEqualsNumeric(r$pval, tcc$stat$p.value)
+    checkTrue(auc > 0.80)
+
+    ## Wald
+    tcc <- estimateDE(tcc, test.method = "deseq2", DESeq2.test = "Wald")
+    auc <- calcAUCValue(tcc)
+
+    d <- DESeqDataSetFromMatrix(tcc$count, tcc$group, design = formula(~ group))
+    ef <- tcc$norm.factors * colSums(tcc$count)
+    sz <- ef / mean(ef)
+    sizeFactors(d) <- sz
+    d <- estimateDispersions(d)
+    d <- nbinomWaldTest(d)
+    r <- results(d)
+    r$pvalue[is.na(r$pvalue)] <- 1
+
+    checkEqualsNumeric(r$pval, tcc$stat$p.value)
     checkTrue(auc > 0.80)
 }
 

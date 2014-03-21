@@ -1,5 +1,5 @@
 TCC$methods(.testByDeseq2 = function(fit0 = NULL, design = NULL, 
-                                     DESeq2.test = "LRT", paired = NULL,
+                                     DESeq2.test = NULL, paired = NULL,
                                      ...) {
 
 
@@ -80,8 +80,10 @@ TCC$methods(.testByDeseq2 = function(fit0 = NULL, design = NULL,
 ##
 ## main process
 ##
+if (is.null(DESeq2.test)) {
+    DESeq2.test <- "LRT"
+}
 test.approach <- .self$.testApproach(paired = paired)
-
 switch(test.approach,
     "1" = .testByDeseq2.1(design, DESeq2.test),
     "2" = .testByDeseq2.1(design, DESeq2.test),
