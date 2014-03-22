@@ -6,7 +6,7 @@ estimateDE(tcc, test.method, FDR, paired,
            fit0, fit1,                      # for DESeq
            DESeq2.test,                # for DESeq2
            design,                       # for DESeq2, edgeR
-           contrast, coef, dispersion, # for edgeR
+           contrast, coef,              # for edgeR
            comparison, cl,              # for baySeq
            samplesize,                   # for baySeq, SAMseq
            logged, floor                 # for WAD
@@ -71,10 +71,10 @@ implemented in other R packages.
           of the linear model are to be tested equal to zero.
           See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
 
-    \item{dispersion}{numeric vector giving the dispersion of all genes 
-          for analyzing the count data without replicates when  the
-          \code{test.method = "edger"} is specified.
-          See the \code{\link[edgeR]{exactTest}} function in edgeR for details.}
+    %\item{dispersion}{numeric vector giving the dispersion of all genes 
+    %      for analyzing the count data without replicates when  the
+    %      \code{test.method = "edger"} is specified.
+    %      See the \code{\link[edgeR]{exactTest}} function in edgeR for details.}
 
     \item{comparison}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument

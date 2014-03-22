@@ -1,5 +1,5 @@
 TCC$methods(.testByEdger = function(design = NULL, coef = NULL, 
-                                    contrast = NULL, dispersion = NULL,
+                                    contrast = NULL,
                                     paired = NULL, ...) {
 
 
@@ -12,21 +12,19 @@ TCC$methods(.testByEdger = function(design = NULL, coef = NULL,
                                          group = group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
     d$samples$norm.factors <- norm.factors
-    if (min(table(group[, 1])) > 1) {
+    if (min(as.numeric(table(.self$group[, 1]))) == 1) {
+        ## signle replicate
+        suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
+                                     method = "deviance",
+                                     robust = TRUE, subset = NULL))
+    } else {
+        ## multiple replicate
         suppressMessages(d <- edgeR::estimateCommonDisp(d))
         suppressMessages(d <- edgeR::estimateTagwiseDisp(d))
     }
-    if (is.null(dispersion)) {
-        suppressMessages(d <- edgeR::exactTest(d))
-    } else {
-        suppressMessages(d <- edgeR::exactTest(d, dispersion = dispersion))
-    }
-    if (!is.null(d$table$PValue)) {
-        private$stat$p.value <<- d$table$PValue
-    } else {
-        private$stat$p.value <<- d$table$p.value
-    }
+    suppressMessages(d <- edgeR::exactTest(d))
     ## get results and set up to TCC class object.
+    private$stat$p.value <<- d$table$PValue
     private$stat$rank <<- rank(private$stat$p.value)
     private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
 }
@@ -128,7 +126,7 @@ TCC$methods(.testByEdger = function(design = NULL, coef = NULL,
 test.approach <- .self$.testApproach(paired = paired)
 
 switch(test.approach,
-    "1" = .testByEdger.1(dispersion = dispersion),
+    "1" = .testByEdger.1(),
     "2" = .testByEdger.2(design = design, coef = coef, contrast = contrast),
     "3" = .testByEdger.3(design = design, coef = coef, contrast = contrast),
     "4" = .testByEdger.4(design = design, coef = coef, contrast = contrast),

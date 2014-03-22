@@ -76,7 +76,6 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                    paired = NULL,
                                    PDEG = NULL,
                                    significance.level = NULL,
-                                   dispersion = NULL,            # edgeR(exactTest)
                                    fit0 = NULL, fit1 = NULL,     # DESeq(GLM)
                                    DESeq2.test = NULL,           # DESeq2
                                    design = NULL,                # edgeR(GLM)
@@ -113,7 +112,6 @@ TCC$methods(estimateDE = function (test.method = NULL,
            "edger" = .self$.testByEdger(design = design, 
                                         coef = coef, 
                                         contrast = contrast,  
-                                        dispersion = dispersion,
                                         paired = paired),
            "deseq" = .self$.testByDeseq(fit1 = fit1, 
                                         fit0 = fit0,
