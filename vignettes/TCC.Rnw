@@ -288,13 +288,13 @@ For Windows end users, we recommend to use the \Rpackage{QuasR} package.
 It provides a comprehensive workflow for many kinds of NGS data including
 ChIP-seq, RNA-seq, smallRNA-seq, and BS-seq.
 The main functionalities are: (1) preprocessing raw sequence reads,
-(2) aligning reads to the reference genome or transcriptome using Rbowtie,
-and (3) producing count matrix from aligned reads.
-\Rpackage{TCC} use the raw count data as input.
-As also clearly mentioned by \Rpackage{DESeq2},
+(2) aligning reads to the reference genome or transcriptome using
+\Rpackage{Rbowtie}, and (3) producing count matrix from aligned reads.
+\Rpackage{TCC} uses the raw count data (a matrix of integer values) as input.
+As also clearly mentioned in \Rpackage{DESeq2},
 the raw count data corresponds to a matrix of integer values.
 Please DO NOT use any normalized counts such as RPM (reads per million),
-CPM (counts per million), and RPKM. The count data must be raw counts of reads.
+CPM (counts per million), and RPKM. 
 
 
 \subsection{Reading the count data}
@@ -428,7 +428,7 @@ Appropriate sections should be referred for your specific experimental designs.
   \caption{\ref{ss_norm_twogroup_reps} unpaired samples (two-group)}
     \begin{tabular}{|ccc|ccc|}
       \hline
-      Label & exmaple 1 & exammple 2 & label & exmaple 3 & example 4 \\ \hline
+      Label & Exmaple 1 & Example 2 & Label & Exmaple 3 & Example 4 \\ \hline
       G1\_rep1 & G1(mouse\_A) & Tumor(patient\_A) & G1\_rep1 & G1(mouse\_A) & Tumor(patient\_A) \\
       G1\_rep2 & G1(mouse\_B) & Tumor(patient\_B) & G1\_rep2 & G1(mouse\_B) & Tumor(patient\_B) \\
       G1\_rep3 & G1(mouse\_C) & Tumor(patient\_C) & G2\_rep1 & G2(mouse\_D) & Normal(patient\_G) \\
@@ -444,7 +444,7 @@ Appropriate sections should be referred for your specific experimental designs.
   \caption{\ref{ss_norm_twogroup_without_reps} paired samples (two-group)}
     \begin{tabular}{|ccc|ccc|}
       \hline
-      Label & exmaple 1 & exammple 2 & label & exmaple 3 & example 4 \\ \hline
+      Label & Exmaple 1 & Example 2 & Label & Exmaple 3 & Example 4 \\ \hline
       G1\_rep1 & G1(mouse\_A) & Tumor(patient\_G) & G1\_rep1 & G1(mouse\_B) & Tumor(patient\_J) \\
       G1\_rep2 & G1(mouse\_B) & Tumor(patient\_H) & G1\_rep2 & G1(mouse\_C) & Tumor(patient\_K) \\
       G1\_rep3 & G1(mouse\_C) & Tumor(patient\_K) & G2\_rep1 & G2(mouse\_B) & Normal(patient\_J) \\
@@ -462,7 +462,7 @@ Appropriate sections should be referred for your specific experimental designs.
   \caption{\ref{ss_norm_multifactor_reps} unpaired samples (multi-group)}
     \begin{tabular}{|ccc|ccc|}
       \hline
-      Label & exmaple 1 & exammple 2 & label & exmaple 3 & example 4 \\ \hline
+      Label & Exmaple 1 & Example 2 & Label & Exmaple 3 & Example 4 \\ \hline
       G1\_rep1 & G1(mouse\_A) & Kidney(sample\_A) & G1\_rep1 & G1(mouse\_A) & Liver(sample\_G) \\
       G1\_rep2 & G1(mouse\_B) & Kidney(sample\_B) & G1\_rep2 & G1(mouse\_B) & Liver(sample\_H) \\
       G1\_rep3 & G1(mouse\_C) & Kidney(sample\_C) & G2\_rep1 & G2(mouse\_D) & Brain(sample\_Y) \\
