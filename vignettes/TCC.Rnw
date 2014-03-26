@@ -21,8 +21,9 @@
 \newcommand{\Rpackage}[1]{\textbf{#1}}
 \newcommand{\Rclass}[1]{{\texttt{#1}}}
 
-\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=n,formatcom=\color{TccRed}}
-\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontshape=n,formatcom=\color{TccBlue}}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=n,formatcom=\color{TccRed}, fontsize=\footnotesize}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontshape=n,formatcom=\color{TccBlue}, fontsize=\footnotesize}
+\fvset{baselinestretch=0.9}
 
 \author {\small Jianqiang Sun$^{1\S}$, Tomoaki Nishiyama$^{2\S}$, Kentaro Shimizu$^1$, and Koji Kadota$^1$\\
 \texttt{\footnotesize $^1$ The University of Tokyo, Tokyo, Japan}\\
@@ -233,7 +234,7 @@ follows: \Rpackage{TCC} (Sun et al., 2013),
 TMM (Robinson and Oshlack, 2010), 
 the exact test (Robinson and Smyth, 2008), 
 and \Rpackage{edgeR} (Robinson et al., 2010). 
-For details, see section \ref{section-3-1-3}.
+For details, see section \ref{section-3-1-3} and \ref{section-4-1-1}.
 
 <<3408021901>>=
 library(TCC)
@@ -456,7 +457,7 @@ Appropriate sections should be referred for your specific experimental designs.
   \caption{\ref{ss_norm_multifactor_reps} unpaired samples (multi-group)}
     \begin{tabular}{|ccc|ccc|}
       \hline
-      Label & Exmaple 1 & Example 2 & Label & Exmaple 3 & Example 4 \\ \hline
+      Label & Example 1 & Example 2 & Label & Example 3 & Example 4 \\ \hline
       G1\_rep1 & G1(mouse\_A) & Kidney(sample\_A) & G1\_rep1 & G1(mouse\_A) & Liver(sample\_G) \\
       G1\_rep2 & G1(mouse\_B) & Kidney(sample\_B) & G1\_rep2 & G1(mouse\_B) & Liver(sample\_H) \\
       G1\_rep3 & G1(mouse\_C) & Kidney(sample\_C) & G2\_rep1 & G2(mouse\_D) & Brain(sample\_Y) \\
@@ -721,6 +722,69 @@ norm.factors
 @
 
 
+\subsubsection{DEGES/DESeq2}
+\label{section-3-1-5}
+
+The DEGES pipeline can also be performed by using only the
+functions in the \Rpackage{DESeq2} package.
+Similar to the \Rpackage{DESeq} case above,
+this DESeq2-DESeq2-DESeq2 pipeline (DEGES/DESeq2) changes
+the corresponding arguments of the
+\Robject{norm.method} and \Robject{test.method} as follows:
+
+<<4390811048>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 1, 1, 2, 2, 2)
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "deseq2", test.method = "deseq2",
+                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
+tcc$norm.factors
+tcc$DEGES$execution.time
+@
+
+For \Rpackage{DESeq2} users, we also provide commands,
+consisting of functions in \Rpackage{DESeq2},
+to perform the DEGES/DESeq2 pipeline without \Rpackage{TCC}.
+The \Rfunction{calcNormFactors} function together with the above
+arguments can be regarded as a wrapper function for the following commands.
+
+<<0869034832>>=
+library(TCC)
+data(hypoData)
+FDR <- 0.1
+floorPDEG <- 0.05
+group <- factor(c(1, 1, 1, 2, 2, 2))
+cl <- data.frame(group = group)
+design <- formula(~ group)
+dds <- DESeqDataSetFromMatrix(countData = hypoData, colData = cl,
+                              design = design)
+### STEP 1 ###
+dds <- estimateSizeFactors(dds)
+sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
+
+### STEP 2 ###
+dds <- estimateDispersions(dds)
+dds <- nbinomLRT(dds, reduced = ~ 1)
+result <- results(dds)
+result$pvalue[is.na(result$pvalue)] <- 1
+q.value <- p.adjust(result$pvalue, method = "BH")
+if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(q.value < FDR)
+} else {
+  is.DEG <- as.logical(rank(result$pvalue, ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
+}
+### STEP 3 ###
+dds <- DESeqDataSetFromMatrix(countData = hypoData[!is.DEG, ], colData = cl,
+                              design = design)
+dds <- estimateSizeFactors(dds)
+norm.factors <- sizeFactors(dds) / colSums(hypoData)
+norm.factors <- norm.factors / mean(norm.factors)
+norm.factors
+@
+
+
 \subsection{Normalization of two-group count data without replicates}
 \label{section-3-2}
 
@@ -781,7 +845,7 @@ d <- DGEList(counts = hypoData[, c(1, 4)], group = group)
 ### STEP 1 ###
 d <- calcNormFactors(d)
 ### STEP 2 ###
-d <- estimateGLMCommonDisp(d, method="deviance", robust=TRUE, subset=NULL)
+d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
 result <- exactTest(d)
 q.value <- p.adjust(result$table$PValue, method = "BH")
 if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
@@ -1509,7 +1573,7 @@ $\Sexpr{sprintf("%.1f",max(hypoData.median))}$)
 than those (ranging from 
 $\Sexpr{sprintf("%.5f", min(buff_2))}$
 to
-$\Sexpr{sprintf("%.5f", max(buff_2))}$
+$\Sexpr{sprintf("%.5f", max(buff_2))}$)
 from DESeq-normalized data.
 
 
@@ -1614,7 +1678,7 @@ $\Sexpr{sprintf("%.1f",max(hypoData.14.median))}$)
 than those (
 $\Sexpr{sprintf("%.5f", min(buff_2))}$
 and
-$\Sexpr{sprintf("%.5f", max(buff_2))}$
+$\Sexpr{sprintf("%.5f", max(buff_2))}$)
 from DESeq-normalized data.
 
 
@@ -1639,7 +1703,7 @@ tcc <- new("TCC", hypoData, cl)
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
 normalized.count <- getNormalizedData(tcc)
-head(normalized.count, n=4)
+head(normalized.count, n = 4)
 apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1874,7 +1938,7 @@ than those (ranging from
 $\Sexpr{sprintf("%.5f", min(buff_2))}$
 to
 $\Sexpr{sprintf("%.5f", max(buff_2))}$
-from DESeq-normalized data.
+) from DESeq-normalized data.
 
 
 \subsubsection{Retrieving multi-group iDEGES/edgeR-normalized data with replicates}
@@ -1973,7 +2037,7 @@ by using the \Rfunction{estimateDE} function with
 and \Rfunction{"bayseq"}, respectively. Here, we show some 
 examples of DE analysis for two-group data with replicates 
 (\ref{section-4-1}), two-group data without replicates (\ref{section-4-2}), 
-paired two-group data without replicates (\ref{faefljifeaf}), 
+paired two-group data without replicates (\ref{ss_de_2gnr_p}), 
 and multi-group data with replicates (\ref{section-4-3}).
 
 \subsection{DE analysis for two-group data with replicates}
@@ -2024,9 +2088,11 @@ indicates average read count
 from the normalized count data. 
 The magenta points indicate the identified DEGs at FDR $< 0.1$.
 
-<<maplot_of_estimated_result, fig = TRUE, size = 0.60, png = TRUE, pdf = FALSE, eps = FALSE>>=
+\begin{center}
+<<maplot_of_estimated_result, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
 plot(tcc)
 @
+\end{center}
 
 Since we know the true information for \Robject{hypoData}
 (i.e., 200 DEGs and 800 non-DEGs),
@@ -2055,7 +2121,7 @@ d <- calcNormFactors(d)
 d <- estimateCommonDisp(d)
 d <- estimateTagwiseDisp(d)
 out <- exactTest(d)
-result <- topTags(out, n=nrow(hypoData), sort.by="PValue")
+result <- topTags(out, n = nrow(hypoData), sort.by = "PValue")
 head(result)
 @
 
@@ -2080,7 +2146,7 @@ AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 We give a procedure for DE analysis using the likelihood ratio test for GLMs
 implemented in \Rpackage{DESeq2} together with iDEGES/DESeq2 normalization
 factors (i.e., the iDEGES/DESeq2-DESeq2 combination) for the hypothetical
-two-group count data with replicates (i.e., the hypoData object).
+two-group count data with replicates (i.e., the \Robject{hypoData} object).
 If the user wants to determine the genes having
 an FDR threshold of $< 10$\% as DEGs,
 one can do as follows.
@@ -2109,12 +2175,12 @@ The DE results can be broken down as follows.
 <<7512913498>>=
 table(tcc$estimatedDEG)
 @
-<<7512013498>>=
+<<7512013498, echo = FALSE>>=
 tb <- table(tcc$estimatedDEG)
 @
 
 This means $\Sexpr{tb[["0"]]}$ non-DEGs and $\Sexpr{tb[["1"]]}$ DEGs satisfy FDR $< 0.1$.
-The plot function generates an M-A plot, where "M" indicates the
+The \Rfunction{plot} function generates an M-A plot, where "M" indicates the
 log-ratio 
 (i.e., $\mbox{M} = \log_{2}\mbox{G2} - \log_{2}\mbox{G1}$)
 and "A" indicates average read count
@@ -2122,9 +2188,11 @@ and "A" indicates average read count
 from the normalized count data.
 The magenta points indicate the identified DEGs at FDR $< 0.1$.
 
-<<3489400103, fig = TRUE, size = 0.60, png = TRUE, pdf = FALSE, eps = FALSE>>=
+\begin{center}
+<<3489400103, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
 plot(tcc)
 @
+\end{center}
 
 Since we know the true information for \Robject{hypoData}
 (i.e., 200 DEGs and 800 non-DEGs),
@@ -2155,12 +2223,12 @@ dds <- estimateSizeFactors(dds)
 sizeFactors(dds) <- sizeFactors(dds)/mean(sizeFactors(dds))
 dds <- estimateDispersions(dds)
 dds <- nbinomLRT(dds, reduced = ~ 1)
-res <- results(dds)
-head(res[order(res$pvalue),])
+result <- results(dds)
+head(result[order(result$pvalue),])
 library(ROC)
 truth <- c(rep(1, 200), rep(0, 800))
-res$pvalue[is.na(res$pvalue)] <- 1
-AUC(rocdemo.sca(truth = truth, data = -rank(res$pvalue)))
+result$pvalue[is.na(result$pvalue)] <- 1
+AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
 @
 
 This is the same as
@@ -2185,7 +2253,7 @@ buff_1 <- AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 
 As described in \ref{s_retr_norm_data},
 the size factors termed in \Rpackage{DESeq2} and \Rpackage{DESeq}
-are comparable to the normalized effective library sizes termed
+are comparable to the {\it normalized} effective library sizes termed
 in \Rpackage{TCC} and \Rpackage{edgeR}.
 The effective library size in \Rpackage{edgeR} is calculated as the
 library size multiplied by the normalization factor.
@@ -2222,80 +2290,412 @@ design <- formula(~ group)
 dds <- DESeqDataSetFromMatrix(countData = hypoData, colData = cl,
                               design = design)
 dds <- DESeq(dds)
-res <- results(dds)
-head(res[order(res$pvalue),])
+result <- results(dds)
+head(result[order(result$pvalue),])
 library(ROC)
 truth <- c(rep(1, 200), rep(0, 800))
-res$pvalue[is.na(res$pvalue)] <- 1
-AUC(rocdemo.sca(truth = truth, data = -rank(res$pvalue)))
+result$pvalue[is.na(result$pvalue)] <- 1
+AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
 @
 <<4090911011, echo = FALSE>>=
-buff_2 <- AUC(rocdemo.sca(truth = truth, data = -rank(res$pvalue)))
+buff_2 <- AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
 @
 
-The different AUC values ($\Sexpr{buff_1}$ and $\Sexpr{buff_2}$) caused by the different
+The different AUC values ($\Sexpr{sprintf("%.7f", buff_1)}$ and
+$\Sexpr{sprintf("%.7f", buff_2)}$) caused by the different
 choices of test methods: the former and the latter procedures used the
 \Rfunction{nbinomLRT} and the \Rfunction{nbinomWaldTest} functions,
 respectively. \Rpackage{TCC} internally uses the \Rfunction{nbinomLRT}
 function in \Rpackage{DESeq2} for this experimental design.
 
+If you want to use the \Rfunction{nbinomWaldTest} function in
+\Rpackage{TCC}, one can do as follows.
+
+<<3489184391>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 1, 1, 2, 2, 2)
+tcc <- new("TCC", hypoData, group)
+tcc <- calcNormFactors(tcc, norm.method = "deseq2", iteration = 0)
+tcc <- estimateDE(tcc, test.method = "deseq2", DESeq2.test = "Wald", FDR = 0.1)
+result <- getResult(tcc, sort = TRUE)
+head(result)
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
 
 \subsection{DE analysis for two-group data without replicates}
 \label{section-4-2}
 
-Here, we show a procedure for DE analysis using 
-the NB test implemented in \Rpackage{DESeq} together with 
-iDEGES/DESeq normalization factors 
-(i.e., the iDEGES/DESeq-DESeq combination) 
-for the hypothetical two-group count data without replicates (i.e., 
-the \Robject{hypoData[, c(1, 4)]} object). If the user wants to determine 
-the genes having an FDR threshold of $< 10\%$ as DEGs, 
-one can do as follows.
+It is important to keep in mind that most R packages
+(including \Rpackage{edgeR}, \Rpackage{DESeq}, \Rpackage{DESeq2}
+and \Rpackage{baySeq}) are primarily for analyzing data including
+biological replications because the biological variability has to
+be accurately estimated to avoid spurious DE calls (Glaus et al., 2012).
+We here describe two DE analysis pipelines using the subset of
+\Robject{hypoData} consisting of the first and the fourth columns, i.e.,
 
-<<idegerDeseq_tcc_without_replicaets_summary>>=
+<<4893438912>>=
 library(TCC)
 data(hypoData)
 group <- c(1, 2)
 tcc <- new("TCC", hypoData[, c(1, 4)], group)
 head(tcc$count)
 tcc$group
-tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
-                       iteration = 3, FDR = 0.1, floorPDEG = 0.05)
-tcc$norm.factors
-tcc <- estimateDE(tcc, test.method = "deseq", 
-                  FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-table(tcc$estimatedDEG)
 @
 
-It can be seen that there is no DEG having FDR $< 0.1$.
+\subsubsection{edgeR coupled with iDEGES/edgeR normalization}
 
+We give a procedure for DE analysis using the exact test implemented
+in \Rpackage{edgeR} together with iDEGES/edgeR normalization factors
+(i.e., the iDEGES/edgeR-edgeR combination) for the hypothetical
+two-group count data without replicates (i.e., the \Robject{hypoData} object).
+If the user wants to determine the genes having an FDR threshold
+of $< 10$\% as DEGs, one can do as follows.
+
+<<8439100943>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 2)
+tcc <- new("TCC", hypoData[, c(1, 4)], group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
+                       iteration = 3, FDR = 0.1, floorPDEG = 0.05)
+tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
+@
+
+The results of the DE analysis are stored in the \Robject{TCC} class object.
+The summary statistics for top-ranked genes can be retrieved by using the
+\Rfunction{getResult} function.
+
+<<4390087612>>=
+result <- getResult(tcc, sort = TRUE)
+head(result)
+@
+
+The DE results can be broken down as follows.
+
+<<0238735032>>=
+table(tcc$estimatedDEG)
+@
+<<0233731032, echo = FALSE>>=
+tb <- table(tcc$estimatedDEG)
+@
+
+This means $\Sexpr{as.numeric(tb[["0"]])}$ non-DEGs and
+$\Sexpr{as.numeric(tb[["1"]])}$ DEGs satisfy FDR $< 0.1$.
+The \Rfunction{plot} function generates an M-A plot,
+where "M" indicates the log-ratio
+(i.e., $\mbox{M} = \log_{2}\mbox{G2} - \log_{2}\mbox{G1}$)
+and "A" indicates average read count
+(i.e., $\mbox{A} = (\log_{2}\mbox{G2} + \log_{2}\mbox{G1}) / 2$), 
+from the normalized count data.
+The magenta points indicate the identified DEGs at FDR $< 0.1$.
+
+\begin{center}
+<<3489320103, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
+plot(tcc)
+@
+\end{center}
+
+Since we know the true information for \Robject{hypoData}
+(i.e., 200 DEGs and 800 non-DEGs), we can calculate the area
+under the ROC curve (i.e., AUC; $0 \le$ AUC $\le 1$) between
+the ranked gene list and the truth and thereby evaluate the
+sensitivity and specificity simultaneously.
+A well-ranked gene list should have a high AUC value
+(i.e., high sensitivity and specificity).
+
+<<5702784221>>=
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
+
+For comparison, the DE results from the original procedure in
+\Rpackage{edgeR} can be obtained as follows.
+
+<<4890357892>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 2)
+d <- DGEList(counts = hypoData[, c(1, 4)], group = group)
+d <- calcNormFactors(d)
+d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
+out <- exactTest(d)
+result <- topTags(out, n = nrow(hypoData), sort.by = "PValue")
+head(result)
+@
+
+This is the same as
+
+<<4741957232>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 2)
+tcc <- new("TCC", hypoData[, c(1, 4)], group)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0)
+tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
+result <- getResult(tcc, sort = TRUE)
+head(result)
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
+
+
+\subsubsection{DESeq2 coupled with iDEGES/DESeq2 normalization}
+
+We give a procedure for DE analysis using the likelihood ratio
+test for GLMs implemented in \Rpackage{DESeq2} together with iDEGES/DESeq2
+normalization factors (i.e., the iDEGES/DESeq2-DESeq2 combination)
+for the hypothetical two-group count data without replicates
+(i.e., the \Robject{hypoData} object). If the user wants to
+determine the genes having an FDR threshold of $< 10$\% as DEGs,
+one can do as follows.
+
+<<7400039021>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 2)
+tcc <- new("TCC", hypoData[, c(1, 4)], group)
+tcc <- calcNormFactors(tcc, norm.method = "deseq2", test.method = "deseq2",
+                       iteration = 3, FDR = 0.1, floorPDEG = 0.05)
+tcc <- estimateDE(tcc, test.method = "deseq2", FDR = 0.1)
+@
+
+The results of the DE analysis are stored in the \Robject{TCC} class object.
+The summary statistics for top-ranked genes can be retrieved by using the
+\Rfunction{getResult} function.
+
+<<4890184102>>=
+result <- getResult(tcc, sort = TRUE)
+head(result)
+@
+
+The DE results can be broken down as follows.
+
+<<4901822901>>=
+table(tcc$estimatedDEG)
+@
+<<4911822001, echo = FALSE>>=
+tb <- table(tcc$estimatedDEG)
+@
+
+This means $1000$ non-DEGs and $0$ DEGs satisfy FDR $< 0.1$.
+The \Rfunction{plot} function generates an M-A plot,
+where "M" indicates the log-ratio
+(i.e., $\mbox{M} = \log_{2}\mbox{G2} - \log_{2}\mbox{G1}$)
+and "A" indicates average read count
+(i.e., $\mbox{A} = (\log_{2}\mbox{G2} + \log_{2}\mbox{G1}) / 2$), 
+from the normalized count data.
+The magenta points indicate the identified DEGs at FDR $< 0.1$.
+
+\begin{center}
+<<3387482103, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
+plot(tcc)
+@
+\end{center}
+
+Since we know the true information for \Robject{hypoData}
+(i.e., 200 DEGs and 800 non-DEGs), we can calculate the area
+under the ROC curve (i.e., AUC; $0 \le$ AUC $\le 1$) between
+the ranked gene list and the truth and thereby evaluate
+the sensitivity and specificity simultaneously.
+A well-ranked gene list should have a high AUC value
+(i.e., high sensitivity and specificity).
+
+<<4919187780>>=
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
+
+For comparison, the DE results from the original procedure in
+\Rpackage{DESeq2} can be obtained as follows.
+
+<<4929100782>>=
+library(TCC)
+data(hypoData)
+group <- factor(c(1, 2))
+cl <- data.frame(group = group)
+design <- formula(~ group)
+dds <- DESeqDataSetFromMatrix(countData = hypoData[, c(1, 4)], colData = cl,
+                              design = design)
+dds <- estimateSizeFactors(dds)
+sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
+dds <- estimateDispersions(dds)
+dds <- nbinomLRT(dds, reduced = ~ 1)
+result <- results(dds)
+head(result[order(result$pvalue),])
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+result$pvalue[is.na(result$pvalue)] <- 1
+AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
+@
+
+This is the same as
+
+<<8787372620>>=
+library(TCC)
+data(hypoData)
+group <- c(1, 2)
+tcc <- new("TCC", hypoData[, c(1, 4)], group)
+tcc <- calcNormFactors(tcc, norm.method = "deseq2", iteration = 0)
+tcc <- estimateDE(tcc, test.method = "deseq2", FDR = 0.1)
+result <- getResult(tcc, sort = TRUE)
+head(result)
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
 
 
 \subsection{DE analysis for two-group data without replicates (paired)}
-\label{faefljifeaf}
+\label{ss_de_2gnr_p}
 
-We show a procedure for DE analysis using the GLM aproach implemented in
-\Rpackage{edgeR} together with iDEGES/edgeR normalization 
-factors for paired two-group count data without replicates.
+\Rpackage{edgeR} and \Rpackage{DESeq} (and \Rpackage{DESeq2}) employs
+generalized linear models (GLMs) which can apply to detect DEGs from
+paired two-group count data. The analysis for paired samples can be
+performed by indicating (1) the pair information when constructing
+the \Robject{TCC} class object and (2) \Robject{paired = TRUE} when
+performing the \Rfunction{calcNormFactors} and \Rfunction{estimateDE}
+functions.
+For analyzing paired data, we here use the hypothetical count data
+(\Robject{hypoData}; for details see \ref{ss_reading_the_count_data})
+by changing the label information, i.e.,
 
-<<9384718934>>=
+<<0285012872>>=
+data(hypoData)
+colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
+                        "N_dogA", "N_dogB", "N_dogC")
+head(hypoData)
+@
+
+This count data consists of three individuals (or sibships),
+dogA, dogB, and dogC. "T" and "N" indicate tumor and normal tissues,
+respectively.
+
+
+
+\subsubsection{edgeR coupled with iDEGES/edgeR normalization}
+
+We give a procedure for DE analysis using the likelihood ratio
+test for GLMs implemented in \Rpackage{edgeR} together with
+iDEGES/edgeR normalization factors
+(i.e., the iDEGES/edgeR-edgeR combination) for the paired
+two-group count data without replicates (i.e., the above
+\Robject{hypoData} object). If the user wants to determine
+the genes having an FDR threshold of $< 10$\% as DEGs,
+one can do as follows.
+
+<<4891209302>>=
 library(TCC)
 data(hypoData)
-cl <- data.frame(
-        group = c(1, 1, 1, 2, 2, 2),
-        pair  = c(1, 2, 3, 1, 2, 3)
-      )
+colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
+                        "N_dogA", "N_dogB", "N_dogC")
+group <- c(1, 1, 1, 2, 2, 2)
+pair <- c(1, 2, 3, 1, 2, 3)
+cl <- data.frame(group = group, pair = pair)
 tcc <- new("TCC", hypoData, cl)
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+                       iteration = 3, FDR = 0.1, floorPDEG = 0.05, paired = TRUE)
+tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1, paired = TRUE)
+@
+
+The results of the DE analysis are stored in the \Robject{TCC} class object.
+The summary statistics for top-ranked genes can be retrieved by using the
+\Rfunction{getResult} function.
+
+<<4390911012>>=
+result <- getResult(tcc, sort = TRUE)
+head(result)
+@
+
+The DE results can be broken down as follows.
+
+<<3909884931>>=
+table(tcc$estimatedDEG)
+@
+<<3934884932, echo = FALSE>>=
+tb <- table(tcc$estimatedDEG)
+@
+
+This means $\Sexpr{as.numeric(tb[["0"]])}$ non-DEGs and
+$\Sexpr{as.numeric(tb[["1"]])}$ DEGs satisfy FDR $< 0.1$.
+The \Rfunction{plot} function generates an M-A plot,
+where "M" indicates the log-ratio
+(i.e., $\mbox{M} = \log_{2}\mbox{G2} - \log_{2}\mbox{G1}$)
+and "A" indicates average read count
+(i.e., $\mbox{A} = (\log_{2}\mbox{G2} + \log_{2}\mbox{G1}) / 2$), 
+from the normalized count data.
+The magenta points indicate the identified DEGs at FDR $< 0.1$.
+
+\begin{center}
+<<3482340103, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
+plot(tcc)
+@
+\end{center}
+
+Since we know the true information for \Robject{hypoData}
+(i.e., 200 DEGs and 800 non-DEGs), we can calculate the area
+under the ROC curve (i.e., AUC; $0 \le$ AUC $\le 1$) between the
+ranked gene list and the truth and thereby evaluate the
+sensitivity and specificity simultaneously.
+A well-ranked gene list should have a high AUC value
+(i.e., high sensitivity and specificity).
+
+<<3490930192>>=
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
+@
+
+For comparison, the DE results from the original procedure in
+\Rpackage{edgeR} can be obtained as follows.
+
+<<8402288128>>=
+library(TCC)
+data(hypoData)
+colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
+                        "N_dogA", "N_dogB", "N_dogC")
+group <- factor(c(1, 1, 1, 2, 2, 2))
+pair <- factor(c(1, 2, 3, 1, 2, 3))
+design <- model.matrix(~ group + pair)
+coef <- 2
+d <- DGEList(counts = hypoData, group = group)
+d <- calcNormFactors(d)
+d <- estimateGLMCommonDisp(d, design)
+d <- estimateGLMTrendedDisp(d, design)
+d <- estimateGLMTagwiseDisp(d, design)
+fit <- glmFit(d, design)
+lrt <- glmLRT(fit, coef = coef)
+topTags(lrt, n = 6)
+p.value <- lrt$table$PValue
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -rank(p.value)))
+@
+
+This is the same as
+
+<<4209576561>>=
+library(TCC)
+data(hypoData)
+colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
+                        "N_dogA", "N_dogB", "N_dogC")
+group <- c(1, 1, 1, 2, 2, 2)
+pair <- c(1, 2, 3, 1, 2, 3)
+cl <- data.frame(group = group, pair = pair)
+tcc <- new("TCC", hypoData, cl)
+tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0, paired = TRUE)
 tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1, paired = TRUE)
 result <- getResult(tcc, sort = TRUE)
 head(result)
-table(tcc$estimatedDEG)
+library(ROC)
+truth <- c(rep(1, 200), rep(0, 800))
+AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 @
-
 
 
 \subsection{DE analysis for multi-group data with replicates}
@@ -2499,9 +2899,8 @@ tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
 fit1 <- count ~ condition
 fit0 <- count ~ 1
 cds <- newCountDataSet(tcc$count, group)
-ef.libsizes <- tcc$norm.factors * colSums(tcc$count)
-size.factors <- ef.libsizes / mean(ef.libsizes)
-sizeFactors(cds) <- size.factors
+cds <- estimateSizeFactors(cds)
+sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
 cds <- estimateDispersions(cds)
 reduced.model <- fitNbinomGLMs(cds, fit0)
 full.model <- fitNbinomGLMs(cds, fit1)
@@ -2756,12 +3155,8 @@ approach for \Rpackage{DESeq} users.
 <<calc_AUC_of_degesDeseq_org>>=
 cds <- newCountDataSet(tcc$count, tcc$group$group)
 cds <- estimateSizeFactors(cds)
-norm.factors <- sizeFactors(cds) / colSums(tcc$count)
-norm.factors <- norm.factors / mean(norm.factors)
-ef.libsizes <- norm.factors * colSums(tcc$count)
-size.factors <- ef.libsizes / mean(ef.libsizes)
-sizeFactors(cds) <- size.factors
-cds <- estimateDispersions(cds, method="blind", sharingMode="fit-only")
+sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
+cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 AUC(rocdemo.sca(truth = as.numeric(tcc$simulation$trueDEG != 0),
@@ -2777,7 +3172,7 @@ approximately the same AUC value as above.
 <<calc_AUC_of_deseq_org>>=
 cds <- newCountDataSet(tcc$count, tcc$group$group)
 cds <- estimateSizeFactors(cds)
-cds <- estimateDispersions(cds, method="blind", sharingMode="fit-only")
+cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 AUC(rocdemo.sca(truth = as.numeric(tcc$simulation$trueDEG != 0),
@@ -2821,9 +3216,11 @@ fold-change (FC). As expected, it can be seen that the first
 $210$, $60$, and $30$ genes are up-regulated in G1, G2, and G3, 
 respectively.
 
+\begin{center}
 <<plot_fc_pseudocolor_multigroup, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
 plotFCPseudocolor(tcc)
 @
+\end{center}
 
 Now let us  see how the DEGES/edgeR-edgeR combination
 with the original edgeR-edgeR combination performs.
@@ -2851,7 +3248,7 @@ calcAUCValue(tcc)
 It can be seen that the DEGES/edgeR-edgeR combination
 outperforms the original \Rpackage{edgeR} procedure under the given simulation
 conditions. Note that the \Robject{test.method} argument will be ignored when
-\Rpackage{iteration = 0} is specified.
+\Robject{iteration = 0} is specified.
 
 Next, let us generate another dataset consisting of a total of eight groups. 
 The simulation conditions for this dataset are as follows: 
@@ -2868,6 +3265,7 @@ and (v) there are a total of nine libraries (except for G3,
 none of the groups have replicates) 
 (\Robject{replicates = c(1, 1, 2, 1, 1, 1, 1, 1)}).
 
+\begin{center}
 <<plot_fc_pseudocolor_multigroup_2, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
 set.seed(1000)
 library(TCC)
@@ -2880,6 +3278,7 @@ tcc$group
 head(tcc$count)
 plotFCPseudocolor(tcc)
 @
+\end{center}
 
 
 This kind of simulation data may be useful for evaluating methods 
@@ -2949,11 +3348,13 @@ of DEGs, we can see the 2-fold up-regulation in the first four columns
 (i.e., WT-related samples) compared to the last four columns
 (i.e., KO-related samples).
 
+\begin{center}
 <<plot_fc_pseudocolor_multifactor, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
 head(tcc$count)
 tcc$group
 plotFCPseudocolor(tcc)
 @
+\end{center}
 
 
 \subsection{Other utilities}
@@ -2987,9 +3388,11 @@ An M-A plot for the simulation data can be viewed as follows;
 the points for up-regulated DEGs in G1 and G2 are colored 
 blue and red, respectively. The non-DEGs are in black:
 
-<<maplot_simulate_data_1000, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
+\begin{center}
+<<maplot_simulate_data_1000, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
 plot(tcc)
 @
+\end{center}
 
 This plot is generated from simulation data that has been scaled 
 in such a way that the library sizes of each sample are the same 
@@ -3019,9 +3422,11 @@ $\Sexpr{sprintf("%.3f", median.G1)}$,
 and $\Sexpr{sprintf("%.3f", median.G2)}$ for non-DEGs 
 and up-regulated DEGs in G1 and G2.
 
-<<maplot_normed_simulate_data_1000, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
+\begin{center}
+<<maplot_normed_simulate_data_1000, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
 plot(tcc, median.lines = TRUE) 
 @
+\end{center}
 
 <<maplot_normed_simulate_data_1000_2_hide, echo = FALSE, fig = FALSE>>=
 tcc <- calcNormFactors(tcc, "tmm", "edger", iteration = 3, 
@@ -3037,11 +3442,13 @@ iDEGES/edgeR normalization, e.g., the median M value
 for non-DEGs based on the iDEGES/edgeR-normalized 
 data is nearly zero. 
 
-<<maplot_normed_simulate_data_1000_2, fig = TRUE, size = 0.8, png = TRUE, pdf = FALSE, eps = FALSE>>=
+\begin{center}
+<<maplot_normed_simulate_data_1000_2, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger", 
                        iteration = 3, FDR = 0.1, floorPDEG = 0.05)
 plot(tcc, median.line = TRUE)
 @
+\end{center}
 
 The comparison of those values obtained from different normalization 
 methods might be another evaluation metric.
@@ -3050,7 +3457,7 @@ methods might be another evaluation metric.
 
 \section{Session info}
 
-<<session_info>>=
+<<2390118599>>=
 sessionInfo()
 @
 
@@ -3061,59 +3468,81 @@ sessionInfo()
 \renewcommand\refname{\vskip -1cm}
 
 \begin{thebibliography}{99}
-\bibitem{anders} Anders S and Huber W. Differential expression analysis 
-                 for sequence count data. Genome Biol. 2010, 11(10): R106
-\bibitem{di} Di Y, Schafer DW, Cumbie JS, and Chang JH. The NBP negative 
-             binomial model for assessing differential gene expression from
-             RNA-Seq. Stat Appl Genet Mol Biol. 2011, 10: art24
-\bibitem{dillies} Dillies MA, Rau A, Aubert J, Hennequet-Antier C, 
-                  Jeanmougin M, Servant N, Keime C, Marot G, Castel D, 
-                  Estelle J, Guernec G, Jagla B, Jouneau L, Lalo\"e D, 
-                  Le Gall C, Scha\"effer B, Le Crom S, Guedj M, 
-                  Jaffr\'ezic F; on behalf of The French StatOmique 
-                  Consortium. A comprehensive evaluation of normalization 
-                  methods for Illumina high-throughput RNA sequencing data 
-                  analysis. Brief Bioinform, in press
-\bibitem{glaus} Glaus P, Honkela A, and Rattray M. Identifying differentially
-                expressed transcripts from RNA-seq data with biological 
-                variation. Bioinformatics 2012, 28(13): 1721-1728
-\bibitem{hardcastle} Hardcastle TJ and Kelly KA. baySeq: 
-                     empirical Bayesian methods for identifying differential
-                     expression in sequence count data. BMC Bioinformatics 
-                     2010, 11: 422
-\bibitem{wad} Kadota K, Nakai Y, Shimizu K: A weighted average difference
-              method for detecting differentially expressed genes from 
-              microarray data. Algorithms Mol Biol. 208, 3: 8
-\bibitem{aicentropy} Kadota K, Nishimura SI, Bono H, Nakamura S, 
-                     Hayashizaki Y, Okazaki Y, Takahashi K: 
-                     Detection of genes with tissue-specific expression 
-                     patterns using Akaike's Information Criterion (AIC) 
-                     procedure. Physiol Genomics 2003, 12: 251-259
-\bibitem{kadota} Kadota K, Nishiyama T, and Shimizu K. A normalization 
-                 strategy for comparing tag count data. Algorithms Mol 
-                 Biol. 2012, 7:5
-\bibitem{roku} Kadota K, Ye J, Nakai Y, Terada T, Shimizu K: ROKU: a novel
-               method for identification of tissue-specific genes. 
-               BMC Bioinformatics 2006, 7: 294
-\bibitem{mccarthy} McCarthy DJ, Chen Y, Smyth GK. Differential expression 
-                   analysis of multifactor RNA-Seq experiments with respect
-                   to biological variation. Nucleic Acids Res. 2012, 40(10): 
-                   4288-4297
-\bibitem{robinson} Robinson MD, McCarthy DJ, and Smyth GK. edgeR: 
-                   a Bioconductor package for differential expression 
-                   analysis of digital gene expression data. Bioinformatics 
-                   2010, 26(1): 139-140
-\bibitem{robinson2} Robinson MD and Oshlack A. A scaling normalization method
-                    for differential expression analysis of RNA-seq data. 
-                    Genome Biol. 2010, 11: R25
-\bibitem{robinson3} Robinson MD and Smyth GK. Small-sample estimation of 
-                    negative binomial dispersion, with applications to SAGE 
-                    data. Biostatistics 2008, 9: 321-332
-\bibitem{sun} Sun J, Nishiyama T, Shimizu K, and Kadota K. TCC: an R package
-              for comparing tag count data with robust normalization 
-              strategies. BMC Bioinformatics 2013, 14: 219
-\bibitem{ueda} Ueda T. Simple method for the detection of outliers.
-               Japanese J Appl Stat 1996, 25: 17-26
+\bibitem{anders}
+Anders S, Huber W. 2010.
+Differential expression analysis for sequence count data.
+Genome Biol 11: R106.
+\bibitem{di}
+Di Y, Schafer DW, Cumbie JS, Chang JH. 2011.
+The NBP negative binomial model for assessing differential
+gene expression from RNA-Seq.
+Stat Appl Genet Mol Biol 10.
+\bibitem{dillies}
+Dillies MA, Rau A, Aubert J, Hennequet-Antier C, Jeanmougin M, Servant N,
+Keime C, Marot G, Castel D, Estelle J, Guernec G, Jagla B, Jouneau L,
+Lalo\"e D, Le Gall C, Scha\"effer B, Le Crom S, Guedj M, Jaffr\'ezic F;
+French StatOmique Consortium. 2013.
+A comprehensive evaluation of normalization methods for Illumina
+high-throughput RNA sequencing data analysis.
+Brief Bioinform 14: 671-683.
+\bibitem{glaus}
+Glaus P, Honkela A, and Rattray M. 2012.
+Identifying differentially expressed transcripts from RNA-seq
+data with biological variation.
+Bioinformatics 28: 1721-1728.
+\bibitem{hardcastle}
+Hardcastle TJ and Kelly KA. 2010.
+baySeq: empirical Bayesian methods for identifying differential
+expression in sequence count data.
+BMC Bioinformatics 11: 422.
+\bibitem{wad}
+Kadota K, Nakai Y, Shimizu K. 2008.
+A weighted average difference method for detecting differentially expressed
+genes from microarray data.
+Algorithms Mol Biol 3: 8.
+\bibitem{aicentropy}
+Kadota K, Nishimura SI, Bono H, Nakamura S, Hayashizaki Y, Okazaki Y,
+Takahashi K. 2003.
+Detection of genes with tissue-specific expression patterns using
+Akaike's Information Criterion (AIC) procedure.
+Physiol Genomics 12: 251-259.
+\bibitem{kadota}
+Kadota K, Nishiyama T, and Shimizu K. 2012.
+A normalization strategy for comparing tag count data.
+Algorithms Mol Biol 7: 5.
+\bibitem{roku}
+Kadota K, Ye J, Nakai Y, Terada T, Shimizu K. 2006.
+ROKU: a novel method for identification of tissue-specific genes. 
+BMC Bioinformatics 7: 294.
+\bibitem{mccarthy}
+McCarthy DJ, Chen Y, Smyth GK. 2012.
+Differential expression analysis of multifactor RNA-Seq experiments
+with respect to biological variation.
+Nucleic Acids Res 40: 4288-4297.
+\bibitem{robinson}
+Robinson MD, McCarthy DJ, Smyth GK. 2010.
+edgeR: A Bioconductor package for differential expression analysis
+of digital gene expression data.
+Bioinformatics 26: 139-140.
+\bibitem{robinson2}
+Robinson MD and Oshlack A. 2010.
+A scaling normalization method for differential expression analysis
+of RNA-seq data. 
+Genome Biol 11: R25.
+\bibitem{robinson3}
+Robinson MD and Smyth GK. 2008.
+Small-sample estimation of negative binomial dispersion,
+with applications to SAGE data.
+Biostatistics 9: 321-332.
+\bibitem{sun}
+Sun J, Nishiyama T, Shimizu K, and Kadota K.
+TCC: an R package for comparing tag count data with robust
+normalization strategies.
+BMC Bioinformatics 14: 219.
+\bibitem{ueda}
+Ueda T. 1996.
+Simple method for the detection of outliers.
+Japanese J Appl Stat 25: 17-26.
 \end{thebibliography}
 \end{document}
 
