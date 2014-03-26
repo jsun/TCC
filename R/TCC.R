@@ -71,7 +71,7 @@ TCC <- setRefClass(
             private$estimated <<- FALSE
             private$simulation <<- FALSE
             private$normalized <<- FALSE
-            private$available$norm.method <<- c("tmm", "deseq")
+            private$available$norm.method <<- c("tmm", "deseq", "deseq2")
             private$available$test.method <<- data.frame(
                 TG_Y   = c(T, T, T, T, T),  # two-group with replicates
                 TG_N   = c(T, T, T, T, F),  # two-group without replicates

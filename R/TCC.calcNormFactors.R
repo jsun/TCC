@@ -23,14 +23,36 @@ TCC$methods(.normByDeseq = function(x){
 ## to normalization factors before return factors.
 ##
     if (ncol(group) == 1) {
-        suppressMessages(d <- newCountDataSet(countData = round(x), 
+        suppressMessages(d <- DESeq::newCountDataSet(countData = round(x), 
                                               conditions = group[, 1]))
     } else {
-        suppressMessages(d <- newCountDataSet(countData = round(x), 
+        suppressMessages(d <- DESeq::newCountDataSet(countData = round(x), 
                                               conditions = group))
     }
-    suppressMessages(d <- estimateSizeFactors(d))
+    suppressMessages(d <- DESeq::estimateSizeFactors(d))
     return(sizeFactors(d) / colSums(x))
+})
+
+
+
+
+TCC$methods(.normByDeseq2 = function(x){
+##
+## Med(DESeq2) normalization
+## The 'estimateSizeFactors' implemented in DESeq2 is used for calculating.
+## Since 'estimateSizeFactors' outputs size factors, we convert size factor
+## to normalization factors before return factors.
+##
+    dgroup <- colnames(.self$group)
+    design <- formula(eval(parse(text =
+                paste("~", paste(dgroup, collapse = " + "), sep = " ")
+              )))
+    suppressMessages(d <- DESeq2::DESeqDataSetFromMatrix(
+                                      countData = round(x), 
+                                      colData = .self$group,
+                                      design = design))
+    suppressMessages(d <- DESeq2::estimateSizeFactors(d))
+    return(DESeq2::sizeFactors(d) / colSums(x))
 })
 
 
@@ -86,9 +108,6 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     if (norm.method == "edger") {
         norm.method <- "tmm" 
     }
-    if (norm.method == "deseq2") {
-        norm.method <- "deseq" 
-    }
     ## Initialize 'test.method'.
     add.args <- list(...)
     if (is.null(test.method)) {
@@ -131,6 +150,7 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
         norm.factors <<- switch(norm.method,
                                 "tmm" = .self$.normByTmm(count),
                                 "deseq" = .self$.normByDeseq(count),
+                                "deseq2" = .self$.normByDeseq2(count),
                                 stop(paste("\nTCC::ERROR: The normalization method of ", 
                                 norm.method, " doesn't supported.\n")))
     }
@@ -207,7 +227,8 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
             ## The last X of X-Y-X pipeline.
             norm.factors <<- switch(norm.method,
                                     "tmm" = .self$.normByTmm(count.ndeg),
-                                    "deseq" = .self$.normByDeseq(count.ndeg)
+                                    "deseq" = .self$.normByDeseq(count.ndeg),
+                                    "deseq2" = .self$.normByDeseq2(count.ndeg)
             )
             ## Standarlize normalization factors.
             norm.factors <<- norm.factors * colSums(count.ndeg) / colSums(count)
