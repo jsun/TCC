@@ -4,12 +4,12 @@
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
            fit0, fit1,                      # for DESeq
-           DESeq2.test,                # for DESeq2
-           design,                       # for DESeq2, edgeR
-           contrast, coef,              # for edgeR
-           comparison, cl,              # for baySeq
-           samplesize,                   # for baySeq, SAMseq
-           logged, floor                 # for WAD
+           DESeq2.test,                     # for DESeq2
+           design,                          # for DESeq2, edgeR
+           contrast, coef,                  # for edgeR
+           comparison, cl,                  # for baySeq
+           samplesize,                      # for baySeq, SAMseq
+           logged, floor                    # for WAD
 )
 }
 \description{
@@ -27,7 +27,7 @@ implemented in other R packages.
           \code{"bayseq"}, \code{"samseq"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
-          replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), 
+          replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}) and
           \code{"deseq"} when analyzing the count data without replicates 
           (i.e., \code{min(table(tcc$group[, 1])) == 1)}).}
 
@@ -55,11 +55,11 @@ implemented in other R packages.
           approach using in DESeq2 for identifying DEGs. The default is
           \code{"LRT"}.}
 
-    \item{design}{the argument is used in edgeR or DESeq2.
+    \item{design}{the argument is used in edgeR and DESeq2.
           For edgeR, it should be the numeric matrix giving the design matrix
           for the generalized linear model.
           See the \code{\link[edgeR]{glmFit}} function in edgeR for details.
-          For DESeq2, it should be a formula which specifies the design of the
+          For DESeq2, it should be a formula specifying the design of the
           experiment. See the \code{\link[DESeq2]{DESeqDataSet}} function
           in DESeq2 for details.}
 
@@ -107,7 +107,7 @@ implemented in other R packages.
 \code{\link{calcNormFactors}} function that calculates normalization factors.
 \code{estimateDE} constructs a statistical model for differential expression
 (DE) analysis with the calculated normalization factors and returns the
-\eqn{p}-values (or the derivatives). The individual functions in the other
+\eqn{p}-values (or the derivatives). The individual functions in other
 packages are internally called according to the specified
 \code{test.method} parameter.
 
@@ -119,8 +119,7 @@ packages are internally called according to the specified
           and GLM approach is used for multi-group or multi-factor data. 
           However, if \code{design} and the one of \code{coef} or 
           \code{contrast} are given, the GLM approach will be used for
-          two-group data. Currently, edgeR package does not support data
-          without replicates.\cr
+          two-group data. \cr
           If the exact test approach is used, 
           \code{\link[edgeR]{estimateCommonDisp}},
           \code{\link[edgeR]{estimateTagwiseDisp}}, and

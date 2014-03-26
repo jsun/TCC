@@ -20,7 +20,7 @@ The procedure can generally be described as the
     \item{norm.method}{character specifying a normalization method used in
           both the \eqn{STEP1} and \eqn{STEP3}. Possible values are
           \code{"tmm"} for the TMM normalization method implemented in the
-          edgeR package, \code{"edger"} (same as \code{"tmm"}), 
+          edgeR package, \code{"edger"} (same as \code{"tmm"}), \code{"deseq2"}
           and \code{"deseq"} for the method implemented in the DESeq package.
           The default is \code{"tmm"}
           when analyzing the count data with multiple replicates
@@ -63,7 +63,7 @@ our multi-step strategy can eliminate the negative effect of potential DEGs
 before the second normalization at \eqn{STEP3}.
 To fully utilize the DEG elimination strategy (DEGES), we strongly recommend
 not to use \code{iteration = 0} or \code{iteration = FALSE}. 
-This function internally calls functions implemented in the other R packages
+This function internally calls functions implemented in other R packages
 according to the specified value. 
 
 \itemize{
@@ -71,6 +71,12 @@ according to the specified value.
           The \code{\link[edgeR]{calcNormFactors}} function implemented
           in edgeR is used for obtaining the TMM normalization factors
           at both \eqn{STEP1} and \eqn{STEP3}.
+    \item \code{norm.method = "deseq2"}\cr
+          The \code{\link[DESeq2]{estimateSizeFactors}} function 
+          implemented in DESeq2 is used for obetaining the size factors
+          at both \eqn{STEP1} and \eqn{STEP3}.
+          The size factors are internally converted to normalization factors
+          that are comparable to the TMM normalization factors.
     \item \code{norm.method = "deseq"}\cr
           The \code{\link[DESeq]{estimateSizeFactors}} function 
           implemented in DESeq is used for obetaining the size factors
@@ -88,7 +94,7 @@ identified in \eqn{STEP2}, execution times for the identification, etc.)
 are stored in the DEGES field (i.e., \code{tcc$DEGES}) as follows:
 
     \item{iteration}{the iteration number \eqn{n} for
-          \bold{the STEP1 - (STEP2 - STEP3)\eqn{_{n}} pipeline}.}
+          {the \eqn{STEP1 - (STEP2 - STEP3)_{n}} pipeline}.}
     \item{pipeline}{the DEGES normalization pipeline.}
     \item{threshold}{it stores
           (i) the type of threshold (\code{threshold$type}),
