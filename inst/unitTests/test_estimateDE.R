@@ -259,7 +259,8 @@ test_estimateDE_baySeq_3 <- function() {
 
 
 
-
+if (FALSE) {
+## check this in vignette.
 test_estimateDE_DESeq2_1 <- function() {
     set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
@@ -479,6 +480,7 @@ test_estimateDE_edgeR_3 <- function() {
 
     checkEqualsNumeric(r$PValue, tcc$stat$p.value)
     checkTrue(auc > 0.80)
+}
 }
 
 test_estimateDE_crossvalidate <- function() {

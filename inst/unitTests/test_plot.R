@@ -4,7 +4,7 @@ test_plot <- function() {
     tcc <- new("TCC", hypoData, group)
     plot(tcc)
 
-    tcc <- calcNormFactors(tcc)
+    tcc <- calcNormFactors(tcc, iteration = 0)
     plot(tcc)
 
     tcc <- estimateDE(tcc, test.method = "edger")

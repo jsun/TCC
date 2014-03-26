@@ -1,3 +1,7 @@
+if (FALSE) {
+##
+## Following code are also in vignettes, comments here.
+##
 test_calcNormFactors_DEGESedgeR_1 <- function() {
     data(hypoData)
     FDR <- 0.1
@@ -137,6 +141,7 @@ test_calcNormFactors_DEGESDESeq_glm <- function() {
     fit0 <- count ~ 1
     tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
                            fit1 = fit1, fit0 = fit0, iteration = 1)
+}
 }
 
 test_calcNormFactors_increment <- function() {

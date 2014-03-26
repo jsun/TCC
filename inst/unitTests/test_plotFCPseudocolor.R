@@ -1,8 +1,8 @@
 test_plotFCPseudocolor <- function() {
-    tcc <- simulateReadCounts()
+    tcc <- simulateReadCounts(Ngene = 1000)
     plotFCPseudocolor(tcc)
 
-    tcc <- simulateReadCounts(replicates = c(3, 3, 3))
+    tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))
     plotFCPseudocolor(tcc)
 }
 
