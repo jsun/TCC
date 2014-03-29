@@ -56,6 +56,7 @@
 
 
 test_estimateDE_SAMseq_1 <- function() {
+    set.seed(2014)
     library(samr)
     samplesize <- 10
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3))
@@ -95,6 +96,7 @@ test_estimateDE_SAMseq_1 <- function() {
 ##}
 
 test_estimateDE_SAMseq_2 <- function() {
+    set.seed(2014)
     library(samr)
     samplesize <- 10
     tcc <- simulateReadCounts(replicates = c(3, 3, 3)) 
@@ -131,6 +133,7 @@ test_estimateDE_SAMseq_2 <- function() {
 ##}
 
 test_estimateDE_baySeq_1 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3))
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     set.seed(1)
@@ -203,6 +206,7 @@ test_estimateDE_baySeq_1 <- function() {
 ##}
 
 test_estimateDE_baySeq_2 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     set.seed(1)
@@ -228,6 +232,7 @@ test_estimateDE_baySeq_2 <- function() {
 }
 
 test_estimateDE_baySeq_3 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(4, 4))
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     tcc$group <- data.frame(GROUP = c(1, 1, 1, 1, 2, 2, 2, 2 ),
@@ -346,6 +351,7 @@ test_estimateDE_DESeq2_2 <- function() {
 
 
 test_estimateDE_DESeq_1 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     tcc <- estimateDE(tcc, test.method = "deseq")
@@ -364,6 +370,7 @@ test_estimateDE_DESeq_1 <- function() {
 }
 
 test_estimateDE_DESeq_2 <- function() {
+    set.seed(2014)
     fit1 <- count ~ condition
     fit0 <- count ~ 1
 
@@ -389,6 +396,7 @@ test_estimateDE_DESeq_2 <- function() {
 }
 
 test_estimateDE_DESeq_3 <- function() {
+    set.seed(2014)
     group <- data.frame(
                COND = as.factor(c(1, 1, 1, 1, 2, 2, 2, 2)),
                TIME = as.factor(c(1, 1, 2, 2, 1, 1, 2, 2))
@@ -418,6 +426,7 @@ test_estimateDE_DESeq_3 <- function() {
 
 
 test_estimateDE_edgeR_1 <- function() {
+    set.seed(2014)
     tcc <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3)) 
     tcc <- calcNormFactors(tcc, iteration = FALSE)
     tcc <- estimateDE(tcc, test.method = "edger")
@@ -433,6 +442,7 @@ test_estimateDE_edgeR_1 <- function() {
 }
 
 test_estimateDE_edgeR_2 <- function() {
+    set.seed(2014)
     group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
     coef <- 2:3
     design <- model.matrix(~ as.factor(group))
@@ -459,6 +469,7 @@ test_estimateDE_edgeR_2 <- function() {
 }
 
 test_estimateDE_edgeR_3 <- function() {
+    set.seed(2014)
     group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
     contrast <- c(-1, 0, 1)
     design <- model.matrix(~ 0 + as.factor(group))
@@ -484,6 +495,7 @@ test_estimateDE_edgeR_3 <- function() {
 }
 
 test_estimateDE_crossvalidate <- function() {
+    set.seed(2014)
     tcc <- new("TCC")
     av <- tcc$private$available$test.method
     ty <- colnames(av)

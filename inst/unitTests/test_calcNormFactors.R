@@ -3,6 +3,7 @@ if (FALSE) {
 ## Following code are also in vignettes, comments here.
 ##
 test_calcNormFactors_DEGESedgeR_1 <- function() {
+    set.seed(2014)
     data(hypoData)
     FDR <- 0.1
     floorPDEG <- 0.05
@@ -38,6 +39,7 @@ test_calcNormFactors_DEGESedgeR_1 <- function() {
 }
 
 test_calcNormFactors_DEGESDESeq_1 <- function() {
+    set.seed(2014)
     data(hypoData)
     FDR <- 0.1
     floorPDEG <- 0.05
@@ -73,6 +75,7 @@ test_calcNormFactors_DEGESDESeq_1 <- function() {
 }
 
 test_calcNormFactors_DEGESTbT <- function() {
+    set.seed(2014)
     data(hypoData)
     count <- hypoData
     group <- c(1, 1, 1, 2, 2, 2)
@@ -103,6 +106,7 @@ test_calcNormFactors_DEGESTbT <- function() {
 }
 
 test_calcNormFactors_DEGESDESeq_classic_single <- function() {
+    set.seed(2014)
     data(hypoData)
     floorPDEG <- 0.05
     count <- hypoData[, c(1, 4)]
@@ -119,6 +123,7 @@ test_calcNormFactors_DEGESDESeq_classic_single <- function() {
 
 
 test_calcNormFactors_DEGESedgeR_glm <- function() {
+    set.seed(2014)
     data(hypoData_mg)
     count <- hypoData_mg
     group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
@@ -132,6 +137,7 @@ test_calcNormFactors_DEGESedgeR_glm <- function() {
 
 
 test_calcNormFactors_DEGESDESeq_glm <- function() {
+    set.seed(2014)
     data(hypoData_mg)
     count <- hypoData_mg
     group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
@@ -145,24 +151,23 @@ test_calcNormFactors_DEGESDESeq_glm <- function() {
 }
 
 test_calcNormFactors_increment <- function() {
-  data(hypoData)
-  tcc <- new("TCC", hypoData, c(1, 1, 1, 2, 2, 2))
-  tcc.0 <- calcNormFactors(tcc, iteration = 0)
-  tcc.1 <- calcNormFactors(tcc, iteration = 1)
-  tcc.0.1 <- calcNormFactors(tcc, increment = TRUE)
-  checkEqualsNumeric(tcc.1$norm.factors, tcc.0.1$norm.factors)
+    set.seed(2014)
+    data(hypoData)
+    tcc <- new("TCC", hypoData, c(1, 1, 1, 2, 2, 2))
+    tcc.0 <- calcNormFactors(tcc, iteration = 0)
+    tcc.1 <- calcNormFactors(tcc, iteration = 1)
+    tcc.0.1 <- calcNormFactors(tcc, increment = TRUE)
+    checkEqualsNumeric(tcc.1$norm.factors, tcc.0.1$norm.factors)
 
+    tcc.3 <- calcNormFactors(tcc, iteration = 3)
+    tcc.1 <- calcNormFactors(tcc, increment = TRUE)
+    tcc.1.1 <- calcNormFactors(tcc.1, increment = TRUE)
+    tcc.1.1.1 <- calcNormFactors(tcc.1.1, increment = TRUE)
+    checkEqualsNumeric(tcc.3$norm.factors, tcc.1.1.1$norm.factors)
 
-  tcc.3 <- calcNormFactors(tcc, iteration = 3)
-  tcc.1 <- calcNormFactors(tcc, increment = TRUE)
-  tcc.1.1 <- calcNormFactors(tcc.1, increment = TRUE)
-  tcc.1.1.1 <- calcNormFactors(tcc.1.1, increment = TRUE)
-  checkEqualsNumeric(tcc.3$norm.factors, tcc.1.1.1$norm.factors)
-
-
-  tcc.1 <- calcNormFactors(tcc, iteration = 1)
-  tcc.1.2 <- calcNormFactors(tcc.1, iteration = 2, increment = TRUE)
-  checkEqualsNumeric(tcc.3$norm.factors, tcc.1.2$norm.factors)
+    tcc.1 <- calcNormFactors(tcc, iteration = 1)
+    tcc.1.2 <- calcNormFactors(tcc.1, iteration = 2, increment = TRUE)
+    checkEqualsNumeric(tcc.3$norm.factors, tcc.1.2$norm.factors)
 }
 
 
