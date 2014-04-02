@@ -207,7 +207,7 @@ switch(test.approach,
     "2" = .testByDeseq.2(fit1 = fit1, fit0 = fit0),
     "3" = .testByDeseq.3(fit1 = fit1, fit0 = fit0),
     "4" = .testByDeseq.4(fit1 = fit1, fit0 = fit0),
-    stop("TCC::ERROR: TCC kernel error.")
+    stop("TCC::ERROR: TCC does not support such identification strategy.")
 )
 
 

@@ -130,7 +130,7 @@ switch(test.approach,
     "2" = .testByEdger.2(design = design, coef = coef, contrast = contrast),
     "3" = .testByEdger.3(design = design, coef = coef, contrast = contrast),
     "4" = .testByEdger.4(design = design, coef = coef, contrast = contrast),
-    stop("TCC::ERROR: TCC kernel error.")
+    stop("TCC::ERROR: TCC does not support such identification strategy.")
 )
 
 

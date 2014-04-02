@@ -65,7 +65,7 @@ test.approach <- .self$.testApproach()
 switch(test.approach,
     "1" = .testBySamseq.1(samplesize = samplesize),
     "2" = .testBySamseq.2(samplesize = samplesize),
-    stop("TCC::ERROR: TCC kernel error.")
+    stop("TCC::ERROR: TCC does not support such identification strategy.")
 
 )
 

@@ -120,7 +120,7 @@ switch(test.approach,
     "2" = .testByBayseq.2(samplesize = samplesize, cl = cl),
     "3" = .testByBayseq.3(samplesize = samplesize, cl = cl,
                           comparison = comparison),
-    stop("TCC::ERROR: TCC kernel error.")
+    stop("TCC::ERROR: TCC does not support such identification strategy.")
 )
 
 
