@@ -1,3 +1,9 @@
+##
+## Following functions have deleted since TCC version 1.5.1
+##
+
+if (FALSE) {
+
 MAplot <- function(datalist, FDR_threshold = 0.01){
     data <- datalist$counts
     data.cl <- datalist$group
@@ -158,3 +164,4 @@ exactTestafterTbT <- function(names, counts, group, sample_num = 10000){
                 counts = counts,  group = group))
 }
 
+}

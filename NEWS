@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.5.1
+------------------------
+
+  - 'do_TbT' function was deleted.
+  - 'exactTestafterTbT' function was deleted.
+  - 'MAplot' function was deleted.
+  - 'NBsample' function was deleted.
+
+
+
 CHANGES IN VERSION 1.3.2
 ------------------------
 
