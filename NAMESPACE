@@ -1,8 +1,30 @@
 import(methods)
-import(ROC)
-#import(DESeq)
-import(edgeR)
-import(samr)
+
+
+
+# import methods from ROC
+importFrom(ROC, rocdemo.sca)
+importFrom(ROC, AUC)
+
+
+
+# import methods from edgeR
+importFrom(edgeR, DGEList)
+importFrom(edgeR, calcNormFactors)
+importFrom(edgeR, estimateGLMCommonDisp)
+importFrom(edgeR, estimateGLMTrendedDisp)
+importFrom(edgeR, estimateGLMTagwiseDisp)
+importFrom(edgeR, estimateCommonDisp)
+importFrom(edgeR, estimateTagwiseDisp)
+importFrom(edgeR, exactTest)
+importFrom(edgeR, glmFit)
+importFrom(edgeR, glmLRT)
+importFrom(edgeR, topTags)
+
+
+
+# import methods from samr
+importFrom(samr, SAMseq)
 
 
 # import methods from baySeq
@@ -36,22 +58,22 @@ exportClasses(
 )
 
 export(
-  show.TCC,
-  names,
-  length,
-  "[",
-  TCC,
-  calcAUCValue,
-  calcNormFactors,
-  estimateDE,
-  filterLowCountGenes,
-  simulateReadCounts,
-  getNormalizedData,
-  getResult,
-  plotFCPseudocolor,
-  plot.TCC,
-  WAD,
-  ROKU,
-  clusterSample
+    show.TCC,
+    names,
+    length,
+    "[",
+    TCC,
+    calcAUCValue,
+    calcNormFactors,
+    estimateDE,
+    filterLowCountGenes,
+    simulateReadCounts,
+    getNormalizedData,
+    getResult,
+    plotFCPseudocolor,
+    plot.TCC,
+    WAD,
+    ROKU,
+    clusterSample
 )
 

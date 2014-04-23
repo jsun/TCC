@@ -21,10 +21,8 @@ identifying DEGs, depicting so-called M-A plot, and generating simulation data.
 
 To utilize this package, the count matrix coupled with label information
 should be stored to a \link{TCC-class} object using the \code{new} method.
-All functions, except for some legacy functions
-(i.e., \code{\link{NBsample}}, \code{\link{do_TbT}},
-\code{\link{exactTestafterTbT}}, and \code{\link{MAplot}} for RNA-seq data)
-and for two recently added functions (i.e., \code{\link{ROKU}} and
+All functions,
+except for two recently added functions (i.e., \code{\link{ROKU}} and
 \code{\link{WAD}}) for microarray data,
 used in this package require this \link{TCC-class} object.
 Using this object, the \code{\link{calcNormFactors}} function calculates
