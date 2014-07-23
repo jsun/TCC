@@ -1,42 +1,15 @@
 citHeader("Please cite appropriate references when you publish your results.")
 
-
 citEntry(
     entry = "article",
-    title = "Differential expression analysis for sequence count data",
-    author = "Anders S and Huber W",
-    journal = "Genome Biology",
-    volume = "11(10)",
-    pages = "R106",
-    year = 2010,
-    textVersion = "Anders S and Huber W. Differential expression analysis for sequence count data. Genome Biol. 2010, 11(10): R106"
-)
-
-
-citEntry(
-    entry = "article",
-    title = "The NBP negative binomial model for assessing differential gene expression from RNA-Seq",
-    author = "Di Y, Schafer DW, Cumbie JS and Chang JH",
-    journal = "Stat Appl Genet Mol Biol",
-    volume = "26(1)",
-    pages = 139-140,
-    year = 2010,
-    textVersion = "Di Y, Schafer DW, Cumbie JS, and Chang JH. The NBP negative binomial model for assessing differential gene expression from RNA-Seq. Stat Appl Genet Mol Biol. 2011, 10: art24"
-)
-
-
-citEntry(
-    entry = "article",
-    title = "baySeq: empirical Bayesian methods for identifying differential expression in sequence count data",
-    author = "Hardcastle TJ and Kelly KA",
+    title = "TCC: an R package for comparing tag count data with robust normalization strategies",
+    author = "Sun J, Nishiyama T, Shimizu K and Kadota K",
     journal = "BMC Bioinformatics",
-    volume = 11,
-    pages = 422,
-    year = 2010,
-    textVersion = "Hardcastle TJ and Kelly KA. baySeq: empirical Bayesian methods for identifying differential expression in sequence count data. BMC Bioinformatics 2010, 11: 422"
+    volume = 14,
+    pages = 219,
+    year = 2013,
+    textVersion = "Sun J, Nishiyama T, Shimizu K, and Kadota K. TCC: an R package for comparing tag count data with robust normalization strategies. BMC Bioinformatics 2013, 14: 219"
 )
-
-
 citEntry(
     entry = "article",
     title = "A normalization strategy for comparing tag count data",
@@ -48,19 +21,6 @@ citEntry(
     textVersion = "Kadota K, Nishiyama T, and Shimizu K. A normalization strategy for comparing tag count data. Algorithms Mol Biol. 2012, 7: 5"
 )
 
-
-citEntry(
-    entry = "article",
-    title = "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data",
-    author = "Robinson MD, McCarthy DJ and Smyth GK",
-    journal = "Bioinformatics",
-    volume = "26(1)",
-    pages = 139-140,
-    year = 2010,
-    textVersion = "Robinson MD, McCarthy DJ, and Smyth GK. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics 2010, 26(1): 139-140"
-)
-
-
 citEntry(
     entry = "article",
     title = "A scaling normalization method for differential expression analysis of RNA-seq data",
@@ -71,44 +31,6 @@ citEntry(
     year = 2010,
     textVersion = "Robinson MD and Oshlack A. A scaling normalization method for differential expression analysis of RNA-seq data. Genome Biol. 2010, 11: R25"
 )
-
-
-citEntry(
-    entry = "article",
-    title = "Small-sample estimation of negative binomial dispersion, with applications to SAGE data",
-    author = "Robinson MD and Smyth GK",
-    journal = "Biostatistics",
-    volume = 9,
-    pages = 321-332,
-    year = 2008,
-    textVersion = "Robinson MD and Smyth GK. Small-sample estimation of negative binomial dispersion, with applications to SAGE data. Biostatistics 2008, 9: 321-332"
-)
-
-
-citEntry(
-    entry = "article",
-    title = "TCC: an R package for comparing tag count data with robust normalization strategies",
-    author = "Sun J, Nishiyama T, Shimizu K and Kadota K",
-    journal = "BMC Bioinformatics",
-    volume = 14,
-    pages = 219,
-    year = 2013,
-    textVersion = "Sun J, Nishiyama T, Shimizu K, and Kadota K. TCC: an R package for comparing tag count data with robust normalization strategies. BMC Bioinformatics 2013, 14: 219"
-)
-
-
-citEntry(
-    entry = "article",
-    title = "Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation",
-    author = "McCarthy DJ, Chen Y and Smyth GK",
-    journal = "Nucleic Acids Research",
-    volume = 40,
-    pages = 4288-4297,
-    year = 2012,
-    textVersion = "McCarthy DJ, Chen Y and Smyth GK. Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research 2012, 40: 4288-4297"
-)
-
-
 citEntry(
     entry = "article",
     title = "A weighted average difference method for detecting differentially expressed genes from microarray data",
@@ -119,20 +41,16 @@ citEntry(
     year = 2008,
     textVersion = "Kadota K, Nakai Y, Shimizu K: A weighted average difference method for detecting differentially expressed genes from microarray data. Algorithms Mol Biol. 2008, 3: 8"
 )
-
-
 citEntry(
     entry = "article",
-    title = "ROKU: a novel method for identification of tissue-specific genes",
-    author = "Kadota K, Ye J, Nakai Y, Terada T, Shimizu K",
+    title = "baySeq: empirical Bayesian methods for identifying differential expression in sequence count data",
+    author = "Hardcastle TJ and Kelly KA",
     journal = "BMC Bioinformatics",
-    volume = 7,
-    pages = 294,
-    year = 2006,
-    textVersion = "Kadota K, Ye J, Nakai Y, Terada T, Shimizu K: ROKU: a novel method for identification of tissue-specific genes. BMC Bioinformatics 2006, 7: 294"
+    volume = 11,
+    pages = 422,
+    year = 2010,
+    textVersion = "Hardcastle TJ and Kelly KA. baySeq: empirical Bayesian methods for identifying differential expression in sequence count data. BMC Bioinformatics 2010, 11: 422"
 )
-
-
 citEntry(
     entry = "article",
     title = "Detection of genes with tissue-specific expression patterns using Akaike's Information Criterion (AIC) procedure",
@@ -143,8 +61,46 @@ citEntry(
     year = 2003,
     textVersion = "Kadota K, Nishimura SI, Bono H, Nakamura S, Hayashizaki Y, Okazaki Y, Takahashi K: Detection of genes with tissue-specific expression patterns using Akaike's Information Criterion (AIC) procedure. Physiol Genomics 2003, 12: 251-259"
 )
-
-
+citEntry(
+    entry = "article",
+    title = "Differential expression analysis for sequence count data",
+    author = "Anders S and Huber W",
+    journal = "Genome Biology",
+    volume = "11(10)",
+    pages = "R106",
+    year = 2010,
+    textVersion = "Anders S and Huber W. Differential expression analysis for sequence count data. Genome Biol. 2010, 11(10): R106"
+)
+citEntry(
+    entry = "article",
+    title = "Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation",
+    author = "McCarthy DJ, Chen Y and Smyth GK",
+    journal = "Nucleic Acids Research",
+    volume = 40,
+    pages = 4288-4297,
+    year = 2012,
+    textVersion = "McCarthy DJ, Chen Y and Smyth GK. Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation. Nucleic Acids Research 2012, 40: 4288-4297"
+)
+citEntry(
+    entry = "article",
+    title = "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data",
+    author = "Robinson MD, McCarthy DJ and Smyth GK",
+    journal = "Bioinformatics",
+    volume = "26(1)",
+    pages = 139-140,
+    year = 2010,
+    textVersion = "Robinson MD, McCarthy DJ, and Smyth GK. edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics 2010, 26(1): 139-140"
+)
+citEntry(
+    entry = "article",
+    title = "ROKU: a novel method for identification of tissue-specific genes",
+    author = "Kadota K, Ye J, Nakai Y, Terada T, Shimizu K",
+    journal = "BMC Bioinformatics",
+    volume = 7,
+    pages = 294,
+    year = 2006,
+    textVersion = "Kadota K, Ye J, Nakai Y, Terada T, Shimizu K: ROKU: a novel method for identification of tissue-specific genes. BMC Bioinformatics 2006, 7: 294"
+)
 citEntry(
     entry = "article",
     title = "Simple method for the detection of outliers",
@@ -155,5 +111,24 @@ citEntry(
     year = 1996,
     textVersion = "Ueda T. Simple method for the detection of outliers. Japanese J Appl Stat 1996, 25: 17-26"
 )
-
+citEntry(
+    entry = "article",
+    title = "Small-sample estimation of negative binomial dispersion, with applications to SAGE data",
+    author = "Robinson MD and Smyth GK",
+    journal = "Biostatistics",
+    volume = 9,
+    pages = 321-332,
+    year = 2008,
+    textVersion = "Robinson MD and Smyth GK. Small-sample estimation of negative binomial dispersion, with applications to SAGE data. Biostatistics 2008, 9: 321-332"
+)
+citEntry(
+    entry = "article",
+    title = "The NBP negative binomial model for assessing differential gene expression from RNA-Seq",
+    author = "Di Y, Schafer DW, Cumbie JS and Chang JH",
+    journal = "Stat Appl Genet Mol Biol",
+    volume = "26(1)",
+    pages = 139-140,
+    year = 2010,
+    textVersion = "Di Y, Schafer DW, Cumbie JS, and Chang JH. The NBP negative binomial model for assessing differential gene expression from RNA-Seq. Stat Appl Genet Mol Biol. 2011, 10: art24"
+)
 
