@@ -46,7 +46,9 @@
     y <- y[!is.na(y)]
     l <- length(y)
     y <- y[y != 0]
-    if (is.na(sd(y))) {
+    if (length(y) == 0) {
+        return (log2(l))
+    } else if (is.na(sd(y))) {
         return (0)
     } else if (sum(y) <= 0 || sd(y) == 0) {
         return (log2(l))
@@ -70,7 +72,9 @@
     y <- y[!is.na(y)]
     l <- length(y)
     y <- y[y != 0]
-    if (is.na(sd(y))) {
+    if (length(y) == 0) {
+      return (log2(l))
+    } else if (is.na(sd(y))) {
         return (0)
     } else if (sum(y) <= 0 || sd(y) == 0) {
         return (log2(l))
