@@ -84,7 +84,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                    samplesize = NULL,            # baySeq, SAMseq
                                    logged = NULL,                # WAD
                                    floor = NULL,                 # WAD
-                                   cl = NULL) {                  # baySeq
+                                   cl = NULL, ...) {             # baySeq
 ##
 ## Indentify DEGs from data with given method, i.e., 'test.method'.
 ##
@@ -128,6 +128,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                          paired = paired),
            "wad" = .self$.testByWad(logged = logged,
                                     floor = floor),
+           "yayoi" = .self$.testByYayoi(...),
            stop(paste("\nTCC::ERROR: The identifying method of ", 
                       test.method, " doesn't supported.\n"))
     )

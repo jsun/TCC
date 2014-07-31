@@ -12,7 +12,7 @@ The procedure can generally be described as the
 }
 \usage{
 \S4method{calcNormFactors}{TCC}(tcc, norm.method = NULL, test.method = NULL,
-                iteration = TRUE,  FDR = NULL, floorPDEG = 0.05, 
+                iteration = TRUE,  FDR = NULL, floorPDEG = NULL, 
                 increment = FALSE, ...)
 }
 \arguments{

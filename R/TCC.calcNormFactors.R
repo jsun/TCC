@@ -63,7 +63,7 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
                                        test.method = NULL,
                                        iteration = 1,
                                        FDR = NULL,
-                                       floorPDEG = 0.05,
+                                       floorPDEG = NULL,
                                        increment = FALSE,
                                        ...) {
 ## 
@@ -122,6 +122,16 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     if (test.method != "bayseq" && is.null(FDR)) {
         FDR <- 0.1
     }
+
+    ## Initialize 'floorPDEG' threshold.
+    if (is.null(floorPDEG)) {
+        if (test.method == "yayoi") {
+            floorPDEG <- 0.60
+        } else {
+            floorPDEG <- 0.05
+        }
+    }
+
     ## Initialize 'iteration'.
     if (iteration) {
         if (is.logical(iteration)) {
@@ -174,6 +184,7 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
                    #"ebseq" = .self$.testByEbseq(...),
                    "samseq" = .self$.testBySamseq(...),
                    "wad" = .self$.testByWad(...),
+                   "yayoi" = .self$.testByYayoi(norm = TRUE, ...),
                    stop(paste("\nTCC::ERROR: The identifying method of ", test.method, " doesn't supported.\n"))
             )
             ## Removing process.

@@ -2,7 +2,7 @@ setMethod(
     f = "calcNormFactors",
     signature(tcc = "TCC"),
     definition = function(tcc, norm.method = NULL, test.method = NULL, 
-                          iteration = TRUE, FDR = NULL, floorPDEG = 0.05,
+                          iteration = TRUE, FDR = NULL, floorPDEG = NULL,
                           increment = FALSE, ...) {
         obj <- tcc$copy()
         obj$calcNormFactors(norm.method = norm.method, 
@@ -21,13 +21,13 @@ estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
                        contrast = NULL, coef = NULL, 
                        comparison = NULL, cl = NULL,
                        samplesize = NULL,
-                       logged = NULL, floor = NULL) {
+                       logged = NULL, floor = NULL, ...) {
     obj <- tcc$copy()
     obj$estimateDE(test.method = test.method, FDR = FDR, paired = paired,
                    fit0 = fit0, fit1 = fit1, DESeq2.test = DESeq2.test,
                    design = design, contrast = contrast, coef = coef,
                    comparison = comparison, samplesize = samplesize,
-                   logged = logged, floor = floor, cl = cl)
+                   logged = logged, floor = floor, cl = cl, ...)
     return(obj)
 }
 

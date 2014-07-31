@@ -9,7 +9,8 @@ estimateDE(tcc, test.method, FDR, paired,
            contrast, coef,                  # for edgeR
            comparison, cl,                  # for baySeq
            samplesize,                      # for baySeq, SAMseq
-           logged, floor                    # for WAD
+           logged, floor,                   # for WAD
+           ...
 )
 }
 \description{
@@ -101,6 +102,8 @@ implemented in other R packages.
           values less than 1 are replaced by 1. Ignored if
           \code{logged = TRUE}.
           Ignored if \code{test.method} is not \code{"wad"}.}
+
+    \item{...}{further paramenters.}
 }
 \details{
 \code{estimaetDE} function is generally used after performing the
