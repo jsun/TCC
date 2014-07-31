@@ -34,6 +34,11 @@ YAYOI <- function(count = NULL,          # count data
     if (is.null(group))
         group <- 1:n.libs
 
+    if (unique(group) < 3) {
+        stop("TCC::ERROR: YAYOI requires the data with more than three groups.")
+    }
+
+
     ## normalize count data.
     if (is.null(norm.factors)) {
         tcc <- new("TCC", count, group)
@@ -68,7 +73,6 @@ YAYOI <- function(count = NULL,          # count data
         suppressMessages(d <- DESeq2::estimateDispersions(d))
         phi <- dispersions(d)
     }
-
     ## estimate means by DESeq approach.
     ##     if there more than one replicates for a tissues,
     ##     treate them as one replicate.
@@ -82,9 +86,8 @@ YAYOI <- function(count = NULL,          # count data
                    sum(group == ugroup[i])
     }
     nmcs <- t(apply(nmc, 1, sort))
-    mu <- rowMeans(as.matrix(nmcs[, -c(1:ceiling(upper.limit * n.libs / 2),
-          n.libs:(n.libs + 1 - ceiling(upper.limit * n.libs / 2)))]))
-
+    mu <- rowMeans(as.matrix(nmcs[, -c(1:(floor(upper.limit * n.libs / 2) + 1),
+          rev(n.libs:(n.libs + 1 - (floor(upper.limit * n.libs / 2) + 1))))]))
 
     ## sort normalized count data for calcualting probability.
     prob <- pnbinom(nmc, mu = mu, size = 1 / phi)
@@ -94,7 +97,6 @@ YAYOI <- function(count = NULL,          # count data
     yscore <- -log2(apply(prob, 1, min))
     yscore[is.infinite(yscore)] <- max(yscore[!is.infinite(yscore)]) + 0.1
     yscore[is.na(yscore)] <- 0                # no specific if error occurs
-
 
     ## create pattern matrix.
     expprof <- matrix(0, ncol = n.libs, nrow = n.tags)
