@@ -4,7 +4,7 @@ TCC$methods(.testBySamseq = function(...) {
 
 
 
-.testBySamseq.1 = function(samplesize = NULL) {
+.testBySamseq.1 <- function(samplesize = NULL) {
     c <- round(.self$getNormalizedData())
     s <- suppressMessages(samr::SAMseq(x = c, y = .self$group[, 1],
                 resp.type = "Two class unpaired",
@@ -19,7 +19,8 @@ TCC$methods(.testBySamseq = function(...) {
 
 
 
-.testBySamseq.1p = function(samplesize = NULL) {
+
+.testBySamseq.1p <- function(samplesize = NULL) {
     c <- round(.self$getNormalizedData())
     s <- suppressMessages(samr::SAMseq(x = c, y = .self$group[, 1],
                 resp.type = "Two class paired",
@@ -34,7 +35,7 @@ TCC$methods(.testBySamseq = function(...) {
 
 
 
-.testBySamseq.2 = function(samplesize = NULL) {
+.testBySamseq.2 <- function(samplesize = NULL) {
     c <- round(.self$getNormalizedData())
     s <- suppressMessages(samr::SAMseq(x = c, y = .self$group[, 1],
                 resp.type = "Multiclass",

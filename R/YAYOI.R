@@ -71,7 +71,7 @@ YAYOI <- function(count = NULL,          # count data
              )
         suppressMessages(DESeq2::sizeFactors(d) <- ef)
         suppressMessages(d <- DESeq2::estimateDispersions(d))
-        phi <- dispersions(d)
+        phi <- DESeq2::dispersions(d)
     }
     ## estimate means by DESeq approach.
     ##     if there more than one replicates for a tissues,
