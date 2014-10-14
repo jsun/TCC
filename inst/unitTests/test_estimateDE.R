@@ -149,7 +149,7 @@ test_estimateDE_baySeq_1 <- function() {
     set.seed(1)
     cD <- getPriors.NB(cD, samplesize = 10,
                        estimation = "QL", cl = NULL)
-    cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
+    cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
     tmp <- topCounts(cD, group = "DE", number = nrow(tcc$count))
     tmp <- tmp[rownames(tcc$count), ]
     p <- 1 - tmp$Likelihood
@@ -222,7 +222,7 @@ test_estimateDE_baySeq_2 <- function() {
     set.seed(1)
     cD <- getPriors.NB(cD, samplesize = 10,
                        estimation = "QL", cl = NULL)
-    cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
+    cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
     tmp <- topCounts(cD, group = "DE", number = nrow(tcc$count))
     tmp <- tmp[rownames(tcc$count), ]
     p <- 1 - tmp$Likelihood
@@ -253,7 +253,7 @@ test_estimateDE_baySeq_3 <- function() {
     set.seed(1)
     cD <- getPriors.NB(cD, samplesize = 10,
                        estimation = "QL", cl = NULL)
-    cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
+    cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
     tmp <- topCounts(cD, group = "GROUP", number = nrow(tcc$count))
     tmp <- tmp[rownames(tcc$count), ]
     p <- 1 - tmp$Likelihood
@@ -503,9 +503,9 @@ test_estimateDE_crossvalidate <- function() {
     for (i in 1:length(ty)) {
         for (j in 1:length(pk)) {
             if (av[j, i]) {
-                if (ty[i] == "UnRepTwoGroup")
+                if (ty[i] == "TG_N")
                     x <- simulateReadCounts(Ngene = 1000, replicates = c(1, 1))
-                else if (ty[i] == "TwoGroup" || ty[i] == "PairedTwoGroup")
+                else if (ty[i] == "TG_Y" || ty[i] == "TG_N_P")
                     x <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3))
                 else 
                     x <- simulateReadCounts(Ngene = 1000, replicates = c(3, 3, 3))

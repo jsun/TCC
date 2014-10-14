@@ -549,6 +549,7 @@ library(TCC)
 data(hypoData)
 samplesize <- 100
 group <- c(1, 1, 1, 2, 2, 2)
+floorPDEG <- 0.05
 ### STEP 1 ###
 d <- DGEList(count = hypoData, group = group)
 d <- calcNormFactors(d)
@@ -559,9 +560,14 @@ cD <- new("countData", data = hypoData, replicates = group,
          groups = list(NDE = rep(1, length = length(group)), DE = group),
          libsizes = colSums(hypoData) * norm.factors)
 cD <- getPriors.NB(cD, samplesize = samplesize, estimation = "QL", cl = NULL)
-cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
-is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) < 
-                     (nrow(hypoData) * cD@estProps[2]))
+cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
+if (length(cD@estProps) > 0) {
+  is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) < 
+                       (nrow(hypoData) * cD@estProps[2]))
+} else {
+  is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) < 
+                       (nrow(hypoData) * floorPDEG))
+}
 ### STEP 3 ###
 d <- DGEList(count = hypoData[!is.DEG, ], group = group)
 d <- calcNormFactors(d)
@@ -2759,7 +2765,7 @@ cD <- new("countData", data = tcc$count, replicates = group,
           libsizes = effective.libsizes, groups = groups)
 cD <- getPriors.NB(cD, samplesize = samplesize, 
                    estimation = "QL", cl = NULL)
-cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
+cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
 tmp <- topCounts(cD, group = "DE", number = nrow(tcc$count))
 tmp <- tmp[rownames(tcc$count), ]
 p.value <- 1 - tmp$Likelihood

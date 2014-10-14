@@ -93,7 +93,7 @@ test_calcNormFactors_DEGESTbT <- function() {
              libsizes = colSums(hypoData) * nf.1)
     set.seed(1)
     cD <- getPriors.NB(cD, samplesize = 10, estimation = "QL", cl = NULL)
-    cD <- getLikelihoods.NB(cD, pET = "BIC", cl = NULL)
+    cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
     is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) <
                          (nrow(hypoData) * cD@estProps[2]))
     d <- DGEList(count = hypoData[!is.DEG, ], group = group)
