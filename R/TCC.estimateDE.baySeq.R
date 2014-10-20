@@ -60,7 +60,7 @@ TCC$methods(.testByBayseq = function(...) {
     private$stat$rank <<- rank(- d@posteriors[, "DE"])
     private$stat$likelihood <<- stat.bayseq$Likelihood
     private$stat$p.value <<- 1 - stat.bayseq$Likelihood
-    private$stat$q.value <<- stat.bayseq[, "FDR.NA"]
+    private$stat$q.value <<- stat.bayseq[, "FDR.DE"]
     if (length(d@estProps) > 0) {
         private$estimatedDEG <<- as.numeric(.self$private$stat$rank < 
                                       (nrow(.self$count) * d@estProps[2]))
