@@ -53,7 +53,8 @@ implemented in other R packages.
     \item{design}{the argument is used in edgeR, voom (limma) and DESeq2.
           For edgeR and voom, it should be the numeric matrix giving the
           design matrix for the generalized linear model.
-          See the \code{\link[edgeR]{glmFit}} function in edgeR for details.
+          See the \code{\link[edgeR]{glmFit}} function in edgeR or
+          the \code{\link[limma]{lmFit}} function in limma for details.
           For DESeq2, it should be a formula specifying the design of the
           experiment. See the \code{\link[DESeq2]{DESeqDataSet}} function
           in DESeq2 for details.}
@@ -71,7 +72,7 @@ implemented in other R packages.
           See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
 
     \item{group}{numeric or character string identifying the columns in
-          the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
+          the \code{tcc$group} for analysis. See the \code{group} argument
           of \code{\link[baySeq]{topCounts}} function in baySeq for details.}
 
     \item{cl}{\code{snow} object when using multi processors if
@@ -122,7 +123,7 @@ packages are internally called according to the specified
           \code{\link[edgeR]{exactTest}} are internally called.\cr
           If the GLM approach is used,
           \code{\link[edgeR]{estimateGLMCommonDisp}},
-          \code{\link[edgeR]{estimateGLMTrendedDisp}},
+          \code{\link[edgeR]{estimateGLMTrendedDisp}},\cr
           \code{\link[edgeR]{estimateGLMTagwiseDisp}},
           \code{\link[edgeR]{glmFit}}, and
           \code{\link[edgeR]{glmLRT}}
@@ -181,7 +182,7 @@ A \code{\link{TCC-class}} object containing following fields:
           based on the \eqn{p}-values using the \code{p.adjust} function
           with default parameter settings.}
     \item{stat$testStat}{numeric vector of test statistics if
-          \code{test.method = "samseq"} or \code{"wad"} is specified.}
+          \code{"wad"} is specified.}
     \item{stat$rank}{gene rank in order of the \eqn{p}-values or
           test statistics.}
     \item{estimatedDEG}{numeric vector consisting of 0 or 1

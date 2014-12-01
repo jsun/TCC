@@ -10,9 +10,10 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
                             groups = list(NDE = rep(1, nrow(.self$group)),
                                           DE = .self$group[, 1]),
                             libsizes = .self$norm.factors * colSums(.self$count)))
-    suppressMessages(capture.output(d <- baySeq::getPriors.NB(d,
+    suppressMessages(capture.output(d <- baySeq::getPriors.NB(d, estimation = "QL",
                                     samplesize = samplesize, cl = cl)))
-    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, cl = cl)))
+    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
+                                    cl = cl)))
     res <- topCounts(d, group = "DE", number = nrow(.self$count))
     res <- res[order(res$rowID), ]
     private$stat$p.value <<- res$FWER.DE
@@ -36,9 +37,10 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
              replicates = .self$group[, 1],
              groups = grps,
              libsizes = colSums(.self$count) * .self$norm.factors))
-    suppressMessages(capture.output(d <- baySeq::getPriors.NB(d, 
+    suppressMessages(capture.output(d <- baySeq::getPriors.NB(d, estimation = "QL",
                                     samplesize = samplesize, cl = cl)))
-    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, cl = cl)))
+    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
+                                    cl = cl)))
     res <- topCounts(d, group = g, number = nrow(.self$count))
     res <- res[order(res$rowID), ]
     private$stat$p.value <<- res[, paste0("FWER.", g)]
@@ -62,7 +64,8 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
               libsizes = cbind(libsize_1, libsize_2))
     suppressMessages(capture.output(d <- baySeq::getPriors(d,
                                     samplesize = samplesize, cl = cl)))
-    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, cl = cl)))
+    suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
+                                    nullData = TRUE, cl = cl)))
     res <- topCounts(d, group = "NDE", number = nrow(.self$count))
     res <- res[order(res$rowID), ]
     private$stat$p.value <<- res$FWER.NDE

@@ -104,7 +104,7 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
         if (is.null(test.method)) test.method <- "edger"
     }
     ## Initialize 'FDR' threshold.
-    if (test.method != "bayseq" && is.null(FDR)) {
+    if (is.null(FDR)) {
         FDR <- 0.1
     }
     ## Initialize 'floorPDEG' threshold.

@@ -550,6 +550,7 @@ data(hypoData)
 samplesize <- 100
 group <- c(1, 1, 1, 2, 2, 2)
 floorPDEG <- 0.05
+FDR <- 0.1
 ### STEP 1 ###
 d <- DGEList(count = hypoData, group = group)
 d <- calcNormFactors(d)
@@ -557,16 +558,19 @@ norm.factors <- d$samples$norm.factors
 norm.factors <- norm.factors / mean(norm.factors)
 ### STEP 2 ###
 cD <- new("countData", data = hypoData, replicates = group,
-         groups = list(NDE = rep(1, length = length(group)), DE = group),
-         libsizes = colSums(hypoData) * norm.factors)
+          groups = list(NDE = rep(1, length = length(group)), DE = group),
+          libsizes = colSums(hypoData) * norm.factors)
 cD <- getPriors.NB(cD, samplesize = samplesize, estimation = "QL", cl = NULL)
 cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
-if (length(cD@estProps) > 0) {
-  is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) < 
-                       (nrow(hypoData) * cD@estProps[2]))
+result <- topCounts(cD, group = "DE", number = nrow(hypoData))
+result <- result[order(result$rowID), ]
+pval <- result$FWER.DE
+qval <- result$FDR.DE
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(-cD@posteriors[, "DE"]) < 
-                       (nrow(hypoData) * floorPDEG))
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <= 
+                       nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
 d <- DGEList(count = hypoData[!is.DEG, ], group = group)
@@ -630,11 +634,12 @@ d <- calcNormFactors(d)
 d <- estimateCommonDisp(d)
 d <- estimateTagwiseDisp(d)
 result <- exactTest(d)
-q.value <- p.adjust(result$table$PValue, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$table$PValue, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
@@ -712,11 +717,12 @@ cds <- estimateDispersions(cds)
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 result$padj[is.na(result$padj)] <- 1
-q.value <- result$padj
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$pval
+qval <- result$padj
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$pval, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
@@ -774,11 +780,12 @@ dds <- estimateDispersions(dds)
 dds <- nbinomLRT(dds, reduced = ~ 1)
 result <- results(dds)
 result$pvalue[is.na(result$pvalue)] <- 1
-q.value <- p.adjust(result$pvalue, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$pvalue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$pvalue, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
@@ -853,17 +860,19 @@ d <- calcNormFactors(d)
 ### STEP 2 ###
 d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
 result <- exactTest(d)
-q.value <- p.adjust(result$table$PValue, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$table$PValue, ties.method = "min") <=
-  nrow(hypoData) * floorPDEG)
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
 d <- DGEList(counts = hypoData[!is.DEG, c(1, 4)], group = group)
 d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors * colSums(hypoData[!is.DEG, c(1, 4)]) / colSums(hypoData[, c(1, 4)])
+norm.factors <- d$samples$norm.factors * 
+                colSums(hypoData[!is.DEG, c(1, 4)]) / colSums(hypoData[, c(1, 4)])
 norm.factors <- norm.factors / mean(norm.factors)
 norm.factors
 @
@@ -905,12 +914,13 @@ cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 result$padj[is.na(result$padj)] <- 1
-q.value <- result$padj
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$pval
+qval <- result$padj
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$pval, ties.method = "min") <=
-  nrow(hypoData) * floorPDEG)
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
 cds <- newCountDataSet(hypoData[!is.DEG, c(1, 4)], group)
@@ -999,12 +1009,12 @@ d <- estimateGLMTrendedDisp(d, design)
 d <- estimateGLMTagwiseDisp(d, design)
 fit <- glmFit(d, design)
 lrt <- glmLRT(fit, coef = coef)
-result <- topTags(lrt, n = nrow(hypoData))
-result <- result$table[rownames(hypoData), ]
-if (sum(result$FDR < FDR) > (floorPDEG * nrow(hypoData))){
-  is.DEG <- as.logical(result$FDR < FDR)
+pval <- lrt$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))){
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$table$PValue,ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
@@ -1063,13 +1073,13 @@ cds <- estimateSizeFactors(cds)
 cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 reduced.model <- fitNbinomGLMs(cds, fit0)
 full.model <- fitNbinomGLMs(cds, fit1)
-p.value <- nbinomGLMTest(full.model, reduced.model)
-p.value[is.na(p.value)] <- 1
-q.value <- p.adjust(p.value, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- nbinomGLMTest(full.model, reduced.model)
+pval[is.na(pval)] <- 1
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(p.value, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
@@ -1202,10 +1212,12 @@ fit <- glmFit(d, design)
 lrt <- glmLRT(fit, coef = coef)
 result <- topTags(lrt, n = nrow(hypoData_mg))
 result <- result$table[rownames(hypoData_mg), ]
-if (sum(result$FDR < FDR) > (floorPDEG * nrow(hypoData_mg))) {
-  is.DEG <- as.logical(result$FDR < FDR)
+pval <- lrt$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData_mg))) {
+  is.DEG <- as.logical(qval < FDR)
 } else  {
-  is.DEG <- as.logical(rank(result$PValue, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData_mg) * floorPDEG)
 }
 ### STEP 3 ###
@@ -1281,13 +1293,13 @@ cds <- estimateSizeFactors(cds)
 cds <- estimateDispersions(cds)
 reduced.model <- fitNbinomGLMs(cds, fit0)
 full.model <- fitNbinomGLMs(cds, fit1)
-p.value <- nbinomGLMTest(full.model, reduced.model)
-p.value[is.na(p.value)] <- 1
-q.value <- p.adjust(p.value, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData_mg))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- nbinomGLMTest(full.model, reduced.model)
+pval[is.na(pval)] <- 1
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData_mg))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(p.value, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData_mg) * floorPDEG)
 }
 ### STEP 3 ###
@@ -1401,11 +1413,12 @@ d <- calcNormFactors(d)
 d <- estimateCommonDisp(d)
 d <- estimateTagwiseDisp(d)
 result <- exactTest(d)
-q.value <- p.adjust(result$table$PValue, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(order(rank(result$table$PValue)) <= 
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <= 
                        nrow(hypoData) * floorPDEG)
 }
 ###  Step 3  ###
@@ -1515,11 +1528,12 @@ cds <- estimateDispersions(cds)
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 result$padj[is.na(result$padj)] <- 1
-q.value <- result$padj
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$pval
+qval <- result$padj
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$pval, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ###  Step 3  ###
@@ -1623,11 +1637,12 @@ cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 result <- nbinomTest(cds, 1, 2)
 result$pval[is.na(result$pval)] <- 1
 result$padj[is.na(result$padj)] <- 1
-q.value <- result$padj
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- result$pval
+qval <- result$padj
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$pval, ties.method = "min") <=
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
                        nrow(hypoData) * floorPDEG)
 }
 ###  Step 3  ###
@@ -1740,13 +1755,13 @@ d <- estimateGLMTrendedDisp(d, design)
 d <- estimateGLMTagwiseDisp(d, design)
 fit <- glmFit(d, design)
 lrt <- glmLRT(fit, coef = coef)
-result <- topTags(lrt, n = nrow(hypoData))
-result <- result$table[rownames(hypoData), ]
-if (sum(result$FDR < FDR) > (floorPDEG * nrow(hypoData))){
-  is.DEG <- as.logical(result$FDR < FDR)
+pval <- lrt$table$PValue
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))){
+  is.DEG <- as.logical(qval < FDR)
 } else {
-  is.DEG <- as.logical(rank(result$table$PValue,ties.method = "min") <=
-  nrow(hypoData) * floorPDEG)
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
 d <- DGEList(counts = hypoData[!is.DEG, ], group = group)
@@ -1869,14 +1884,14 @@ cds <- estimateSizeFactors(cds)
 cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
 reduced.model <- fitNbinomGLMs(cds, fit0)
 full.model <- fitNbinomGLMs(cds, fit1)
-p.value <- nbinomGLMTest(full.model, reduced.model)
-p.value[is.na(p.value)] <- 1
-q.value <- p.adjust(p.value, method = "BH")
-if (sum(q.value < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(q.value < FDR)
+pval <- nbinomGLMTest(full.model, reduced.model)
+pval[is.na(pval)] <- 1
+qval <- p.adjust(pval, method = "BH")
+if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
+  is.DEG <- as.logical(qval < FDR)
 } else {
-is.DEG <- as.logical(rank(p.value, ties.method = "min") <=
-  nrow(hypoData) * floorPDEG)
+  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
+                       nrow(hypoData) * floorPDEG)
 }
 ### STEP 3 ###
 cds <- newCountDataSet(hypoData[!is.DEG, ], group)
