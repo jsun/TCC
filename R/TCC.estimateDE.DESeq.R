@@ -1,212 +1,161 @@
-TCC$methods(.testByDeseq = function(fit1 = NULL, fit0 = NULL,
-                                    paired = NULL,...) {
+TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
+                                    paired = NULL, ... ) {
 
 
 
 
 
-.testByDeseq.1 = function() {
+.testByDeseq.1 = function(full, reduced) {
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
+
+    if (is.null(full) && is.null(reduced)) {
+        suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
+                                              conditions = .self$group[, 1]))
+        sizeFactors(d) <- sz
+        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+            suppressMessages(d <- estimateDispersions(d, method = "blind",
+                                                  sharingMode = "fit-only"))
+        } else {
+            suppressMessages(d <- estimateDispersions(d))
+        }
+        suppressMessages(d <- nbinomTest(d, levels(.self$group[, 1])[1],
+                                            levels(.self$group[, 1])[2]))
+        p <- d$pval
+    } else {
+        suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
+                                              conditions = .self$group[, 1]))
+        sizeFactors(d) <- sz
+        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+            suppressMessages(d <- estimateDispersions(d, method = "blind",
+                                                  sharingMode = "fit-only"))
+        } else {
+            suppressMessages(d <- estimateDispersions(d))
+        }
+        if (is.na(match("count", as.character(full))))
+            full <- as.formula(paste(c("count", as.character(full)), collapse=""))
+        if (is.na(match("count", as.character(reduced))))
+            reduced <- as.formula(paste(c("count", as.character(reduced)), collapse=""))
+        capture.output(f.model <- fitNbinomGLMs(d, full))
+        capture.output(r.model <- fitNbinomGLMs(d, reduced))
+        p <- nbinomGLMTest(f.model, r.model)
+    }
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$q.value <<- p.adjust(p, method = "BH")
+    private$stat$rank <<- rank(p)
+}
+
+
+
+
+
+.testByDeseq.2 = function(full, reduced) {
+    if (is.null(full)) full <- formula(~ condition) 
+    if (is.null(reduced)) reduced <- formula(~ 1)
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group[, 1]))
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
     sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
-    if (min(as.numeric(table(.self$group[, 1]))) == 1) {
-        ## Single replicates
-        e <- try(suppressMessages(d <- estimateDispersions(d, 
-                     method = "blind", sharingMode = "fit-only")), 
-                 silent = TRUE)
-        if (class(e) == "try-error") {
-             message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-             message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-             suppressMessages(d <- estimateDispersions(d, 
-                      method = "blind", sharingMode = "fit-only",
-                      fitType = "local"))
-        }
+    if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+        suppressMessages(d <- estimateDispersions(d, method = "blind",
+                                                  sharingMode = "fit-only"))
     } else {
-        ## Multiple replicates
-        e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
-        if (class(e) == "try-error") {
-            message("TCC::WARN: 'estimateDispersions' with method=\"pooled\" in DESeq could not be performed.")
-            message("TCC::WARN: 'estimateDispersions' with method=\"blind\" in DESeq was used instead.")
-            e <- try(suppressMessages(d <- estimateDispersions(d, 
-                         method = "blind", sharingMode = "fit-only")), 
-                     silent = TRUE)
-            ## try local mode if defaul occurs error
-            if (class(e) == "try-error") {
-                message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-                message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-                suppressMessages(d <- estimateDispersions(d, 
-                         method = "blind", sharingMode = "fit-only", 
-                         fitType = "local"))
-            }
-        }
+        suppressMessages(d <- estimateDispersions(d))
     }
-    ug <- unique(.self$group[, 1])
-    suppressMessages(d <- nbinomTest(d, ug[1], ug[2]))
-    d$pval[is.na(d$pval)] <- 1
-    d$padj[is.na(d$padj)] <- 1
-    private$stat$p.value <<- d$pval
-    private$stat$q.value <<- d$padj
-    private$stat$rank <<- rank(d$pval)
+    if (is.na(match("count", as.character(full))))
+        full <- as.formula(paste(c("count", as.character(full)), collapse = ""))
+    if (is.na(match("count", as.character(reduced))))
+        reduced <- as.formula(paste(c("count", as.character(reduced)), collapse = ""))
+    capture.output(f.model <- fitNbinomGLMs(d, full))
+    capture.output(r.model <- fitNbinomGLMs(d, reduced))
+    p <- nbinomGLMTest(f.model, r.model)
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$q.value <<- p.adjust(p, method = "BH")
+    private$stat$rank <<- rank(p)
 }
 
 
 
 
 
-.testByDeseq.2 = function(fit1 = NULL, fit0 = NULL) {
-    suppressMessages(d <- newCountDataSet(countData = round(count), 
-                                              conditions = group[, 1]))
-    ef.libsizes <- .self$norm.factors * colSums(.self$count)
-    sz <- ef.libsizes / mean(ef.libsizes)
-    sizeFactors(d) <- sz
-    if (min(as.numeric(table(.self$group[, 1]))) == 1) {
-        ## single replicates
-        e <- try(suppressMessages(d <- estimateDispersions(d, 
-                      method = "blind", sharingMode = "fit-only")), 
-                 silent = TRUE)
-        if (class(e) == "try-error") {
-             message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-             message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-             suppressMessages(d <- estimateDispersions(d, 
-                      method = "blind", sharingMode = "fit-only", 
-                      fitType = "local"))
-        }
-    } else { 
-        ## Multiple replicates
-        e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
-        if (class(e) == "try-error") {
-            message("TCC::WARN: 'estimateDispersions' with method=\"pooled\" in DESeq could not be performed.")
-            message("TCC::WARN: 'estimateDispersions' with method=\"blind\" in DESeq was used instead.")
-            e <- try(suppressMessages(d <- estimateDispersions(d, 
-                        method = "blind", sharingMode = "fit-only")), 
-                     silent = TRUE)
-            ## try local mode if detaul occurs error
-            if (class(e) == "try-error") {
-                message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-                message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-                suppressMessages(d <- estimateDispersions(d, 
-                         method = "blind", sharingMode = "fit-only", 
-                         fitType = "local"))
-            }
-        }
-    }
-    ## GLM for multiple group comparison.
-    if (is.null(fit1) && is.null(fit0)) {
-        fit1 <- count ~ condition
-        fit0 <- count ~ 1
-    }
-    if (is.null(fit0))
-        stop("TCC::ERROR: Need the formula('fit0') to create reduced model regresses for GLM.")
-    if (is.null(fit1))
-        stop("TCC::ERROR: Need the formula('fit1') to create full model regresses for GLM.")
-    capture.output(f0 <- fitNbinomGLMs(d, fit0))
-    capture.output(f1 <- fitNbinomGLMs(d, fit1))
-    private$stat$p.value <<- nbinomGLMTest(f1, f0)
-    private$stat$p.value[is.na(private$stat$p.value)] <<- 1
-    private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
-    private$stat$rank <<- rank(private$stat$p.value)
-}
-
-
-
-
-
-.testByDeseq.3 = function(fit1 = NULL, fit0 = NULL) {
-    suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
-                                              conditions = .self$group))
-    ef.libsizes <- .self$norm.factors * colSums(.self$count)
-    sz <- ef.libsizes / mean(ef.libsizes)
-    sizeFactors(d) <- sz
-    ## try default
-    e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
-    ## try blind method
-    if (class(e) == "try-error") {
-        message("TCC::WARN: 'estimateDispersions' with method=\"pooled\" in DESeq could not be performed.")
-        message("TCC::WARN: 'estimateDispersions' with method=\"blind\" in DESeq was used instead.")
-        e <- try(suppressMessages(d <- estimateDispersions(d, 
-                                  method = "blind", sharingMode = "fit-only")), 
-                     silent = TRUE)
-        ## try local mode
-        if (class(e) == "try-error") {
-            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-            suppressMessages(d <- estimateDispersions(d, 
-                             method = "blind", sharingMode = "fit-only", 
-                             fitType = "local"))
-        }
-    }
-    if (is.null(fit0))
-        stop("TCC::ERROR: Need the formula('fit0') to create reduced model regresses for GLM.")
-    if (is.null(fit1))
-        stop("TCC::ERROR: Need the formula('fit1') to create full model regresses for GLM.")
-    capture.output(f0 <- fitNbinomGLMs(d, fit0))
-    capture.output(f1 <- fitNbinomGLMs(d, fit1))
-    private$stat$p.value <<- nbinomGLMTest(f1, f0)
-    private$stat$p.value[is.na(private$stat$p.value)] <<- 1
-    private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
-    private$stat$rank <<- rank(private$stat$p.value)
-}
-
-
-
-
-
-.testByDeseq.4 <- function(fit1 = NULL, fit0 = NULL) {
+.testByDeseq.3 = function(full, reduced) {
+    if (is.null(full)) full <- as.formula(paste("~",
+                               paste(colnames(.self$group), collapse = "+"))) 
+    if (is.null(reduced)) reduced <- formula(~ 1)
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                           conditions = .self$group))
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
     sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
-    ## try default
-    e <- try(suppressMessages(d <- estimateDispersions(d)), silent = TRUE)
-    ## try blind method
-    if (class(e) == "try-error") {
-        message("TCC::WARN: 'estimateDispersions' with method=\"pooled\" in DESeq could not be performed.")
-        message("TCC::WARN: 'estimateDispersions' with method=\"blind\" in DESeq was used instead.")
-        e <- try(suppressMessages(d <- estimateDispersions(d, 
-                                  method = "blind", sharingMode = "fit-only")), 
-                     silent = TRUE)
-        ## try local mode
-        if (class(e) == "try-error") {
-            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"fit-only\" in DESeq could not be performed.")
-            message("TCC::WARN: 'estimateDispersions' with sharingMode=\"local\" in DESeq was used instead.")
-            suppressMessages(d <- estimateDispersions(d, 
-                             method = "blind", sharingMode = "fit-only", 
-                             fitType = "local"))
-        }
+    gtags <- apply(.self$group, 1, paste, collapse = "")
+    if (length(unique(gtags)) == length(gtags)) {
+        suppressMessages(d <- estimateDispersions(d, method = "blind",
+                                                  sharingMode = "fit-only"))
+    } else {
+        suppressMessages(d <- estimateDispersions(d))
     }
-    if (is.null(fit0)) {
-        fit0 <- paste("count ~ ", colnames(.self$group)[-1], sep = "")
-    }
-    if (is.null(fit1)) {
-        fit1 <- paste("count ~ ",
-                      paste(colnames(.self$group), collapse = " + "),
-                      sep = "")
-    }
-    capture.output(f0 <- fitNbinomGLMs(d, eval(parse(text = fit0))))
-    capture.output(f1 <- fitNbinomGLMs(d, eval(parse(text = fit1))))
-    private$stat$p.value <<- nbinomGLMTest(f1, f0)
-    private$stat$p.value[is.na(private$stat$p.value)] <<- 1
-    private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
-    private$stat$rank <<- rank(private$stat$p.value)
+    if (is.na(match("count", as.character(full))))
+        full <- as.formula(paste(c("count", as.character(full)), collapse=""))
+    if (is.na(match("count", as.character(reduced))))
+        reduced <- as.formula(paste(c("count", as.character(reduced)), collapse=""))
+    capture.output(f.model <- fitNbinomGLMs(d, full))
+    capture.output(r.model <- fitNbinomGLMs(d, reduced))
+    p <- nbinomGLMTest(f.model, r.model)
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$q.value <<- p.adjust(p, method = "BH")
+    private$stat$rank <<- rank(p)
 }
 
 
 
 
 
-##
-## main process
-##
+
+
+.testByDeseq.4 <- function(full, reduced) {
+    if (is.null(full)) full <- as.formula(paste("~",
+                               paste(colnames(.self$group), collapse = "+"))) 
+    if (is.null(reduced)) reduced <- as.formula(paste("~", colnames(.self$group)[2]))
+    suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
+                                          conditions = .self$group))
+    ef.libsizes <- .self$norm.factors * colSums(.self$count)
+    sz <- ef.libsizes / mean(ef.libsizes)
+    sizeFactors(d) <- sz
+    gtags <- apply(.self$group, 1, paste, collapse = "")
+    if (length(unique(gtags)) == length(gtags)) {
+        suppressMessages(d <- estimateDispersions(d, method = "blind",
+                                                  sharingMode = "fit-only"))
+    } else {
+        suppressMessages(d <- estimateDispersions(d))
+    }
+    if (is.na(match("count", as.character(full))))
+        full <- as.formula(paste(c("count", as.character(full)), collapse = ""))
+    if (is.na(match("count", as.character(reduced))))
+        reduced <- as.formula(paste(c("count", as.character(reduced)), collapse = ""))
+    capture.output(f.model <- fitNbinomGLMs(d, full))
+    capture.output(r.model <- fitNbinomGLMs(d, reduced))
+    p <- nbinomGLMTest(f.model, r.model)
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$q.value <<- p.adjust(p, method = "BH")
+    private$stat$rank <<- rank(p)
+}
+
+
+
+
+
 test.approach <- .self$.testApproach(paired = paired)
 
 switch(test.approach,
-    "1" = .testByDeseq.1(),
-    "2" = .testByDeseq.2(fit1 = fit1, fit0 = fit0),
-    "3" = .testByDeseq.3(fit1 = fit1, fit0 = fit0),
-    "4" = .testByDeseq.4(fit1 = fit1, fit0 = fit0),
+    "1" = .testByDeseq.1(full = full, reduced = reduced),
+    "2" = .testByDeseq.2(full = full, reduced = reduced),
+    "3" = .testByDeseq.3(full = full, reduced = reduced),
+    "4" = .testByDeseq.4(full = full, reduced = reduced),
     stop("TCC::ERROR: TCC does not support such identification strategy.")
 )
 

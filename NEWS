@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.7.5
+------------------------
+  - rewrite the R code.
+  - 'fit0' and 'fit1' arguments were changed to 'full' and 'reduced',
+    'DESeq.test' arguments were deleted.
+  - 'voom' in limma package wa added for DEG identification.
+  - the 'test.method' for the comparison of paired two-group can be 
+    choosed from 'edger', 'deseq', 'deseq2', 'bayseq' and 'voom'.
+
 CHANGES IN VERSION 1.5.3
 ------------------------
 

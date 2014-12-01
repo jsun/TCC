@@ -30,7 +30,7 @@ TCC$methods(.normByDeseq = function(x){
                                               conditions = group))
     }
     suppressMessages(d <- DESeq::estimateSizeFactors(d))
-    return(sizeFactors(d) / colSums(x))
+    return(DESeq::sizeFactors(d) / colSums(x))
 })
 
 
@@ -43,10 +43,7 @@ TCC$methods(.normByDeseq2 = function(x){
 ## Since 'estimateSizeFactors' outputs size factors, we convert size factor
 ## to normalization factors before return factors.
 ##
-    dgroup <- colnames(.self$group)
-    design <- formula(eval(parse(text =
-                paste("~", paste(dgroup, collapse = " + "), sep = " ")
-              )))
+    design <- formula(as.formula(paste("~", paste(colnames(.self$group), collapse = "+"))))
     suppressMessages(d <- DESeq2::DESeqDataSetFromMatrix(
                                       countData = round(x), 
                                       colData = .self$group,
@@ -95,41 +92,24 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
 
     ## Initialize 'start points' of DEGES normlization.
     if ((increment == FALSE) || 
-        (increment == TRUE && private$normalized == FALSE)) {
+        (increment == TRUE && .self$private$normalized == FALSE)) {
         DEGES$iteration <<- 0
     }
-    ## Initialize 'norm.method'.
-    if (is.null(norm.method)) {
-        if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1)) 
-            norm.method = "deseq"
-        else 
-            norm.method = "tmm"
-    }
-    if (norm.method == "edger") {
-        norm.method <- "tmm" 
-    }
-    ## Initialize 'test.method'.
-    add.args <- list(...)
-    if (is.null(test.method)) {
-        if (!is.null(add.args$paired) && add.args$paired)
-            test.method = "edger"
-        else if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1)) 
-            test.method = "deseq"
-        else 
-            test.method = "edger"
+    ## Initialize 'norm.method' an 'test.method'.
+    if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1))  {
+        if (is.null(norm.method)) norm.method <- "deseq"
+        if (is.null(test.method)) test.method <- "deseq"
+    } else {
+        if (is.null(norm.method)) norm.method <- "tmm"
+        if (is.null(test.method)) test.method <- "edger"
     }
     ## Initialize 'FDR' threshold.
     if (test.method != "bayseq" && is.null(FDR)) {
         FDR <- 0.1
     }
-
     ## Initialize 'floorPDEG' threshold.
     if (is.null(floorPDEG)) {
-        if (test.method == "yayoi") {
-            floorPDEG <- 0.60
-        } else {
             floorPDEG <- 0.05
-        }
     }
 
     ## Initialize 'iteration'.
@@ -180,11 +160,10 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
                    "deseq" = .self$.testByDeseq(...),
                    "deseq2" = .self$.testByDeseq2(...),
                    "bayseq" = .self$.testByBayseq(...),
-                   #"noiseq" = .self$.testByNoiseq(...),
-                   #"ebseq" = .self$.testByEbseq(...),
+                   "voom" = .self$.testByLimmavoom(...),
                    "samseq" = .self$.testBySamseq(...),
                    "wad" = .self$.testByWad(...),
-                   "yayoi" = .self$.testByYayoi(norm = TRUE, ...),
+                   #"yayoi" = .self$.testByYayoi(norm = TRUE, ...),
                    stop(paste("\nTCC::ERROR: The identifying method of ", test.method, " doesn't supported.\n"))
             )
             ## Removing process.

@@ -3,11 +3,10 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           fit0, fit1,                      # for DESeq
-           DESeq2.test,                     # for DESeq2
-           design,                          # for DESeq2, edgeR
-           contrast, coef,                  # for edgeR
-           comparison, cl,                  # for baySeq
+           full, reduced,                   # for DESeq, DESeq2
+           design, contrast,                # for edgeR, DESeq2, voom
+           coef,                            # for edgeR, voom
+           group, cl,                       # for baySeq
            samplesize,                      # for baySeq, SAMseq
            logged, floor,                   # for WAD
            ...
@@ -25,7 +24,7 @@ implemented in other R packages.
 
     \item{test.method}{character string specifying a method for identifying
           DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
-          \code{"bayseq"}, \code{"samseq"}, and \code{"wad"}.
+          \code{"bayseq"}, \code{"samseq"}, \code{"voom"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
           replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}) and
@@ -39,45 +38,39 @@ implemented in other R packages.
           (two-group) paired samples. If \code{FALSE}, the input data are
           regarded as unpaired samples. The default is \code{FALSE}.}
 
-    \item{fit0}{a formula for creating reduced model described in DESeq and
-          DESeq2. 
-          The left hand side must be \code{count},
-          the right hand side can involve any column of \code{tcc$group}
+    \item{full}{a formula for creating full model described in DESeq and
+          DESeq2. The right hand side can involve any column of \code{tcc$group}
           is used as the model frame.
           See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
           for details, or \code{\link[DESeq2]{nbinomLRT}} function in DESeq2.}
 
-    \item{fit1}{a formula for creating full model described in DESeq.
-          The left hand side must be \code{count}, the right hand side can
-          involve any column of \code{tcc$group} is used as the model frame.
-          See the \code{\link[DESeq]{fitNbinomGLMs}} function for details.}
+    \item{reduced}{a formula for creating reduced model described in DESeq.
+          The right hand side can involve any column of \code{tcc$group} is
+          used as the model frame.
+          See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
+          for details, or \code{\link[DESeq2]{nbinomLRT}} function in DESeq2.}
 
-    \item{DESeq2.test}{either \code{"Wald"} or \code{"LRT"} to specify the
-          approach using in DESeq2 for identifying DEGs. The default is
-          \code{"LRT"}.}
-
-    \item{design}{the argument is used in edgeR and DESeq2.
-          For edgeR, it should be the numeric matrix giving the design matrix
-          for the generalized linear model.
+    \item{design}{the argument is used in edgeR, voom (limma) and DESeq2.
+          For edgeR and voom, it should be the numeric matrix giving the
+          design matrix for the generalized linear model.
           See the \code{\link[edgeR]{glmFit}} function in edgeR for details.
           For DESeq2, it should be a formula specifying the design of the
           experiment. See the \code{\link[DESeq2]{DESeqDataSet}} function
           in DESeq2 for details.}
 
-    \item{contrast}{numeric vector specifying a contrast of the linear model
+    \item{contrast}{the argument is used in edgeR and DESeq2.
+          For edgeR, numeric vector specifying a contrast of the linear model
           coefficients to be tested equal to zero.
-          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
+          See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.
+          For DESeq2, the argument is same to \code{contrast} which used in
+          DESeq2 package to retrive the results from Wald test. See the
+          \code{\link[DESeq2]{results}} function in DESeq2 for details.}
 
     \item{coef}{integer or character vector indicating which coefficients
           of the linear model are to be tested equal to zero.
           See the \code{\link[edgeR]{glmLRT}} function in edgeR for details.}
 
-    %\item{dispersion}{numeric vector giving the dispersion of all genes 
-    %      for analyzing the count data without replicates when  the
-    %      \code{test.method = "edger"} is specified.
-    %      See the \code{\link[edgeR]{exactTest}} function in edgeR for details.}
-
-    \item{comparison}{numeric or character string identifying the columns in
+    \item{group}{numeric or character string identifying the columns in
           the \code{tcc$group[, 1]} for analysis. See the \code{group} argument
           of \code{\link[baySeq]{topCounts}} function in baySeq for details.}
 
@@ -89,7 +82,7 @@ implemented in other R packages.
     \item{samplesize}{integer specifying (i) the sample size for estimating the
           prior parameters if \code{test.method = "bayseq"} (defaults to 10000),
           and (ii) the number of permutation in samr if
-          \code{test.method = "samseq"} (defaults to 20).}
+          \code{test.method = "samseq"} (defaults to 100).}
 
     \item{logged}{logical. If \code{TRUE}, the input data are regarded as 
           log2-transformed. If \code{FALSE}, the log2-transformation is
@@ -139,7 +132,7 @@ packages are internally called according to the specified
           GLM approach) for identifying DEGs. As a default,
           the exact test is used for two-group data,
           and GLM approach is used for multi-group or multi-factor data.
-          However, if \code{fit0} and \code{fit1} are given, the GLM approach
+          However, if \code{full} and \code{reduced} are given, the GLM approach
           will be used for two-group data.\cr
           If the exact test is used, 
           \code{\link[DESeq]{estimateDispersions}} and
@@ -150,40 +143,28 @@ packages are internally called according to the specified
           \code{\link[DESeq]{nbinomGLMTest}}
           are internally called.
     \item \code{test.method = "deseq2"}\cr
-          \code{\link[DESeq2]{estimateDispersions}},
-          \code{\link[DESeq2]{nbinomWaldTest}} (when \code{DESeq2.test = "Wald"}),
-          and \code{\link[DESeq2]{nbinomLRT}} (when \code{DESeq2.test = "LRT"}) in
-          DESeq2 are internally called for identifying DEGs.
+          \code{\link[DESeq2]{estimateDispersions}}, and 
+          \code{\link[DESeq2]{nbinomLRT}} are internally called for 
+          identifying DEGs.
+          However, if \code{contrast} is given,
+          the \code{\link[DESeq2]{nbinomWaldTest}} will be used.
     \item \code{test.method = "bayseq"}\cr
           \code{\link[baySeq]{getPriors.NB}} and
-          \code{\link[baySeq]{getLikelihoods.NB}} in baySeq are internally
+          \code{\link[baySeq]{getLikelihoods}} in baySeq are internally
           called for identifying DEGs.
-          %when \code{paired = FALSE}.
-          %\code{\link[baySeq]{getPriors.BB}} and
-          %\code{\link[baySeq]{getLikelihoods.BB}} in baySeq are called
-          %when \code{paired = TRUE}.
-          Since baySeq outputs posterior likelihoods instead of
-          \eqn{p}-values, the \eqn{(1 - likelihood)} values are
-          stored in the corersponding field
-          (i.e., \code{tcc$stat$p.value}).
-    %\item \code{test.method = "ebseq"}\cr
-    %      \code{\link[EBSeq]{EBTest}} and \code{\link[EBSeq]{EBMultiTest}}
-    %      are internally called for two-group and multi-group data with
-    %      replicates, respectively. Currently, both functions does not
-    %      support data without replicates.
-    %      Since EBSeq only outputs \eqn{q}-value,
-    %      the all values in \code{tcc$stat$p.value} are \code{NA}.
+          If \code{paired = TRUE}, 
+          \code{\link[baySeq]{getPriors}} and
+          \code{\link[baySeq]{getLikelihoods}} in baySeq are used.
     \item \code{test.method = "samseq"}\cr
           \code{\link[samr]{SAMseq}} with
           \code{resp.type = "Two class unpaired"} arugment
           in samr package is called to identify DEGs for two-group data,
+          \code{resp.type = "Two class paired"} for paired two-group data,
           and \code{resp.type = "Multiclass"} for multi-group data.
-          Since \code{\link[samr]{SAMseq}} outputs test statistics
-          instead of \eqn{p}-values, 
-          the \code{tcc$stat$p.value} and \code{tcc$stat$q.value}
-          are  \code{NA}.
-          Alternatively, the test statistics are stored in 
-          \code{tcc$stat$testStat} field.
+    \item \code{test.method = "voom"}\cr
+          \code{\link[limma]{voom}}, \code{\link[limma]{lmFit}}, and
+          \code{\link[limma]{eBayes}} in limma are internally called
+          for identifying DEGs. 
     \item \code{test.method = "wad"}\cr
           The \code{\link{WAD}} implemented in TCC is used for identifying
           DEGs. Since \code{\link{WAD}} outputs test statistics instead of

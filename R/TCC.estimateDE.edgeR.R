@@ -1,46 +1,89 @@
-TCC$methods(.testByEdger = function(design = NULL, coef = NULL, 
-                                    contrast = NULL,
-                                    paired = NULL, ...) {
+TCC$methods(.testByEdger = function(
+        design   = NULL,
+        coef     = NULL, 
+        contrast = NULL,
+        paired   = NULL,
+        ...) {
 
 
 
-
-
-.testByEdger.1 = function(dispersion = NULL) {
-    ## DEG identification.
-    suppressMessages(d <- edgeR::DGEList(counts = round(count), 
-                                         group = group[, 1]))
+# Two approach can be performed, i.e., exact test and LRT. If the 'design' is
+# given, then performe the LRT, or not performe exact test as default.
+.testByEdger.1 = function(design, coef, contrast) {
+    suppressMessages(d <- edgeR::DGEList(counts = round(.self$count), 
+                                         group  = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
-    d$samples$norm.factors <- norm.factors
-    if (min(as.numeric(table(.self$group[, 1]))) == 1) {
-        ## signle replicate
-        suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
-                                     method = "deviance",
-                                     robust = TRUE, subset = NULL))
+    d$samples$norm.factors <- .self$norm.factors
+    if (is.null(design)) {
+        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+            suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
+                                  method = "deviance", robust = TRUE,
+                                  subset = NULL))
+        } else {
+            suppressMessages(d <- edgeR::estimateCommonDisp(d))
+            suppressMessages(d <- edgeR::estimateTagwiseDisp(d))
+        }
+        suppressMessages(d <- edgeR::exactTest(d))
+        p <- d$table$PValue
     } else {
-        ## multiple replicate
-        suppressMessages(d <- edgeR::estimateCommonDisp(d))
-        suppressMessages(d <- edgeR::estimateTagwiseDisp(d))
+        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+            suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
+                                  method = "deviance", robust = TRUE,
+                                  subset = NULL))
+        } else {
+            if (is.null(coef) && is.null(contrast)) coef <- 2
+            suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+            suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+            suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+        }
+        suppressMessages(fit <- glmFit(d, design))
+        suppressMessages(lrt <- glmLRT(fit, coef = coef, contrast = contrast))
+        p <- lrt$table$PValue
     }
-    suppressMessages(d <- edgeR::exactTest(d))
-    ## get results and set up to TCC class object.
-    private$stat$p.value <<- d$table$PValue
-    private$stat$rank <<- rank(private$stat$p.value)
-    private$stat$q.value <<- p.adjust(private$stat$p.value, method = "BH")
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$rank <<- rank(p)
+    private$stat$q.value <<- p.adjust(p, method = "BH")
 }
 
 
 
 
 
-.testByEdger.2 = function(design = NULL, coef = NULL,
-                                      contrast = NULL){
-    ## stop if design is not given.
-    if (is.null(design))
-         design <- model.matrix(~ as.factor(.self$group[, 1]))
-    if (is.null(coef) && is.null(contrast))
-         coef <- 2:length(unique(.self$group[, 1]))
-    ## DEG identification.
+.testByEdger.2 = function(design, coef, contrast) {
+    ## ANOVA like design if not given
+    if (is.null(design)) design <- model.matrix(~ ., data = .self$group)
+    if (is.null(coef) && is.null(contrast)) coef <- 2:ncol(design)
+    suppressMessages(d <- edgeR::DGEList(counts = round(.self$count), 
+                                         group = .self$group[, 1]))
+    suppressMessages(d <- edgeR::calcNormFactors(d))
+    d$samples$norm.factors <- .self$norm.factors
+    if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+        suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
+                              method = "deviance", robust = TRUE,
+                              subset = NULL))
+    } else {
+        suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+        suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+        suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+    }
+    suppressMessages(fit <- edgeR::glmFit(d, design))
+    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
+    p <- lrt$table$PValue
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$rank <<- rank(p)
+    private$stat$q.value <<- p.adjust(p, method = "BH")
+}
+
+
+
+
+# If the arguments ('design', 'coef', 'contrast') are given, then used them.
+# If not given, then perform ANOVA like LRT.
+.testByEdger.3 = function(design, coef, contrast) {
+    if (is.null(design)) design <- model.matrix(~ ., data = .self$group)
+    if (is.null(coef) && is.null(contrast)) coef <- 2:ncol(design)
     suppressMessages(d <- edgeR::DGEList(counts = round(.self$count), 
                                          group = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
@@ -49,55 +92,21 @@ TCC$methods(.testByEdger = function(design = NULL, coef = NULL,
     suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
     suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
     suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, 
-                                          contrast = contrast))
-    ## get results and set up to TCC class object.
-    s <- topTags(lrt, n = nrow(.self$count))
-    s <- s$table[rownames(.self$count), ]
-    private$stat$p.value <<- s$PValue
-    private$stat$rank <<- rank(.self$private$stat$p.value)
-    private$stat$q.value <<- s$FDR
+    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
+    p <- lrt$table$PValue
+    p[is.na(p)] <- 1
+    private$stat$p.value <<- p
+    private$stat$rank <<- rank(p)
+    private$stat$q.value <<- p.adjust(p, method = "BH")
 }
 
 
 
 
 
-.testByEdger.3 = function(design = NULL, coef = NULL,
-                                      contrast = NULL){
-    ## stop if design is not given.
-    if (is.null(design))
-        stop("TCC::ERROR: Need the design matrix for GLM.")
-    ## DEG identification.
-    suppressMessages(d <- edgeR::DGEList(counts = round(.self$count), 
-                                         group = .self$group[, 1]))
-    suppressMessages(d <- edgeR::calcNormFactors(d))
-    d$samples$norm.factors <- .self$norm.factors
-    suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
-    suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, 
-                                          contrast = contrast))
-    ## get results and set up to TCC class object.
-    s <- topTags(lrt, n = nrow(.self$count))
-    s <- s$table[rownames(.self$count), ]
-    private$stat$p.value <<- s$PValue
-    private$stat$rank <<- rank(.self$private$stat$p.value)
-    private$stat$q.value <<- s$FDR
-}
-
-
-
-
-
-.testByEdger.4 <- function(design = NULL, coef = NULL, contrast = NULL) {
-    ## set default parameters for edgeR.
-    if (is.null(design))
-      design <- model.matrix(~ ., data = .self$group)
-    if (is.null(coef) && is.null(contrast))
-      coef <- 2
-    ## DEG identification.
+.testByEdger.4 <- function(design, coef, contrast) {
+    if (is.null(design)) design <- model.matrix(~ ., data = .self$group)
+    if (is.null(coef) && is.null(contrast)) coef <- 2
     suppressMessages(d <- DGEList(counts = round(.self$count),
                                   group = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
@@ -106,27 +115,21 @@ TCC$methods(.testByEdger = function(design = NULL, coef = NULL,
     suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
     suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
     suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, 
-                                          contrast = contrast))
-    ## get results and set up to TCC class object.
-    s <- topTags(lrt, n = nrow(.self$count))
-    s <- s$table[rownames(.self$count), ]
-    private$stat$p.value <<- s$PValue
-    private$stat$rank <<- rank(.self$private$stat$p.value)
-    private$stat$q.value <<- s$FDR
+    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef,  contrast = contrast))
+    p <- lrt$table$PValue
+    p[is.na(p)] <- 1
+    private$stat$p.value <<-p
+    private$stat$rank <<- rank(p)
+    private$stat$q.value <<- p.adjust(p, method = "BH")
 }
 
 
 
 
 
-## 
-## main process
-##
 test.approach <- .self$.testApproach(paired = paired)
-
 switch(test.approach,
-    "1" = .testByEdger.1(),
+    "1" = .testByEdger.1(design = design, coef = coef, contrast = contrast),
     "2" = .testByEdger.2(design = design, coef = coef, contrast = contrast),
     "3" = .testByEdger.3(design = design, coef = coef, contrast = contrast),
     "4" = .testByEdger.4(design = design, coef = coef, contrast = contrast),

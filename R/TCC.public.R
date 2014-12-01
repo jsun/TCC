@@ -15,18 +15,17 @@ setMethod(
 )
 
 estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
-                       fit0 = NULL, fit1 = NULL,
-                       DESeq2.test = NULL,
-                       design = NULL, 
-                       contrast = NULL, coef = NULL, 
-                       comparison = NULL, cl = NULL,
+                       full = NULL, reduced = NULL,
+                       design = NULL,  contrast = NULL,
+                       coef = NULL, 
+                       group = NULL, cl = NULL,
                        samplesize = NULL,
                        logged = NULL, floor = NULL, ...) {
     obj <- tcc$copy()
     obj$estimateDE(test.method = test.method, FDR = FDR, paired = paired,
-                   fit0 = fit0, fit1 = fit1, DESeq2.test = DESeq2.test,
+                   full = full, reduced = reduced, 
                    design = design, contrast = contrast, coef = coef,
-                   comparison = comparison, samplesize = samplesize,
+                   group = group, samplesize = samplesize,
                    logged = logged, floor = floor, cl = cl, ...)
     return(obj)
 }
