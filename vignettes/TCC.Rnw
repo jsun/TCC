@@ -1064,15 +1064,15 @@ pair <- factor(c(1, 2, 3, 1, 2, 3))
 FDR <- 0.1
 floorPDEG <- 0.05
 cl <- data.frame(group = group, pair = pair)
-fit1 <- count ~ group + pair
-fit0 <- count ~ pair
+full <- count ~ group + pair
+reduced <- count ~ pair
 ### STEP 1 ###
 cds <- newCountDataSet(hypoData, cl)
 ### STEP 2 ###
 cds <- estimateSizeFactors(cds)
 cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
-reduced.model <- fitNbinomGLMs(cds, fit0)
-full.model <- fitNbinomGLMs(cds, fit1)
+full.model <- fitNbinomGLMs(cds, full)
+reduced.model <- fitNbinomGLMs(cds, reduced)
 pval <- nbinomGLMTest(full.model, reduced.model)
 pval[is.na(pval)] <- 1
 qval <- p.adjust(pval, method = "BH")
@@ -1234,8 +1234,8 @@ norm.factors
 
 \Rpackage{DESeq} also employs GLMs for analyzing multi-group experiments. 
 Similar to the \Rpackage{edgeR} package, it requires two models (full 
-model and reduced model). The full model (\Robject{fit1}) 
-and reduced model (\Robject{fit0}) 
+model and reduced model). The full model (\Robject{full}) 
+and reduced model (\Robject{reduced}) 
 can be created as follows:
 
 <<degesDeseq_multigroup_tcc>>=
@@ -1243,21 +1243,21 @@ library(TCC)
 data(hypoData_mg)
 group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
 tcc <- new("TCC", hypoData_mg, group)
-fit1 <- count ~ condition
-fit0 <- count ~ 1
+full <- count ~ condition
+reduced <- count ~ 1
 @
 
 
 The DEGES/DESeq pipeline with the two models
-(\Robject{fit1} and \Robject{fit0}) can be performed as follows.
+(\Robject{full} and \Robject{reduced}) can be performed as follows.
 
 <<degesDeseq_multigroup_tcc_nf>>=
 tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
-                       iteration = 1, fit1 = fit1, fit0 = fit0)
+                       iteration = 1, full = full, reduced = reduced)
 tcc$norm.factors
 @
 
-The two models (\Robject{fit1} and \Robject{fit0}) will automatically be
+The two models (\Robject{full} and \Robject{reduced}) will automatically be
 generated when performing the following \Rfunction{calcNormFactors} function
 if those models are not explicitly indicated. That is
 
@@ -1284,15 +1284,15 @@ group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
 FDR <- 0.1
 floorPDEG <- 0.05
 tcc <- new("TCC", hypoData_mg, group)
-fit1 <- count ~ condition
-fit0 <- count ~ 1
+full <- count ~ condition
+reduced <- count ~ 1
 cds <- newCountDataSet(hypoData_mg, group)
 ### STEP 1 ###
 cds <- estimateSizeFactors(cds)
 ### STEP 2 ###
 cds <- estimateDispersions(cds)
-reduced.model <- fitNbinomGLMs(cds, fit0)
-full.model <- fitNbinomGLMs(cds, fit1)
+full.model <- fitNbinomGLMs(cds, full)
+reduced.model <- fitNbinomGLMs(cds, reduced)
 pval <- nbinomGLMTest(full.model, reduced.model)
 pval[is.na(pval)] <- 1
 qval <- p.adjust(pval, method = "BH")
@@ -1875,15 +1875,15 @@ pair <- factor(c(1, 2, 3, 1, 2, 3))
 FDR <- 0.1
 floorPDEG <- 0.05
 cl <- data.frame(group = group, pair = pair)
-fit1 <- count ~ group + pair
-fit0 <- count ~ pair
+full <- count ~ group + pair
+reduced <- count ~ pair
 ### STEP 1 ###
 cds <- newCountDataSet(hypoData, cl)
 ### STEP 2 ###
 cds <- estimateSizeFactors(cds)
 cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
-reduced.model <- fitNbinomGLMs(cds, fit0)
-full.model <- fitNbinomGLMs(cds, fit1)
+full.model <- fitNbinomGLMs(cds, full)
+reduced.model <- fitNbinomGLMs(cds, reduced)
 pval <- nbinomGLMTest(full.model, reduced.model)
 pval[is.na(pval)] <- 1
 qval <- p.adjust(pval, method = "BH")
@@ -2338,7 +2338,7 @@ data(hypoData)
 group <- c(1, 1, 1, 2, 2, 2)
 tcc <- new("TCC", hypoData, group)
 tcc <- calcNormFactors(tcc, norm.method = "deseq2", iteration = 0)
-tcc <- estimateDE(tcc, test.method = "deseq2", DESeq2.test = "Wald", FDR = 0.1)
+tcc <- estimateDE(tcc, test.method = "deseq2", contrast = c("group", "1", "2"), FDR = 0.1)
 result <- getResult(tcc, sort = TRUE)
 head(result)
 library(ROC)
@@ -2892,10 +2892,10 @@ tcc <- new("TCC", hypoData_mg, group)
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 1)
 ###  DE analysis  ###
-fit1 <- count ~ condition
-fit0 <- count ~ 1
+full <- count ~ condition
+redueced <- count ~ 1
 tcc <- estimateDE(tcc, test.method = "deseq", 
-                  FDR = 0.1, fit0 = fit0, fit1 = fit1)
+                  FDR = 0.1, full = full, reduced = reduced)
 result <- getResult(tcc, sort = TRUE)
 head(result)
 table(tcc$estimatedDEG)
@@ -2917,14 +2917,14 @@ tcc <- new("TCC", hypoData_mg, group)
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 1)
 ###  DE analysis  ###
-fit1 <- count ~ condition
-fit0 <- count ~ 1
+full <- count ~ condition
+reduced <- count ~ 1
 cds <- newCountDataSet(tcc$count, group)
 cds <- estimateSizeFactors(cds)
 sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
 cds <- estimateDispersions(cds)
-reduced.model <- fitNbinomGLMs(cds, fit0)
-full.model <- fitNbinomGLMs(cds, fit1)
+full.model <- fitNbinomGLMs(cds, full)
+reduced.model <- fitNbinomGLMs(cds, reduced)
 p.value <- nbinomGLMTest(full.model, reduced.model)
 p.value[is.na(p.value)] <- 1
 q.value <- p.adjust(p.value, method = "BH")
@@ -3007,12 +3007,11 @@ The information about the simulation conditions can be viewed as follows.
 str(tcc$simulation)
 @
 
-Specifically, the entries for $0, 1$, and $2$ in the 
+Specifically, the entries for $0$ and $1$ in the 
 \Robject{tcc\$simulation\$trueDEG} 
-object are for non-DEG, DEGs up-regulated in G1, and DEGs up-regulated in G2, 
-respectively. The breakdowns for individual entries are the same as 
-stated above: $800$ entries are non-DEGs, $180$ DEGs are up-regulated in G1, 
-and $20$ DEGs are up-regulated in G2.
+object are for non-DEGs and DEGs respectively.
+The breakdowns for individual entries are the same as 
+stated above: $800$ entries are non-DEGs, $200$ entries are DEGs.
 
 <<tale_of_simulation_trueDEG>>=
 table(tcc$simulation$trueDEG)

@@ -78,10 +78,7 @@ simulateReadCounts <- function(Ngene = 10000, PDEG = 0.20,
             matrix(rep(DEG.foldchange[, i - 1],
                        times = fc.index[i] - fc.index[i - 1]),
                    ncol = ncol(fc.matrix), byrow = TRUE)
-        if (is.null(replicates))
-            trueDEG[(fc.index[i - 1] + 1):(fc.index[i])] <- 1
-        else
-            trueDEG[(fc.index[i - 1] + 1):(fc.index[i])] <- i - 1
+        trueDEG[(fc.index[i - 1] + 1):(fc.index[i])] <- 1
     }
     ## sampling data
     count <- matrix(0, ncol = ncol(group), nrow = Ngene)
@@ -107,6 +104,8 @@ simulateReadCounts <- function(Ngene = 10000, PDEG = 0.20,
         colnames(count) <- colnm
     }
     rownames(count) <- paste("gene", 1:nrow(count), sep = "_")
+    names(trueDEG) <- rownames(population) <- rownames(fc.matrix) <- rownames(count)
+    colnames(fc.matrix) <- colnames(count)
     ## TCC constructor
     tcc <- new("TCC", count,
                if(is.null(replicates)) group
