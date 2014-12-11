@@ -89,7 +89,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
     fcall <- as.list(match.call(expand.dots = TRUE))
     ## Initialize 'test.method'.
     if (is.null(test.method)) {
-        if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1)) {
+        if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1)) {
             test.method = "deseq"
         } else {
             test.method = "edger"

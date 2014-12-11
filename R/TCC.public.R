@@ -75,9 +75,9 @@ getResult <- function(tcc, sort = FALSE, ...) {
             estimatedDEG = tcc$estimatedDEG
         ) 
     }
-    rownames(df) <- NULL
     if (sort)
         df <- df[order(df$rank), ]
+    rownames(df) <- NULL
     return (df)
 }
 

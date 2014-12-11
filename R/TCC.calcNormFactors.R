@@ -96,7 +96,7 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
         DEGES$iteration <<- 0
     }
     ## Initialize 'norm.method' an 'test.method'.
-    if ((ncol(group) == 1) && (min(as.numeric(table(group))) == 1))  {
+    if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1))  {
         if (is.null(norm.method)) norm.method <- "deseq"
         if (is.null(test.method)) test.method <- "deseq"
     } else {

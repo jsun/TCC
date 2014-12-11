@@ -187,37 +187,6 @@ using the data of the first and the fourth
 column of \Robject{hypoData} (Case 3). We recommend the use of commands in 
 Cases 2 and 3.
 
-\textbf{Case 1}:
-DE analysis of two-group count data with replicates by 
-using the exact test (Robinson and Smyth, 2008) 
-in \Rpackage{edgeR} coupled with TbT normalization 
-(termed the TbT-edgeR combination). 
-The \Rpackage{TCC} package was originally designed with the TbT 
-normalization method, and the original study (Kadota et al., 2012)
-recommended this analysis pipeline. 
-Note that a smaller sampling size (i.e., \Robject{samplesize = 100}) 
-is used here to reduce the computation time, but a larger sampling size of 
-around $10,000$ (i.e., \Robject{samplesize = 10000}) 
-is recommended (Hardcastle and Kelly, 2010). 
-Suggested citations are as follows: \Rpackage{TCC} (Sun et al., 2013),
-TbT (Kadota et al., 2012), 
-TMM (Robinson and Oshlack, 2010), 
-\Rpackage{baySeq} (Hardcastle and Kelly, 2010), 
-and \Rpackage{edgeR} (Robinson et al., 2010). 
-For details, see section \ref{section-3-1-1}.
-
-<<4390194301>>=
-library(TCC)
-data(hypoData)
-samplesize <- 100
-group <- c(1, 1, 1, 2, 2, 2)
-tcc <- new("TCC", hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "bayseq",
-                       iteration = 1, samplesize = samplesize) 
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-@
 
 \textbf{Case 2}:
 DE analysis for two-group count data with replicates by using 
@@ -1397,42 +1366,6 @@ apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-The same procedure consisting of functions in \Rpackage{edgeR} is 
-
-<<degesEdger_edger_normed_data>>=
-library(TCC)
-data(hypoData)
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-FDR <- 0.1
-floorPDEG <- 0.05
-d <- DGEList(counts = hypoData, group = group)
-###  Step 1  ###
-d <- calcNormFactors(d)
-###  Step 2  ###
-d <- estimateCommonDisp(d)
-d <- estimateTagwiseDisp(d)
-result <- exactTest(d)
-pval <- result$table$PValue
-qval <- p.adjust(pval, method = "BH")
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <= 
-                       nrow(hypoData) * floorPDEG)
-}
-###  Step 3  ###
-d <- DGEList(counts = hypoData[!is.DEG, ], group = group)
-d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors * colSums(hypoData[!is.DEG, ]) /
-                  colSums(hypoData)
-norm.factors <- norm.factors / mean(norm.factors)
-effective.libsizes <- colSums(hypoData) * norm.factors
-normalized.count <- sweep(hypoData, 2,
-                          mean(effective.libsizes) / effective.libsizes, "*")
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
 <<4390011292,echo = false, result = hide>>=
 buff_1 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1449,27 +1382,13 @@ group <- c(1, 1, 1, 2, 2, 2)
 d <- DGEList(count = hypoData, group = group)
 d <- calcNormFactors(d)
 norm.factors <- d$samples$norm.factors
-norm.factors <- norm.factors / mean(norm.factors)
 effective.libsizes <- colSums(hypoData) * norm.factors
 normalized.count <- sweep(hypoData, 2,
-mean(effective.libsizes) / effective.libsizes, "*")
+                    mean(effective.libsizes) / effective.libsizes, "*")
 apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-This is the same as
-
-<<3200100222>>=
-library(TCC)
-data(hypoData)
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-cds <- newCountDataSet(hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0)
-normalized.count <- getNormalizedData(tcc)
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
 <<4330011292,echo = false, result = hide>>=
 buff_2 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1511,43 +1430,6 @@ range(apply(normalized.count[nonDEG, ], 2, median))
 buff_1 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-The same procedure consisting of functions in \Rpackage{DESeq} is 
-
-<<degesDeseq_deseq_normed_data>>=
-library(TCC)
-data(hypoData)  
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-FDR <- 0.1
-floorPDEG <- 0.05
-cds <- newCountDataSet(hypoData, group)
-###  Step 1  ###
-cds <- estimateSizeFactors(cds)
-###  Step 2  ###
-cds <- estimateDispersions(cds)
-result <- nbinomTest(cds, 1, 2)
-result$pval[is.na(result$pval)] <- 1
-result$padj[is.na(result$padj)] <- 1
-pval <- result$pval
-qval <- result$padj
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
-                       nrow(hypoData) * floorPDEG)
-}
-###  Step 3  ###
-cds <- newCountDataSet(hypoData[!is.DEG, ], group)
-cds <- estimateSizeFactors(cds)
-norm.factors <- sizeFactors(cds) / colSums(hypoData)
-norm.factors <- norm.factors / mean(norm.factors)
-effective.libsizes <- colSums(hypoData) * norm.factors
-normalized.count <- sweep(hypoData, 2,
-                          mean(effective.libsizes) / effective.libsizes, "*")
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
-
 For comparison, the summary statistics for DESeq-normalized
 data produced using the original normalization method in 
 \Rpackage{DESeq} can be obtained as follows.
@@ -1559,25 +1441,11 @@ nonDEG <- 201:1000
 group <- c(1, 1, 1, 2, 2, 2)
 cds <- newCountDataSet(hypoData, group)
 cds <- estimateSizeFactors(cds)
-sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
 normalized.count <- counts(cds, normalized = TRUE)
 apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-This is the same as
-
-<<9548902322>>=
-library(TCC)
-data(hypoData)
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-cds <- newCountDataSet(hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = 0)
-normalized.count <- getNormalizedData(tcc)
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
 <<1330110292,echo = false, result = hide>>=
 buff_2 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1620,42 +1488,6 @@ apply(normalized.count[nonDEG, ], 2, median)
 buff_1 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-The same procedure consisting of functions in \Rpackage{DESeq} is 
-
-<<degesDeseq_deseq_without_replicates_normed_data>>=
-library(TCC)
-data(hypoData) 
-nonDEG <- 201:1000
-group <- c(1, 2)
-FDR <- 0.1
-floorPDEG <- 0.05
-cds <- newCountDataSet(hypoData[,c(1, 4)], group)
-###  Step 1  ###
-cds <- estimateSizeFactors(cds)
-###  Step 2  ###
-cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
-result <- nbinomTest(cds, 1, 2)
-result$pval[is.na(result$pval)] <- 1
-result$padj[is.na(result$padj)] <- 1
-pval <- result$pval
-qval <- result$padj
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
-                       nrow(hypoData) * floorPDEG)
-}
-###  Step 3  ###
-cds <- newCountDataSet(hypoData[!is.DEG, c(1, 4)], group)
-cds <- estimateSizeFactors(cds)
-norm.factors <- sizeFactors(cds) / colSums(hypoData[, c(1, 4)])
-norm.factors <- norm.factors / mean(norm.factors)
-effective.libsizes <- colSums(hypoData[, c(1, 4)]) * norm.factors
-normalized.count <- sweep(hypoData[, c(1, 4)], 2,
-                          mean(effective.libsizes) / effective.libsizes, "*")
-apply(normalized.count[nonDEG, ], 2, median)
-@
-
 For comparison, the summary statistics for DESeq-normalized
 data produced using the original normalization method in
 \Rpackage{DESeq} can be obtained as follows.
@@ -1667,23 +1499,10 @@ nonDEG <- 201:1000
 group <- c(1, 2)
 cds <- newCountDataSet(hypoData[, c(1, 4)], group)
 cds <- estimateSizeFactors(cds)
-sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
 normalized.count <- counts(cds, normalized = TRUE)
 apply(normalized.count[nonDEG, ], 2, median)
 @
 
-This is the same as
-
-<<675849322>>=
-library(TCC)
-data(hypoData)
-nonDEG <- 201:1000
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = 0)
-normalized.count <- getNormalizedData(tcc)
-apply(normalized.count[nonDEG, ], 2, median)
-@
 <<1664110292,echo = false, result = hide>>=
 buff_2 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1732,50 +1551,6 @@ range(apply(normalized.count[nonDEG, ], 2, median))
 buff_1 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-The same procedure consisting of functions in \Rpackage{edgeR} is
-
-<<4300349321>>=
-library(TCC)
-data(hypoData)
-colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
-                        "N_dogA", "N_dogB", "N_dogC")
-nonDEG <- 201:1000
-group <- factor(c(1, 1, 1, 2, 2, 2))
-pair <- factor(c(1, 2, 3, 1, 2, 3))
-design <- model.matrix(~ group + pair)
-coef <- 2
-FDR <- 0.1
-floorPDEG <- 0.05
-d <- DGEList(counts = hypoData, group = group)
-### STEP 1 ###
-d <- calcNormFactors(d)
-### STEP 2 ###
-d <- estimateGLMCommonDisp(d, design)
-d <- estimateGLMTrendedDisp(d, design)
-d <- estimateGLMTagwiseDisp(d, design)
-fit <- glmFit(d, design)
-lrt <- glmLRT(fit, coef = coef)
-pval <- lrt$table$PValue
-qval <- p.adjust(pval, method = "BH")
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))){
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
-                       nrow(hypoData) * floorPDEG)
-}
-### STEP 3 ###
-d <- DGEList(counts = hypoData[!is.DEG, ], group = group)
-d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors * colSums(hypoData[!is.DEG, ]) /
-colSums(hypoData)
-norm.factors <- norm.factors / mean(norm.factors)
-effective.libsizes <- colSums(hypoData) * norm.factors
-normalized.count <- sweep(hypoData, 2, 
-                          mean(effective.libsizes) / effective.libsizes, "*")
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
-
 For comparison, the summary statistics for TMM-normalized data produced
 using the original normalization method (i.e., TMM) in
 \Rpackage{edgeR} can be obtained as follows.
@@ -1790,7 +1565,6 @@ group <- factor(c(1, 1, 1, 2, 2, 2))
 d <- DGEList(counts = hypoData, group = group)
 d <- calcNormFactors(d)
 norm.factors <- d$samples$norm.factors
-norm.factors <- norm.factors / mean(norm.factors)
 effective.libsizes <- colSums(hypoData) * norm.factors
 normalized.count <- sweep(hypoData, 2,
                           mean(effective.libsizes) / effective.libsizes, "*")
@@ -1798,23 +1572,6 @@ apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-This is the same as
-
-<<4900200123>>=
-library(TCC)
-data(hypoData)
-colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
-                        "N_dogA", "N_dogB", "N_dogC")
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-pair <- c(1, 2, 3, 1, 2, 3)
-cl <- data.frame(group = group, pair = pair)
-tcc <- new("TCC", hypoData, cl)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0, paired = TRUE)
-normalized.count <- getNormalizedData(tcc)
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
 <<1674110992,echo = false, result = hide>>=
 buff_2 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -1862,49 +1619,6 @@ range(apply(normalized.count[nonDEG, ], 2, median))
 buff_1 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-The same procedure consisting of functions in \Rpackage{DESeq} is
-
-<<3756281243>>=
-library(TCC)
-data(hypoData)
-colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
-                        "N_dogA", "N_dogB", "N_dogC")
-nonDEG <- 201:1000
-group <- factor(c(1, 1, 1, 2, 2, 2))
-pair <- factor(c(1, 2, 3, 1, 2, 3))
-FDR <- 0.1
-floorPDEG <- 0.05
-cl <- data.frame(group = group, pair = pair)
-full <- count ~ group + pair
-reduced <- count ~ pair
-### STEP 1 ###
-cds <- newCountDataSet(hypoData, cl)
-### STEP 2 ###
-cds <- estimateSizeFactors(cds)
-cds <- estimateDispersions(cds, method = "blind", sharingMode = "fit-only")
-full.model <- fitNbinomGLMs(cds, full)
-reduced.model <- fitNbinomGLMs(cds, reduced)
-pval <- nbinomGLMTest(full.model, reduced.model)
-pval[is.na(pval)] <- 1
-qval <- p.adjust(pval, method = "BH")
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
-                       nrow(hypoData) * floorPDEG)
-}
-### STEP 3 ###
-cds <- newCountDataSet(hypoData[!is.DEG, ], group)
-cds <- estimateSizeFactors(cds)
-norm.factors <- sizeFactors(cds) / colSums(hypoData)
-norm.factors <- norm.factors / mean(norm.factors)
-effective.libsizes <- colSums(hypoData) * norm.factors
-normalized.count <- sweep(hypoData, 2,
-                          mean(effective.libsizes) / effective.libsizes, "*")
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
-
 For comparison, the summary statistics for DESeq-normalized data
 produced using the original normalization method in \Rpackage{DESeq}
 can be obtained as follows.
@@ -1920,29 +1634,11 @@ pair <- factor(c(1, 2, 3, 1, 2, 3))
 cl <- data.frame(group = group, pair = pair)
 cds <- newCountDataSet(hypoData, cl)
 cds <- estimateSizeFactors(cds)
-sizeFactors(cds) <- sizeFactors(cds) / mean(sizeFactors(cds))
 normalized.count <- counts(cds, normalized = TRUE)
 apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @
 
-This is the same as
-
-<<5982890114>>=
-library(TCC)
-data(hypoData)
-colnames(hypoData) <- c("T_dogA", "T_dogB", "T_dogC",
-                        "N_dogA", "N_dogB", "N_dogC")
-nonDEG <- 201:1000
-group <- c(1, 1, 1, 2, 2, 2)
-pair <- c(1, 2, 3, 1, 2, 3)
-cl <- data.frame(group = group, pair = pair)
-tcc <- new("TCC", hypoData, cl)
-tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = 0, paired = TRUE)
-normalized.count <- getNormalizedData(tcc)
-apply(normalized.count[nonDEG, ], 2, median)
-range(apply(normalized.count[nonDEG, ], 2, median))
-@
 <<9600320992,echo = false, result = hide>>=
 buff_2 <- range(apply(normalized.count[nonDEG, ], 2, median))
 @
@@ -2018,9 +1714,12 @@ library(TCC)
 data(hypoData_mg)
 nonDEG <- 201:1000
 group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
-tcc <- new("TCC", hypoData_mg, group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0)
-normalized.count <- getNormalizedData(tcc)
+d <- DGEList(tcc$count, group = group)
+d <- calcNormFactors(d)
+norm.factors <- d$samples$norm.factors
+effective.libsizes <- colSums(hypoData) * norm.factors
+normalized.count <- sweep(hypoData, 2,
+                    mean(effective.libsizes) / effective.libsizes, "*")
 apply(normalized.count[nonDEG, ], 2, median)
 range(apply(normalized.count[nonDEG, ], 2, median))
 @

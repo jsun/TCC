@@ -60,11 +60,21 @@ test_estimateDE_crossvalidate <- function() {
         for (p in 1:length(package.name)) {
             if (!test.methods[p, d]) next
             for (n in 1:length(norm.methods)) {
-                x <- calcNormFactors(x, norm.method = norm.methods[n],
-                                     test.method = package.name[p], 
-                                     iteration = T, samplesize = 10)
+                e <- try(x <- calcNormFactors(x, norm.method = norm.methods[n],
+                                     test.method = package.name[p],
+                                     iteration = T, samplesize = 10))
+                if (class(e) == "try-error") {
+                    x <- calcNormFactors(x, norm.method = norm.methods[n],
+                                     test.method = package.name[p],
+                                     iteration = T, samplesize = 10,
+                                     method = "blind", sharingMode = "fit-only")
+                }
             }
-            x <- estimateDE(x, test.method = package.name[p], samplesize = 10)
+            e <- try(x <- estimateDE(x, test.method = package.name[p], samplesize = 10))
+            if (class(e) == "try-error") {
+                x <- estimateDE(x, test.method = package.name[p], samplesize = 10,
+                                method = "blind", sharingMode = "fit-only")
+            }
             print(calcAUCValue(x))
             checkTrue(calcAUCValue(x) > 0.5)
         }
