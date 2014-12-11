@@ -5,7 +5,7 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
 
 
 
-.testByDeseq.1 = function(full, reduced) {
+.testByDeseq.1 = function(full, reduced, ...) {
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
     sz <- ef.libsizes / mean(ef.libsizes)
 
@@ -13,11 +13,12 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
         suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
                                               conditions = .self$group[, 1]))
         sizeFactors(d) <- sz
-        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+        if ((length(unique(.self$group[, 1])) == nrow(.self$group)) &&
+            (length(list(...)) == 0)) {
             suppressMessages(d <- estimateDispersions(d, method = "blind",
                                                   sharingMode = "fit-only"))
         } else {
-            suppressMessages(d <- estimateDispersions(d))
+            suppressMessages(d <- estimateDispersions(d, ...))
         }
         suppressMessages(d <- nbinomTest(d, levels(.self$group[, 1])[1],
                                             levels(.self$group[, 1])[2]))
@@ -30,7 +31,7 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
             suppressMessages(d <- estimateDispersions(d, method = "blind",
                                                   sharingMode = "fit-only"))
         } else {
-            suppressMessages(d <- estimateDispersions(d))
+            suppressMessages(d <- estimateDispersions(d, ...))
         }
         if (is.na(match("count", as.character(full))))
             full <- as.formula(paste(c("count", as.character(full)), collapse=""))
@@ -50,7 +51,7 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
 
 
 
-.testByDeseq.2 = function(full, reduced) {
+.testByDeseq.2 = function(full, reduced, ...) {
     if (is.null(full)) full <- formula(~ condition) 
     if (is.null(reduced)) reduced <- formula(~ 1)
     suppressMessages(d <- newCountDataSet(countData = round(.self$count), 
@@ -58,11 +59,12 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
     ef.libsizes <- .self$norm.factors * colSums(.self$count)
     sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
-    if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+    if ((length(unique(.self$group[, 1])) == nrow(.self$group)) &&
+        (length(list(...)) == 0)) {
         suppressMessages(d <- estimateDispersions(d, method = "blind",
                                                   sharingMode = "fit-only"))
     } else {
-        suppressMessages(d <- estimateDispersions(d))
+        suppressMessages(d <- estimateDispersions(d, ...))
     }
     if (is.na(match("count", as.character(full))))
         full <- as.formula(paste(c("count", as.character(full)), collapse = ""))
@@ -81,7 +83,7 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
 
 
 
-.testByDeseq.3 = function(full, reduced) {
+.testByDeseq.3 = function(full, reduced, ...) {
     if (is.null(full)) full <- as.formula(paste("~",
                                paste(colnames(.self$group), collapse = "+"))) 
     if (is.null(reduced)) reduced <- formula(~ 1)
@@ -91,11 +93,13 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
     sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     gtags <- apply(.self$group, 1, paste, collapse = "")
-    if (length(unique(gtags)) == length(gtags)) {
+
+    if ((length(unique(gtags)) == length(gtags)) &&
+        (length(list(...)) == 0)) {
         suppressMessages(d <- estimateDispersions(d, method = "blind",
                                                   sharingMode = "fit-only"))
     } else {
-        suppressMessages(d <- estimateDispersions(d))
+        suppressMessages(d <- estimateDispersions(d, ...))
     }
     if (is.na(match("count", as.character(full))))
         full <- as.formula(paste(c("count", as.character(full)), collapse=""))
@@ -116,7 +120,7 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
 
 
 
-.testByDeseq.4 <- function(full, reduced) {
+.testByDeseq.4 <- function(full, reduced, ...) {
     if (is.null(full)) full <- as.formula(paste("~",
                                paste(colnames(.self$group), collapse = "+"))) 
     if (is.null(reduced)) reduced <- as.formula(paste("~", colnames(.self$group)[2]))
@@ -126,11 +130,12 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
     sz <- ef.libsizes / mean(ef.libsizes)
     sizeFactors(d) <- sz
     gtags <- apply(.self$group, 1, paste, collapse = "")
-    if (length(unique(gtags)) == length(gtags)) {
+    if ((length(unique(gtags)) == length(gtags)) &&
+        (length(list(...)) == 0)) {
         suppressMessages(d <- estimateDispersions(d, method = "blind",
                                                   sharingMode = "fit-only"))
     } else {
-        suppressMessages(d <- estimateDispersions(d))
+        suppressMessages(d <- estimateDispersions(d, ...))
     }
     if (is.na(match("count", as.character(full))))
         full <- as.formula(paste(c("count", as.character(full)), collapse = ""))
@@ -152,10 +157,10 @@ TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
 test.approach <- .self$.testApproach(paired = paired)
 
 switch(test.approach,
-    "1" = .testByDeseq.1(full = full, reduced = reduced),
-    "2" = .testByDeseq.2(full = full, reduced = reduced),
-    "3" = .testByDeseq.3(full = full, reduced = reduced),
-    "4" = .testByDeseq.4(full = full, reduced = reduced),
+    "1" = .testByDeseq.1(full = full, reduced = reduced, ...),
+    "2" = .testByDeseq.2(full = full, reduced = reduced, ...),
+    "3" = .testByDeseq.3(full = full, reduced = reduced, ...),
+    "4" = .testByDeseq.4(full = full, reduced = reduced, ...),
     stop("TCC::ERROR: TCC does not support such identification strategy.")
 )
 
