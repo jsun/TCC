@@ -11,7 +11,7 @@
  log2(G2)) / 2} on the \eqn{x}-axis) using normalized count data.}
 \usage{
 \method{plot}{TCC}(x, FDR = NULL, median.lines = FALSE, floor = 0,
-     groups = NULL, col = NULL, col.tag = NULL, normalize = TRUE, ...)
+     group = NULL, col = NULL, col.tag = NULL, normalize = TRUE, ...)
 }
 \arguments{
     \item{x}{\link{TCC-class} object.}
@@ -19,12 +19,11 @@
           threshold for determining differentially expressed genes 
           (DEGs)}
     \item{median.lines}{logical. If \code{TRUE}, horizontal lines
-          specifying the median M values for non-DEGs (black), 
-          DEGs up-regulated in Group 1 (G1; blue), 
-          and G2 (red) are drawn.}
+          specifying the median M values for non-DEGs (black) and
+          DEGs (red) are drawn.}
     \item{floor}{numeric scalar specifying a threshold for adjusting 
           low count data.}
-    \item{groups}{numeric vector consists two elements for specifying what 
+    \item{group}{numeric vector consists two elements for specifying what 
           two groups should be drawn when data contains more than 
           three groups.}
     \item{col}{vector specifying plotting color.}
@@ -42,9 +41,7 @@ all the genes (points) are treated as non-DEGs
 (the default is black; see Example 1). 
 The \code{\link{simulateReadCounts}} function followed 
 by the \code{\link{plot}} function can classify the genes 
-as \emph{true} non-DEGs (black), 
-\emph{true} DEGs up-regulated in Group 1 (G1; blue), 
-and \emph{true} DEGs up-regulated in G2 (red) (see Example 2). 
+as \emph{true} non-DEGs (black), \emph{true} DEGs. (see Example 2). 
 The \code{\link{estimateDE}} function followed 
 by the \code{\link{plot}} function generates \emph{estimated} DEGs (magenta) 
 and the remaining \emph{estimated} non-DEGs (black).
@@ -84,8 +81,7 @@ mean(colSums(hypoData))
 # Example 2. 
 # M-A plotting of DEGES/edgeR-normalized simulation data.
 # It can be seen that the median M value for non-DEGs approaches
-# zero. Note that non-DEGs are in black, DEGs up-regulated in 
-# G1 and G2 are in blue and red.
+# zero. Note that non-DEGs are in black, DEGs are in red.
 tcc <- simulateReadCounts()
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 1, FDR = 0.1, floorPDEG = 0.05)

@@ -3104,8 +3104,7 @@ head(tcc$count)
 @
 
 An M-A plot for the simulation data can be viewed as follows; 
-the points for up-regulated DEGs in G1 and G2 are colored 
-blue and red, respectively. The non-DEGs are in black:
+the points for DEGs are colored red and the non-DEGs are colored black:
 
 \begin{center}
 <<maplot_simulate_data_1000, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
@@ -3127,8 +3126,10 @@ mean(colSums(tcc$count))
 <<maplot_normed_simulate_data_1000_hide, echo = FALSE, fig = FALSE>>=
 xy <- plot(tcc)
 isnot.na <- as.logical(xy[, 1] != min(xy[, 1]))
-median.G1 <- median(xy[(tcc$simulation$trueDEG == 1) & isnot.na, 2])
-median.G2 <- median(xy[(tcc$simulation$trueDEG == 2) & isnot.na, 2])
+upG1 <- as.numeric(xy$m.value < 0)
+upG2 <- as.numeric(xy$m.value > 0)
+median.G1 <- median(xy[((tcc$simulation$trueDEG == 1) & isnot.na) & upG1, 2])
+median.G2 <- median(xy[((tcc$simulation$trueDEG == 1) & isnot.na) & upG2, 2])
 median.nonDEG <- median(xy[(tcc$simulation$trueDEG == 0) & isnot.na, 2])
 @
 

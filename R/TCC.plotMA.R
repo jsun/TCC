@@ -3,17 +3,14 @@ TCC$methods(plotMA = function (FDR = NULL,
                        significance.level = NULL,
                        median.lines = FALSE,
                        floor = 0,
-                       groups = NULL,
+                       group = NULL,
                        col = NULL,
                        col.tag = NULL,
                        normalize = TRUE,
                        showfig = TRUE,
                        ...) {
+    fcall <- as.list(match.call(expand.dots = TRUE))
     arglist <- list(...)
-    if (is.null(arglist$xlab))
-        arglist$xlab <- expression(A == (log[2] * G2 + log[2] * G1 ) / 2)
-    if (is.null(arglist$ylab))
-        arglist$ylab <- expression(M == log[2] * G2 - log[2] * G1)
     if (is.null(arglist$cex))
         arglist$cex <- 0.3
     if (is.null(arglist$pch))
@@ -22,18 +19,40 @@ TCC$methods(plotMA = function (FDR = NULL,
         arglist$main <- "MA plot"
 
     ## set up default arguments.
+    ggroups <- eval(parse(text = fcall$group))
     gro <- .self$group[, 1]
     gru <- unique(as.vector(gro))
-    if (is.null(groups)) {
-        groups <- c(gru[1], gru[2])
+    if (is.null(ggroups)) {
+        ggroups <- c(gru[1], gru[2])
     }
+    if (is.null(arglist$xlab)) {
+        g1name <- ggroups[1]
+        g2name <- ggroups[2]
+        suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
+        if (.self$private$simulation && ggname.is.na) {
+            g1name <- paste0("G", g1name)
+            g2name <- paste0("G", g2name)
+        }
+        arglist$xlab <- paste0("A = (log2(", g2name, ") + log2(", g1name, "))/2")
+    }
+    if (is.null(arglist$ylab)) {
+        g1name <- ggroups[1]
+        g2name <- ggroups[2]
+        suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
+        if (.self$private$simulation && ggname.is.na) {
+            g1name <- paste0("G", g1name)
+            g2name <- paste0("G", g2name)
+        }
+        arglist$ylab <- paste0("M = log2(", g2name, ") - log2(", g1name, ")")
+    }
+
     if (is.null(col)) {
         if (private$estimated == TRUE) {
-            arglist$col <- c(1, rep(6, length = length(gru)))
+            arglist$col <- c("black", rep("magenta", length = length(gru)))
         } else if (private$simulation == TRUE) {
-            arglist$col <- c(1, 4, 2, 4 + 1:(length(gru)))
+            arglist$col <- 1:length(gru)
         } else {
-            arglist$col <- rep(1, length = length(gru))
+            arglist$col <- rep("black", length = length(gru))
         }
     } else {
         arglist$col <- col
@@ -42,10 +61,10 @@ TCC$methods(plotMA = function (FDR = NULL,
       count.normed <- .self$getNormalizedData()  
     else
       count.normed <- .self$count
-    mean.i <- rowMeans(as.matrix(count.normed[, gro == groups[1]]))
-    mean.j <- rowMeans(as.matrix(count.normed[, gro == groups[2]]))
-    norm.i <- mean(norm.factors[gro == groups[1]])
-    norm.j <- mean(norm.factors[gro == groups[2]])
+    mean.i <- rowMeans(as.matrix(count.normed[, gro == ggroups[1]]))
+    mean.j <- rowMeans(as.matrix(count.normed[, gro == ggroups[2]]))
+    norm.i <- mean(norm.factors[gro == ggroups[1]])
+    norm.j <- mean(norm.factors[gro == ggroups[2]])
     ma.axes <- .self$.getMACoordinates(mean.i, mean.j, floor)
     filter <- as.logical(mean.i > 0 & mean.j > 0)
     a <- ma.axes$a.value
@@ -60,23 +79,25 @@ TCC$methods(plotMA = function (FDR = NULL,
         arglist$type <- "n"
         do.call(plot, arglist)
         grid(col = "gray", lty = "dotted")
-        col.tag.v <- rep(0, length = nrow(count))
-        if (private$estimated == FALSE) {
-            if (private$simulation == TRUE)
-                col.tag.v <- simulation$trueDEG
-        } else {
-            if ((!is.null(estimatedDEG)) && (length(estimatedDEG != 0))) {
-                col.tag.v <- as.numeric(estimatedDEG)
+
+        if (is.null(col.tag)) {
+            col.tag.v <- rep(1, length = nrow(count))
+            if (private$estimated == FALSE) {
+                if (private$simulation == TRUE)
+                    col.tag.v <- simulation$trueDEG + 1
+            } else {
+                if ((!is.null(.self$estimatedDEG)) && (length(.self$estimatedDEG != 0))) {
+                    col.tag.v <- as.numeric(estimatedDEG) + 1
+                }
+                if (!(is.null(FDR) && is.null(significance.level))) {
+                    private$stat$q.value <<- stat$q.value
+                    private$stat$p.value <<- stat$p.value
+                    col.tag.v <- .self$.exactTest(FDR = FDR, 
+                                      significance.level = significance.level) + 1
+                }
             }
-            if (!(is.null(FDR) && is.null(significance.level))) {
-                private$stat$q.value <<- stat$q.value
-                private$stat$p.value <<- stat$p.value
-                col.tag.v <- .self$.exactTest(FDR = FDR, 
-                                  significance.level = significance.level)
-            }
+            col.tag <- col.tag.v
         }
-        if (is.null(col.tag))
-            col.tag <- col.tag.v + 1
         if (length(col.tag) != nrow(count))
             stop("\nTCC::ERROR: The length of col.tag has to be equal to the number of genes.\n")
         for (k in unique(col.tag)) {
@@ -84,13 +105,26 @@ TCC$methods(plotMA = function (FDR = NULL,
                col = arglist$col[k], pch = arglist$pch, cex = arglist$cex)
         }
         if (median.lines == TRUE) {
-            for (k in unique(col.tag)) {
-                if (length(setdiff(gru, groups)) != 0 && k == setdiff(gru, groups))
-                    next
-                med <- median(m[(col.tag == k & filter)])
-                lines(c(min(a) + 1, max(a)), c(med, med), col = arglist$col[k])
-                text(arglist$xlim[2], med + 0.5, sprintf("%.3f", med), col = arglist$col[k],
+            if (.self$private$simulation || length(groups) == 2) {
+                upG2 <- as.logical(m > 0)
+                upG1 <- as.logical(m < 0)
+                # nonDEGs
+                med <- median(m[(col.tag == 1 & filter)])
+                lines(c(min(a) + 1, max(a)), c(med, med), col = arglist$col[1])
+                text(arglist$xlim[2], med + 0.5, sprintf("%.3f", med), col = arglist$col[1],
                      pos = 2, offset = 0)
+                # DEGs in G1
+                med <- median(m[((col.tag == 2 & filter) & upG1)])
+                lines(c(min(a) + 1, max(a)), c(med, med), col = arglist$col[2])
+                text(arglist$xlim[2], med + 0.5, sprintf("%.3f", med), col = arglist$col[2],
+                     pos = 2, offset = 0)
+                # DEGs in G2
+                med <- median(m[((col.tag == 2 & filter) & upG2)])
+                lines(c(min(a) + 1, max(a)), c(med, med), col = arglist$col[2])
+                text(arglist$xlim[2], med + 0.5, sprintf("%.3f", med), col = arglist$col[2],
+                     pos = 2, offset = 0)
+            } else {
+                warnings("TCC::WARN:: TCC ploted MA-plot without the 'median.lines = TRUE' option, this option only for two-group simulation data created by 'simulateReadCounts' function.\n")
             }
         }
     }

@@ -38,7 +38,8 @@ getResult <- function(tcc, sort = FALSE, ...) {
     m.value <- rep(NA, length = nrow(tcc$count))
     a.value <- rep(NA, length = nrow(tcc$count))
     if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
-      ma <- tcc$plotMA(showfig = FALSE, ...)
+      #ma <- tcc$plotMA(showfig = FALSE, ...)
+      ma <- plot(tcc, showfig = FALSE, ...)
       m.value <- ma$m.value
       a.value <- ma$a.value
     }

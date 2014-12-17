@@ -7,14 +7,14 @@
 
 
 plot.TCC <- function(x, FDR = NULL, median.lines = FALSE, floor = 0, 
-                     groups = NULL, col = NULL, col.tag = NULL,
+                     group = NULL, col = NULL, col.tag = NULL,
                      normalize = TRUE, ...) {
 ## The function for plotting M-A plot links to TCC class object. The
 ## function calls the method implemented in TCC class. It plots M-A 
 ## plot and output (but no show) the coordinates of M-A plot as 
 ## data.frame class object.
     invisible(x$plotMA(FDR = FDR, median.lines = median.lines, floor = floor,
-                       groups = groups, col = col, col.tag = col.tag,
+                       group = group, col = col, col.tag = col.tag,
                        normalize = normalize, ...))
 }
 
