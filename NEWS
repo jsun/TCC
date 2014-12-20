@@ -1,21 +1,25 @@
-CHANGES IN VERSION 1.7.5
-------------------------
+CHANGES IN VERSION 1.7.11
+-------------------------
   - rewrite the R code.
   - 'fit0' and 'fit1' arguments were changed to 'full' and 'reduced',
     'DESeq.test' arguments were deleted.
   - 'voom' in limma package wa added for DEG identification.
   - the 'test.method' for the comparison of paired two-group can be 
     choosed from 'edger', 'deseq', 'deseq2', 'bayseq' and 'voom'.
+  - change the mode of expression of tcc$simulation$trueDEG. '0'
+    indicates a non-DEG and '1' indicates a DEG, only '0' and '1' are
+    used in this field.
+  - 'groups' argument in 'plot.TCC' function has changed to 'group'.
 
 CHANGES IN VERSION 1.5.3
-------------------------
+-------------------------
 
   - fixed bug in 'ROKU' that missing to treat data consists of all zero
     expression.
 
 
 CHANGES IN VERSION 1.5.1
-------------------------
+-------------------------
 
   - 'do_TbT' function was deleted.
   - 'exactTestafterTbT' function was deleted.
@@ -25,7 +29,7 @@ CHANGES IN VERSION 1.5.1
 
 
 CHANGES IN VERSION 1.3.2
-------------------------
+-------------------------
 
   - DESeq2 was implemented in TCC for identifying DEGs.
   - EBSeq was removed from TCC.
@@ -38,7 +42,7 @@ CHANGES IN VERSION 1.3.2
 
 
 CHANGES IN VERSION 1.2.0
-------------------------
+-------------------------
 
   - this package was released as a Bioconductor package (previously CRAN).
   - WAD method for identifying DEGs was added.
@@ -49,7 +53,7 @@ CHANGES IN VERSION 1.2.0
 
 
 CHANGES IN VERSION 1.1.3
-------------------------
+-------------------------
 
   - 'generateSimulationData' function was renamed to 'simulateReadCount'.
   - 'names' field of TCC class was changed to 'gene_id'.
@@ -60,7 +64,7 @@ CHANGES IN VERSION 1.1.3
 
 
 CHANGES IN VERSION 1.0.0
-------------------------
+-------------------------
 
   - 'TCC' class was implemented as a R5 reference class. Wrapper functions
     with functional programming semantics were proviede.

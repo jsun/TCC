@@ -86,6 +86,9 @@ TCC$methods(estimateDE = function (test.method = NULL,
 ##
 ## Indentify DEGs from data with given method, i.e., 'test.method'.
 ##
+    if (!is.null(paired) && paired == TRUE) {
+        private$paired <<- TRUE
+    }
     fcall <- as.list(match.call(expand.dots = TRUE))
     ## Initialize 'test.method'.
     if (is.null(test.method)) {

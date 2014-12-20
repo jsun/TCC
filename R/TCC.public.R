@@ -38,10 +38,14 @@ getResult <- function(tcc, sort = FALSE, ...) {
     m.value <- rep(NA, length = nrow(tcc$count))
     a.value <- rep(NA, length = nrow(tcc$count))
     if ((length(gru) == 2) && (ncol(tcc$group) == 1)) {
-      #ma <- tcc$plotMA(showfig = FALSE, ...)
-      ma <- plot(tcc, showfig = FALSE, ...)
-      m.value <- ma$m.value
-      a.value <- ma$a.value
+        #ma <- tcc$plotMA(showfig = FALSE, ...)
+        ma <- plot(tcc, showfig = FALSE, ...)
+        m.value <- ma$m.value
+        a.value <- ma$a.value
+    } else if (tcc$private$paired) {
+        ma <- plot(tcc, showfig = FALSE, ...)
+        m.value <- ma$m.value
+        a.value <- ma$a.value
     }
     ## merge statistics to data frame
     if (!is.null(tcc$stat$p.value)) {

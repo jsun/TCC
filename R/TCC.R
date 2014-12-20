@@ -71,6 +71,7 @@ TCC <- setRefClass(
             private$estimated <<- FALSE
             private$simulation <<- FALSE
             private$normalized <<- FALSE
+            private$paired <<- FALSE
             private$available$norm.method <<- c("tmm", "deseq", "deseq2")
             private$available$test.method <<- data.frame(
                 TGY  = c(T, T, T, T, T, T),  # ID:1 (two-group)
