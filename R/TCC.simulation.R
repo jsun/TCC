@@ -70,9 +70,10 @@ simulateReadCounts <- function(Ngene = 10000, PDEG = 0.20,
     population <- population[resampling.vector, ]
     ## make foldchange-matrix for sampling count data.
     fc.matrix <- matrix(1, nrow = Ngene, ncol = nrow(group))
-    fc.index <- unique(c(0, cumsum(round(Ngene * PDEG * DEG.assign))))
+    fc.index <- c(0, cumsum(round(Ngene * PDEG * DEG.assign)))
     trueDEG <- rep(0, length = Ngene)
     for (i in 2:length(fc.index)) {
+        if (fc.index[i] - fc.index[i - 1] == 0) next
         fc.matrix[(fc.index[i - 1] + 1):(fc.index[i]), ] <- 
             fc.matrix[(fc.index[i - 1] + 1):(fc.index[i]), ] * 
             matrix(rep(DEG.foldchange[, i - 1],

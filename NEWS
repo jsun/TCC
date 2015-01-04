@@ -1,5 +1,6 @@
-CHANGES IN VERSION 1.7.11
+CHANGES IN VERSION 1.7.12
 -------------------------
+  - fix bug in 'simulateReadCounts'.
   - rewrite the R code.
   - 'fit0' and 'fit1' arguments were changed to 'full' and 'reduced',
     'DESeq.test' arguments were deleted.
