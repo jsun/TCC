@@ -178,10 +178,12 @@ plotFCPseudocolor <- function(tcc, main = "",
               cex = 0.8, adj = 1, 
               line = i * ifelse(i == 1, 1, 0.6) - ifelse(i == 1, 1, 0.6) + 1)
     }
-    ycoor <- c(1, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
-           nrow(tcc$count) - 0.5)
-    yaxis <- sprintf("%d", c(1, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
-           nrow(tcc$count)))
+    ycoor <- unique(c(0, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
+           nrow(tcc$count) - 0.5))
+    yaxis <- unique(sprintf("%d", c(0, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
+           nrow(tcc$count))))
+    ycoor[ycoor == 0] <- 1
+    yaxis[yaxis == "0"] <- "1"
     axis(2, at = nrow(tcc$count) - ycoor, labels = yaxis, 
          cex.axis = 0.7, las = 1)
     box()
