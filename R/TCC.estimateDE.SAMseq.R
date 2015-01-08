@@ -7,8 +7,7 @@ if(! requireNamespace("samr", quietly=TRUE)) {
 
 
 .testBySamseq.1 <- function(samplesize = NULL) {
-    c <- round(.self$getNormalizedData())
-    suppressMessages(capture.output(res <- samr::SAMseq(x = c,
+    suppressMessages(capture.output(res <- samr::SAMseq(x = .self$count,
                 y = .self$group[, 1],
                 resp.type = "Two class unpaired",
                 nperms = samplesize)))
@@ -24,8 +23,7 @@ if(! requireNamespace("samr", quietly=TRUE)) {
 
 
 .testBySamseq.2 <- function(samplesize = NULL) {
-    c <- round(.self$getNormalizedData())
-    suppressMessages(capture.output(res <- samr::SAMseq(x = c,
+    suppressMessages(capture.output(res <- samr::SAMseq(x = .self$count,
                 y = .self$group[, 1],
                 resp.type = "Multiclass",
                 nperms = samplesize)))
@@ -40,10 +38,9 @@ if(! requireNamespace("samr", quietly=TRUE)) {
 
 
 .testBySamseq.4 <- function(samplesize = NULL) {
-    c <- round(.self$getNormalizedData())
     nreps <- nrow(.self$group) / 2
     g.vec <- c(-(1:nreps), 1:nreps)
-    suppressMessages(capture.output(res <- samr::SAMseq(x = c,
+    suppressMessages(capture.output(res <- samr::SAMseq(x = .self$count,
                 y = g.vec,
                 resp.type = "Two class paired",
                 nperms = samplesize)))
@@ -60,6 +57,8 @@ if(! requireNamespace("samr", quietly=TRUE)) {
 ##
 ## main process
 ##
+message("TCC::INFO: TCC does not use the normalization factors when 'test.method = \"samseq\"'.")
+
 add.args <- list(...)
 if (is.null(add.args$samplesize)) {
     samplesize <- 100

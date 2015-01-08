@@ -1,5 +1,6 @@
-CHANGES IN VERSION 1.7.12
+CHANGES IN VERSION 1.7.13
 -------------------------
+  - fix bug in '.testBySamseq'.
   - fix bug in 'simulateReadCounts'.
   - rewrite the R code.
   - 'fit0' and 'fit1' arguments were changed to 'full' and 'reduced',

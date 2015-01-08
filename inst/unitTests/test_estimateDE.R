@@ -1,5 +1,5 @@
 test_estimateDE_crossvalidate <- function() {
-    set.seed(2015)
+    set.seed(201501)
     tcc <- new("TCC")
     test.methods <- tcc$private$available$test.method
     norm.methods <- tcc$private$available$norm.method
