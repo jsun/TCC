@@ -176,7 +176,7 @@ when you publish your results.
 \subsection{Quick start}
 \label{section-1-3}
 
-Let us begin by showing two examples (Cases 1 and 2) of identifying DEGs 
+Let us begin by showing a example (Case 1) of identifying DEGs 
 between two groups from tag count data consisting of $1,000$ 
 genes and a total of six samples 
 (each group has three biological replicates). The hypothetical 
@@ -184,11 +184,10 @@ count data (termed "\Robject{hypoData}") is stored in this package
 (for details, see section \ref{section-2-1}). We then describe the 
 DE analysis of count data without replicates (i.e., two samples), 
 using the data of the first and the fourth 
-column of \Robject{hypoData} (Case 3). We recommend the use of commands in 
-Cases 2 and 3.
+column of \Robject{hypoData} (Case 2).
 
 
-\textbf{Case 2}:
+\textbf{Case 1}:
 DE analysis for two-group count data with replicates by using 
 the exact test coupled with iterative DEGES/edgeR 
 normalization (i.e., the iDEGES/edgeR-edgeR 
@@ -217,13 +216,13 @@ result <- getResult(tcc, sort = TRUE)
 head(result)
 @
 
-\textbf{Case 3}:
+\textbf{Case 2}:
 DE analysis for two-group count data without replicates by using 
 the negative binomial (NB) test in \Rpackage{DESeq} coupled with 
 iDEGES/DESeq normalization 
 (i.e., the iDEGES/DESeq-DESeq combination). 
 A procedure using the data of the first and fourth columns of 
-\Robject{hypoData} is shown here. Similar to Case 2, this pipeline entirely 
+\Robject{hypoData} is shown here. This pipeline entirely 
 consists of methods implemented in the \Rpackage{DESeq} package. Suggested 
 citations are as follows: \Rpackage{TCC} (Sun et al., 2013) 
 and \Rpackage{DESeq} (Anders and Huber, 2010). For details, 
@@ -746,7 +745,7 @@ sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
 
 ### STEP 2 ###
 dds <- estimateDispersions(dds)
-dds <- nbinomLRT(dds, reduced = ~ 1)
+dds <- nbinomWaldTest(dds)
 result <- results(dds)
 result$pvalue[is.na(result$pvalue)] <- 1
 pval <- result$pvalue
@@ -1940,9 +1939,9 @@ design <- formula(~ group)
 dds <- DESeqDataSetFromMatrix(countData = hypoData, colData = cl,
                               design = design)
 dds <- estimateSizeFactors(dds)
-sizeFactors(dds) <- sizeFactors(dds)/mean(sizeFactors(dds))
+sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
 dds <- estimateDispersions(dds)
-dds <- nbinomLRT(dds, reduced = ~ 1)
+dds <- nbinomWaldTest(dds)
 result <- results(dds)
 head(result[order(result$pvalue),])
 library(ROC)
@@ -2009,7 +2008,10 @@ cl <- data.frame(group = group)
 design <- formula(~ group)
 dds <- DESeqDataSetFromMatrix(countData = hypoData, colData = cl,
                               design = design)
-dds <- DESeq(dds)
+dds <- estimateSizeFactors(dds)
+sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
+dds <- estimateDispersions(dds)
+dds <- nbinomWaldTest(dds)
 result <- results(dds)
 head(result[order(result$pvalue),])
 library(ROC)
@@ -2017,33 +2019,7 @@ truth <- c(rep(1, 200), rep(0, 800))
 result$pvalue[is.na(result$pvalue)] <- 1
 AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
 @
-<<4090911011, echo = FALSE>>=
-buff_2 <- AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
-@
 
-The different AUC values ($\Sexpr{sprintf("%.7f", buff_1)}$ and
-$\Sexpr{sprintf("%.7f", buff_2)}$) caused by the different
-choices of test methods: the former and the latter procedures used the
-\Rfunction{nbinomLRT} and the \Rfunction{nbinomWaldTest} functions,
-respectively. \Rpackage{TCC} internally uses the \Rfunction{nbinomLRT}
-function in \Rpackage{DESeq2} for this experimental design.
-
-If you want to use the \Rfunction{nbinomWaldTest} function in
-\Rpackage{TCC}, one can do as follows.
-
-<<3489184391>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 1, 1, 2, 2, 2)
-tcc <- new("TCC", hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq2", iteration = 0)
-tcc <- estimateDE(tcc, test.method = "deseq2", contrast = c("group", "1", "2"), FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-library(ROC)
-truth <- c(rep(1, 200), rep(0, 800))
-AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
-@
 
 \subsection{DE analysis for two-group data without replicates}
 \label{section-4-2}

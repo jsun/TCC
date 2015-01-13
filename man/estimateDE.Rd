@@ -145,10 +145,10 @@ packages are internally called according to the specified
           are internally called.
     \item \code{test.method = "deseq2"}\cr
           \code{\link[DESeq2]{estimateDispersions}}, and 
-          \code{\link[DESeq2]{nbinomLRT}} are internally called for 
+          \code{\link[DESeq2]{nbinomWaldTest}} are internally called for 
           identifying DEGs.
-          However, if \code{contrast} is given,
-          the \code{\link[DESeq2]{nbinomWaldTest}} will be used.
+          However, if \code{full} and \code{reduced} are given,
+          the \code{\link[DESeq2]{nbinomLRT}} will be used.
     \item \code{test.method = "bayseq"}\cr
           \code{\link[baySeq]{getPriors.NB}} and
           \code{\link[baySeq]{getLikelihoods}} in baySeq are internally
