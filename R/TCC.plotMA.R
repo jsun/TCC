@@ -33,7 +33,8 @@ TCC$methods(plotMA = function (FDR = NULL,
             g1name <- paste0("G", g1name)
             g2name <- paste0("G", g2name)
         }
-        arglist$xlab <- paste0("A = (log2(", g2name, ") + log2(", g1name, "))/2")
+        #arglist$xlab <- paste0("A = (log2(", g2name, ") + log2(", g1name, "))/2")
+        arglist$xlab <- bquote(A ~ "=" ~ (log[2](.(g2name)) + log[2](.(g1name))) / 2)
     }
     if (is.null(arglist$ylab)) {
         g1name <- ggroups[1]
@@ -43,7 +44,8 @@ TCC$methods(plotMA = function (FDR = NULL,
             g1name <- paste0("G", g1name)
             g2name <- paste0("G", g2name)
         }
-        arglist$ylab <- paste0("M = log2(", g2name, ") - log2(", g1name, ")")
+        #arglist$ylab <- paste0("M = log2(", g2name, ") - log2(", g1name, ")")
+        arglist$ylab <- bquote(M ~ "=" ~ log[2](.(g2name)) - log[2](.(g1name)))
     }
 
     if (is.null(col)) {
