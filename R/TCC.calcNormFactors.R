@@ -89,6 +89,8 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     ## Initialize arugments.
     ## If 'norm.method', 'test.method', etc were not given, initiailze them
     ## depend on data type ('tcc$count' and 'tcc$group').
+    if (!is.null(norm.method)) norm.method <- tolower(norm.method)
+    if (!is.null(test.method)) test.method <- tolower(test.method)
 
     ## Initialize 'start points' of DEGES normlization.
     if ((increment == FALSE) || 
@@ -97,8 +99,13 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     }
     ## Initialize 'norm.method' an 'test.method'.
     if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1))  {
-        if (is.null(norm.method)) norm.method <- "deseq"
-        if (is.null(test.method)) test.method <- "deseq"
+        if (length(as.numeric(table(.self$group))) == 2) {
+            if (is.null(norm.method)) norm.method <- "deseq"
+            if (is.null(test.method)) test.method <- "deseq"
+        } else {
+            if (is.null(norm.method)) norm.method <- "deseq2"
+            if (is.null(test.method)) test.method <- "deseq2"
+        }
     } else {
         if (is.null(norm.method)) norm.method <- "tmm"
         if (is.null(test.method)) test.method <- "edger"

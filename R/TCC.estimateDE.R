@@ -86,6 +86,8 @@ TCC$methods(estimateDE = function (test.method = NULL,
 ##
 ## Indentify DEGs from data with given method, i.e., 'test.method'.
 ##
+    if (!is.null(test.method)) test.method <- tolower(test.method)
+
     if (!is.null(paired) && paired == TRUE) {
         private$paired <<- TRUE
     }
@@ -93,7 +95,11 @@ TCC$methods(estimateDE = function (test.method = NULL,
     ## Initialize 'test.method'.
     if (is.null(test.method)) {
         if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1)) {
-            test.method = "deseq"
+            if (length(as.numeric(table(.self$group))) == 2) {
+                test.method = "deseq"
+            } else {
+                test.method = "deseq2"
+            }
         } else {
             test.method = "edger"
         }
