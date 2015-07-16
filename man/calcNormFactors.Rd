@@ -33,9 +33,10 @@ The procedure can generally be described as the
           \code{"bayseq"}, \code{"samseq"}, \code{"voom"} and \code{"wad"}.
           See the "Details" filed in \code{\link{estimateDE}} for detail.
           The default is \code{"edger"} when analyzing the count data with
-          multiple replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}) 
-          and \code{"deseq"} when analyzing the count data without replicates 
-          (i.e., \code{min(table(tcc$group[, 1])) == 1))}.}
+          multiple replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}),
+          and \code{"deseq"} (2 group) and \code{"deseq2"} (more than 2 group)
+          when analyzing the count data without replicates 
+          (i.e., \code{min(table(tcc$group[, 1])) == 1}.)}
     \item{iteration}{logical or numeric value specifying the number of
           iteration (\eqn{n}) in the proposed normalization pipeline: the
           \eqn{STEP1-(STEP2-STEP3)_{n}}{STEP1-(STEP2-STEP3)n} pipeline.

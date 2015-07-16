@@ -27,9 +27,10 @@ implemented in other R packages.
           \code{"bayseq"}, \code{"samseq"}, \code{"voom"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
-          replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}) and
-          \code{"deseq"} when analyzing the count data without replicates 
-          (i.e., \code{min(table(tcc$group[, 1])) == 1)}).}
+          replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), and
+          \code{"deseq"} (2 group) and \code{"deseq2"} (more than 2 group)
+          when analyzing the count data without replicates 
+          (i.e., \code{min(table(tcc$group[, 1])) == 1}).}
 
     \item{FDR}{numeric value (between 0 and 1) specifying the threshold
           for determining DEGs.}
