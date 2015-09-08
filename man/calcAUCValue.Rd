@@ -5,10 +5,13 @@
 This function calculates AUC (Area under the ROC curve) value from 
 a \link{TCC-class} object for simulation study.
 }
-\usage{calcAUCValue(tcc)}
+\usage{calcAUCValue(tcc, t = 1)}
 \arguments{
     \item{tcc}{\link{TCC-class} object having values in both \code{stat$rank}
                and \code{simulation$trueDEG} fields.}
+    \item{t}{numeric value (between 0 and 1) specifying the FPR (i.e., the
+             \eqn{x}-axis of ROC curve). AUC value is calculated from 0 to
+             \code{t}. The default is 1.}
 }
 \details{
 This function is generally used after the \code{\link{estimateDE}} function 

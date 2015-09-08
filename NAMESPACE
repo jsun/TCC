@@ -5,6 +5,7 @@ import(methods)
 # import methods from ROC
 importFrom(ROC, rocdemo.sca)
 importFrom(ROC, AUC)
+importFrom(ROC, pAUC)
 
 
 
@@ -68,6 +69,7 @@ export(
     estimateDE,
     filterLowCountGenes,
     simulateReadCounts,
+    makeFCMatrix,
     getNormalizedData,
     getResult,
     plotFCPseudocolor,

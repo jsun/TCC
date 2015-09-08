@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.9.3
+-------------------------
+  - changed default value. Set 'test.method = "DESeq2" as default value
+    when analyze multi-group without replicate data.
+  - add 'makeFCMatrix' function for generating the foldchange matrix that
+    is used in 'simulateReadCounts' funtion.
+  - add function to simulate DEGs using fondchange matrix into
+    'simulateReadCounts' function.
+
 CHANGES IN VERSION 1.7.13
 -------------------------
   - fix bug in '.testBySamseq'.
