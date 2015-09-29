@@ -1178,7 +1178,7 @@ d <- estimateGLMTrendedDisp(d, design)
 d <- estimateGLMTagwiseDisp(d, design)
 fit <- glmFit(d, design)
 lrt <- glmLRT(fit, coef = coef)
-result <- topTags(lrt, n = nrow(hypoData_mg))
+result <- as.data.frame(topTags(lrt, n = nrow(hypoData_mg)))
 result <- result$table[rownames(hypoData_mg), ]
 pval <- lrt$table$PValue
 qval <- p.adjust(pval, method = "BH")
@@ -1840,7 +1840,7 @@ d <- calcNormFactors(d)
 d <- estimateCommonDisp(d)
 d <- estimateTagwiseDisp(d)
 out <- exactTest(d)
-result <- topTags(out, n = nrow(hypoData), sort.by = "PValue")
+result <- as.data.frame(topTags(out, n = nrow(hypoData), sort.by = "PValue"))
 head(result)
 @
 
@@ -2119,7 +2119,7 @@ d <- DGEList(counts = hypoData[, c(1, 4)], group = group)
 d <- calcNormFactors(d)
 d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
 out <- exactTest(d)
-result <- topTags(out, n = nrow(hypoData), sort.by = "PValue")
+result <- as.data.frame(topTags(out, n = nrow(hypoData), sort.by = "PValue"))
 head(result)
 @
 
@@ -2513,7 +2513,7 @@ d <- estimateGLMTrendedDisp(d, design)
 d <- estimateGLMTagwiseDisp(d, design)
 fit <- glmFit(d, design)
 lrt <- glmLRT(fit, coef = coef)
-tmp <- topTags(lrt, n = nrow(tcc$count))
+tmp <- as.data.frame(topTags(lrt, n = nrow(tcc$count)))
 p.value <- tmp$table$PValue
 q.value <- tmp$table$FDR
 result <- cbind(p.value, q.value)
