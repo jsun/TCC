@@ -2517,7 +2517,6 @@ tmp <- as.data.frame(topTags(lrt, n = nrow(tcc$count)))
 p.value <- tmp$table$PValue
 q.value <- tmp$table$FDR
 result <- cbind(p.value, q.value)
-rownames(result) <- rownames(tmp)
 head(result)
 sum(q.value < 0.1)
 sum(q.value < 0.2)
