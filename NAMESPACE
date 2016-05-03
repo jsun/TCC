@@ -1,6 +1,15 @@
 import(methods)
 
 
+# import basic functions
+importFrom("grDevices", "cm.colors")
+importFrom("graphics", "axis", "box", "image", "layout", "mtext",
+           "par", "plot", "title")
+importFrom("stats", "as.dist", "cor", "dist", "hclust", "median",
+           "pnbinom", "rgamma", "rnbinom", "sd", "var")
+importFrom("utils", "combn", "data", "head")
+
+
 
 # import methods from ROC
 importFrom(ROC, rocdemo.sca)

@@ -10,6 +10,9 @@
 \alias{length,TCC-method}
 \alias{[}
 \alias{[,TCC,ANY-method}
+\alias{[,TCC-method}
+\alias{[,TCC,ANY,ANY-method}
+\alias{[,TCC,ANY,ANY,ANY-method}
 \alias{subset}
 \alias{subset,TCC-method}
 \title{A container for storing information used in TCC}
