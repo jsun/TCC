@@ -28,22 +28,32 @@ TCC$methods(plotMA = function (FDR = NULL,
     if (is.null(arglist$xlab)) {
         g1name <- ggroups[1]
         g2name <- ggroups[2]
-        suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
-        if (.self$private$simulation && ggname.is.na) {
-            g1name <- paste0("G", g1name)
-            g2name <- paste0("G", g2name)
-        }
+        #suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
+        #if (.self$private$simulation && ggname.is.na) {
+        #    g1name <- paste0("G", g1name)
+        #    g2name <- paste0("G", g2name)
+        #}
+        g1name <- paste0("G", g1name)
+        g2name <- paste0("G", g2name)
         #arglist$xlab <- paste0("A = (log2(", g2name, ") + log2(", g1name, "))/2")
         arglist$xlab <- bquote(A ~ "=" ~ (log[2](.(g2name)) + log[2](.(g1name))) / 2)
     }
     if (is.null(arglist$ylab)) {
         g1name <- ggroups[1]
         g2name <- ggroups[2]
-        suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
-        if (.self$private$simulation && ggname.is.na) {
-            g1name <- paste0("G", g1name)
-            g2name <- paste0("G", g2name)
-        }
+        
+        ## if the group name is give, use group name,
+        ## otherwise, use G1, G2, ... as group name.
+        #suppressWarnings(ggname.is.na <- !any(is.na(as.integer(as.character(ggroups)))))
+        #if (.self$private$simulation && ggname.is.na) {
+        #    g1name <- paste0("G", g1name)
+        #    g2name <- paste0("G", g2name)
+        #}
+        
+        ## always use G1, G2, ... as group name.
+        g1name <- paste0("G", g1name)
+        g2name <- paste0("G", g2name)
+        
         #arglist$ylab <- paste0("M = log2(", g2name, ") - log2(", g1name, ")")
         arglist$ylab <- bquote(M ~ "=" ~ log[2](.(g2name)) - log[2](.(g1name)))
     }
