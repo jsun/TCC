@@ -38,8 +38,6 @@ importFrom(samr, SAMseq)
 
 
 # import methods from baySeq
-importFrom(baySeq, getPriors.BB)
-importFrom(baySeq, getLikelihoods.BB)
 importFrom(baySeq, getPriors.NB)
 importFrom(baySeq, getLikelihoods.NB)
 importFrom(baySeq, topCounts)
