@@ -289,7 +289,7 @@ plotFCPseudocolor <- function(tcc, main = "",
     }
     ycoor <- unique(c(0, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
            nrow(tcc$count) - 0.5))
-    yaxis <- unique(sprintf("%d", c(0, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
+    yaxis <- unique(sprintf("%.0f", c(0, cumsum(nrow(tcc$count) * tcc$simulation$PDEG),
            nrow(tcc$count))))
     ycoor[ycoor == 0] <- 1
     yaxis[yaxis == "0"] <- "1"
