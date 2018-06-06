@@ -1,5 +1,14 @@
+CHANGES IN VERSION 1.21.1
+-------------------------
+
+  - fixed bug (order of outputs from devel version of baySeq cannot be sorted)
+    in '.testByBayseq'.
+
+
+
 CHANGES IN VERSION 1.9.3
 -------------------------
+
   - changed default value. Set 'test.method = "DESeq2" as default value
     when analyze multi-group without replicate data.
   - add 'makeFCMatrix' function for generating the foldchange matrix that
@@ -7,7 +16,10 @@ CHANGES IN VERSION 1.9.3
   - add function to simulate DEGs using fondchange matrix into
     'simulateReadCounts' function.
 
+
+
 CHANGES IN VERSION 1.7.13
+
 -------------------------
   - fix bug in '.testBySamseq'.
   - fix bug in 'simulateReadCounts'.
@@ -22,11 +34,14 @@ CHANGES IN VERSION 1.7.13
     used in this field.
   - 'groups' argument in 'plot.TCC' function has changed to 'group'.
 
+
+
 CHANGES IN VERSION 1.5.3
 -------------------------
 
   - fixed bug in 'ROKU' that missing to treat data consists of all zero
     expression.
+
 
 
 CHANGES IN VERSION 1.5.1
