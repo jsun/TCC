@@ -10,6 +10,8 @@
 \SweaveOpts{pdf=TRUE}
 
 
+
+
 \definecolor{TccBlue}{cmyk}{0.74,0.26,0,0.14}
 \definecolor{TccRed}{cmyk}{0,1,0.78,0.1}
 \definecolor{TccGreen}{cmyk}{0.99,0,0.29,0.47}
@@ -528,6 +530,7 @@ norm.factors <- norm.factors / mean(norm.factors)
 cD <- new("countData", data = hypoData, replicates = group,
           groups = list(NDE = rep(1, length = length(group)), DE = group),
           libsizes = colSums(hypoData) * norm.factors)
+cD@annotation <- data.frame(rowID = 1:nrow(hypoData))
 cD <- getPriors.NB(cD, samplesize = samplesize, estimation = "QL", cl = NULL)
 cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
 result <- topCounts(cD, group = "DE", number = nrow(hypoData))

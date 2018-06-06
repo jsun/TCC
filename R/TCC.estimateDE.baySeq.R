@@ -10,6 +10,7 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
                             groups = list(NDE = rep(1, nrow(.self$group)),
                                           DE = .self$group[, 1]),
                             libsizes = .self$norm.factors * colSums(.self$count)))
+    suppressMessages(d@annotation <- data.frame(rowID = 1:nrow(.self$count)))
     suppressMessages(capture.output(d <- baySeq::getPriors.NB(d, estimation = "QL",
                                     samplesize = samplesize, cl = cl)))
     suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
@@ -37,6 +38,7 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
              replicates = .self$group[, 1],
              groups = grps,
              libsizes = colSums(.self$count) * .self$norm.factors))
+    suppressMessages(d@annotation <- data.frame(rowID = 1:nrow(.self$count)))
     suppressMessages(capture.output(d <- baySeq::getPriors.NB(d, estimation = "QL",
                                     samplesize = samplesize, cl = cl)))
     suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
@@ -62,6 +64,7 @@ TCC$methods(.testByBayseq = function(samplesize = NULL, cl = NULL, paired = NULL
               replicates = grps, groups = patterns,
               densityFunction = bbDensity,
               libsizes = cbind(libsize_1, libsize_2))
+    suppressMessages(d@annotation <- data.frame(rowID = 1:nrow(.self$count)))
     suppressMessages(capture.output(d <- baySeq::getPriors(d,
                                     samplesize = samplesize, cl = cl)))
     suppressMessages(capture.output(d <- baySeq::getLikelihoods(d, pET = "BIC",
