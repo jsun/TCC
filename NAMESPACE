@@ -33,8 +33,6 @@ importFrom(edgeR, topTags)
 
 
 
-# import methods from samr
-importFrom(samr, SAMseq)
 
 
 # import methods from baySeq

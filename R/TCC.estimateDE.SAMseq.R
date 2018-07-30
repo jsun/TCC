@@ -1,4 +1,5 @@
 TCC$methods(.testBySamseq = function(...) {
+require(samr)
 
 if(! requireNamespace("samr", quietly=TRUE)) {
     stop("TCC::ERROR: TCC needs the 'samr' package for DEG identification if 'test.method' is specifed to 'samseq'. Please install the 'samr' package from CRAN.")

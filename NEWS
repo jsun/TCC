@@ -1,9 +1,9 @@
-CHANGES IN VERSION 1.21.1
+CHANGES IN VERSION 1.21.2
 -------------------------
 
   - fixed bug (order of outputs from devel version of baySeq cannot be sorted)
     in '.testByBayseq'.
-
+  - disabled 'samseq' option, since samr package has been removed from CRAN.
 
 
 CHANGES IN VERSION 1.9.3
