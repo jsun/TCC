@@ -1,3 +1,4 @@
+if (FALSE) {
 TCC$methods(.testByYayoi = function(upper.limit = 0.4, deseq = NULL, norm = FALSE, ...) {
     if (is.null(deseq)) {
         deseq <- 1
@@ -23,5 +24,4 @@ TCC$methods(.testByYayoi = function(upper.limit = 0.4, deseq = NULL, norm = FALS
     private$outmx <<- r$outlier
     private$prob <<- r$prob
 })
-
-
+}

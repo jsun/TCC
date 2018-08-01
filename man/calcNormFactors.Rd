@@ -30,7 +30,7 @@ The procedure can generally be described as the
     \item{test.method}{character specifying a method for identifying
           differentially expressed genes (DEGs) used in \eqn{STEP2}:
           one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
-          \code{"bayseq"}, \code{"samseq"}, \code{"voom"} and \code{"wad"}.
+          \code{"bayseq"}, \code{"voom"} and \code{"wad"}.
           See the "Details" filed in \code{\link{estimateDE}} for detail.
           The default is \code{"edger"} when analyzing the count data with
           multiple replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}),

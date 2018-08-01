@@ -24,7 +24,7 @@ implemented in other R packages.
 
     \item{test.method}{character string specifying a method for identifying
           DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
-          \code{"bayseq"}, \code{"samseq"}, \code{"voom"}, and \code{"wad"}.
+          \code{"bayseq"}, \code{"voom"}, and \code{"wad"}.
           See the "Details" field for detail.
           The default is \code{"edger"} when analyzing the count data with
           replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), and

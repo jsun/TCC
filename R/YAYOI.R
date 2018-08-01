@@ -1,3 +1,4 @@
+if (FALSE) {
 YAYOI <- function(count = NULL,          # count data
                   group = NULL,          # condition label
                   norm.factors = NULL,   # normalization factors
@@ -124,4 +125,5 @@ YAYOI <- function(count = NULL,          # count data
 
     yscore[rowSums(abs(expprof)) == 0] <- min(yscore)
     return (list(outlier = expprof, score = yscore, prob = prob))
+}
 }

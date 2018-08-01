@@ -2143,11 +2143,11 @@ AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 @
 
 
-\subsubsection{DESeq2 coupled with iDEGES/DESeq2 normalization}
+\subsubsection{DESeq coupled with iDEGES/DESeq normalization}
 
 We give a procedure for DE analysis using the likelihood ratio
-test for GLMs implemented in \Rpackage{DESeq2} together with iDEGES/DESeq2
-normalization factors (i.e., the iDEGES/DESeq2-DESeq2 combination)
+test for GLMs implemented in \Rpackage{DESeq} together with iDEGES/DESeq
+normalization factors (i.e., the iDEGES/DESeq-DESeq combination)
 for the hypothetical two-group count data without replicates
 (i.e., the \Robject{hypoData} object). If the user wants to
 determine the genes having an FDR threshold of $< 10$\% as DEGs,
@@ -2158,9 +2158,9 @@ library(TCC)
 data(hypoData)
 group <- c(1, 2)
 tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq2", test.method = "deseq2",
+tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
                        iteration = 3, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "deseq2", FDR = 0.1)
+tcc <- estimateDE(tcc, test.method = "deseq", FDR = 0.1)
 @
 
 The results of the DE analysis are stored in the \Robject{TCC} class object.
@@ -2211,26 +2211,24 @@ AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 @
 
 For comparison, the DE results from the original procedure in
-\Rpackage{DESeq2} can be obtained as follows.
+\Rpackage{DESeq} can be obtained as follows.
 
 <<4929100782>>=
 library(TCC)
 data(hypoData)
 group <- factor(c(1, 2))
 cl <- data.frame(group = group)
-design <- formula(~ group)
-dds <- DESeqDataSetFromMatrix(countData = hypoData[, c(1, 4)], colData = cl,
-                              design = design)
+dds <- newCountDataSet(countData = hypoData[, c(1, 4)], condition = group)
 dds <- estimateSizeFactors(dds)
 sizeFactors(dds) <- sizeFactors(dds) / mean(sizeFactors(dds))
-dds <- estimateDispersions(dds)
-dds <- nbinomLRT(dds, reduced = ~ 1)
-result <- results(dds)
-head(result[order(result$pvalue),])
+dds <- estimateDispersions(dds, method = "blind", sharingMode = "fit-only")
+dds <- nbinomTest(dds, 1, 2)
+pvalue <- dds$pval
+
 library(ROC)
 truth <- c(rep(1, 200), rep(0, 800))
-result$pvalue[is.na(result$pvalue)] <- 1
-AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
+pvalue[is.na(pvalue)] <- 1
+AUC(rocdemo.sca(truth = truth, data = -rank(pvalue)))
 @
 
 This is the same as
@@ -2240,8 +2238,8 @@ library(TCC)
 data(hypoData)
 group <- c(1, 2)
 tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq2", iteration = 0)
-tcc <- estimateDE(tcc, test.method = "deseq2", FDR = 0.1)
+tcc <- calcNormFactors(tcc, norm.method = "deseq", iteration = 0)
+tcc <- estimateDE(tcc, test.method = "deseq", FDR = 0.1)
 result <- getResult(tcc, sort = TRUE)
 head(result)
 library(ROC)

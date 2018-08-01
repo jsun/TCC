@@ -1,9 +1,11 @@
-CHANGES IN VERSION 1.21.2
+CHANGES IN VERSION 1.21.3
 -------------------------
 
   - fixed bug (order of outputs from devel version of baySeq cannot be sorted)
     in '.testByBayseq'.
   - disabled 'samseq' option, since samr package has been removed from CRAN.
+  - change design matrix used in DESeq2
+
 
 
 CHANGES IN VERSION 1.9.3
@@ -41,12 +43,6 @@ CHANGES IN VERSION 1.5.3
 
   - fixed bug in 'ROKU' that missing to treat data consists of all zero
     expression.
-
-
-
-CHANGES IN VERSION 1.5.1
--------------------------
-
   - 'do_TbT' function was deleted.
   - 'exactTestafterTbT' function was deleted.
   - 'MAplot' function was deleted.

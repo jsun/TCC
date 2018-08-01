@@ -146,7 +146,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
            "wad" = .self$.testByWad(logged = logged,
                                     floor = floor,
                                     ...),
-           "yayoi" = .self$.testByYayoi(...),
+           #"yayoi" = .self$.testByYayoi(...),
            stop(paste("\nTCC::ERROR: The identifying method of ", 
                       test.method, " doesn't supported.\n"))
     )
