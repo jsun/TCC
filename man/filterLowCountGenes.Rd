@@ -14,8 +14,8 @@ The threshold is configurable with \code{low.count} parameter.
           numbers of genes to be filtered out.}
 }
 \value{
-\link{TCC-class} object consisting of genes whose sum of the counts
-across samples is equal or higher than the \code{low.count} value.
+\link{TCC-class} object consisting of genes whose max count across
+samples is higher than the \code{low.count} value.
 }
 \examples{
 # Filtering genes with zero counts across samples (default) from
