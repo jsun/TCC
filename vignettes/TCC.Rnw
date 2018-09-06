@@ -141,8 +141,9 @@ To install the package, enter the following command after starting R:
 
 \begin{Schunk}
 \begin{Sinput}
-> source("http://bioconductor.org/biocLite.R")
-> biocLite("TCC")
+> if (!requireNamespace("BiocManager", quietly=TRUE))
+    > install.packages("BiocManager")
+> BiocManager::install("TCC")
 \end{Sinput}
 \end{Schunk}
 
