@@ -88,25 +88,21 @@ getResult <- function(tcc, sort = FALSE, ...) {
 
 filterLowCountGenes <- function(tcc, low.count = 0) {
     obj <- tcc$copy()
-    gru <- unique(obj$group[, 1])
-    filters <- matrix(0, ncol = length(gru), nrow = nrow(obj$count)) 
-    for (i in 1:length(gru)) {
-        filters[, i] <- as.numeric(rowSums(
-                            as.matrix(obj$count[, (obj$group[, 1] == gru[i])])
-                        ) <= low.count)
-    }
-    left.tag <- as.logical(rowSums(filters) != length(gru))
-    obj$count <- obj$count[left.tag, ]
+    
+    gene.keep = (rowSums(obj$count) > low.count)
+    
+    obj$count <- obj$count[gene.keep, ]
     if (!is.null(obj$simulation$trueDEG) && length(obj$simulation$trueDEG) != 0)
-        obj$simulation$trueDEG <- obj$simulation$trueDEG[left.tag]
+        obj$simulation$trueDEG <- obj$simulation$trueDEG[gene.keep]
     if (!is.null(obj$estimatedDEG) && length(obj$estimatedDEG) != 0)
-        obj$estimatedDEG <- obj$estimatedDEG[left.tag]
+        obj$estimatedDEG <- obj$estimatedDEG[gene.keep]
     if (!is.null(obj$stat) && length(obj$stat) != 0) {
         for (i in 1:length(obj$stat)) {
-            if (length(obj$stat[[i]]) == length(left.tag))
-                obj$stat[[i]] <- obj$stat[[i]][left.tag]
+            if (length(obj$stat[[i]]) == length(gene.keep))
+                obj$stat[[i]] <- obj$stat[[i]][gene.keep]
         }
     }
+    
     return (obj)
 }
 

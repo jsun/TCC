@@ -14,8 +14,8 @@ The threshold is configurable with \code{low.count} parameter.
           numbers of genes to be filtered out.}
 }
 \value{
-\link{TCC-class} object consisting of genes whose max count across
-samples is higher than the \code{low.count} value.
+\link{TCC-class} object consisting of genes whose total counts
+across samples is higher than the \code{low.count} value.
 }
 \examples{
 # Filtering genes with zero counts across samples (default) from
@@ -32,7 +32,7 @@ data(hypoData)
 group <- c(1, 1, 1, 2, 2, 2)
 tcc <- new("TCC", hypoData, group)
 dim(tcc$count)
-tcc <- filterLowCountGenes(tcc, low.count = 10)
+tcc <- filterLowCountGenes(tcc, 10)
 dim(tcc$count)
 }
 \keyword{methods}
