@@ -1,4 +1,7 @@
 import(methods)
+S3method(plot, TCC)
+#S3method(show, TCC)
+#S3method(subset, TCC)
 
 
 # import basic functions
@@ -10,12 +13,10 @@ importFrom("stats", "as.dist", "cor", "dist", "hclust", "median",
 importFrom("utils", "combn", "data", "head")
 
 
-
 # import methods from ROC
 importFrom(ROC, rocdemo.sca)
 importFrom(ROC, AUC)
 importFrom(ROC, pAUC)
-
 
 
 # import methods from edgeR
@@ -32,13 +33,11 @@ importFrom(edgeR, glmLRT)
 importFrom(edgeR, topTags)
 
 
-
-
-
 # import methods from baySeq
 importFrom(baySeq, getPriors.NB)
 importFrom(baySeq, getLikelihoods.NB)
 importFrom(baySeq, topCounts)
+
 
 # import methods from DESeq
 importFrom(DESeq, newCountDataSet)
@@ -48,6 +47,7 @@ importFrom(DESeq, estimateSizeFactors)
 importFrom(DESeq, nbinomTest)
 importFrom(DESeq, fitNbinomGLMs)
 importFrom(DESeq, nbinomGLMTest)
+
 
 # import methods from DESeq2
 importFrom(DESeq2, DESeqDataSetFromMatrix)
