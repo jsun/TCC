@@ -2,7 +2,7 @@ clusterSample <- function (data, dist.method = "spearman",
                            hclust.method = "average", unique.pattern = TRUE) {
 ##  This function performs hierarchical clustering for samples (tissues or 
 ##  columns) from expression data.
-    if (class(data) == "TCC") {
+    if (class(data)[1] == "TCC") {
         data <- data$count
     }
     data <- data[rowSums(data) > 0, ]
