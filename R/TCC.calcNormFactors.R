@@ -14,7 +14,7 @@ TCC$methods(.normByTmm = function(x){
 
 
 
-
+if (FALSE) {
 TCC$methods(.normByDeseq = function(x){
 ##
 ## Med(DESeq) normalization
@@ -32,7 +32,7 @@ TCC$methods(.normByDeseq = function(x){
     suppressMessages(d <- DESeq::estimateSizeFactors(d))
     return(DESeq::sizeFactors(d) / colSums(x))
 })
-
+}
 
 
 
@@ -100,8 +100,8 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
     ## Initialize 'norm.method' an 'test.method'.
     if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1))  {
         if (length(as.numeric(table(.self$group))) == 2) {
-            if (is.null(norm.method)) norm.method <- "deseq"
-            if (is.null(test.method)) test.method <- "deseq"
+            if (is.null(norm.method)) norm.method <- "tmm"
+            if (is.null(test.method)) test.method <- "edger"
         } else {
             if (is.null(norm.method)) norm.method <- "deseq2"
             if (is.null(test.method)) test.method <- "deseq2"
@@ -146,7 +146,6 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
         (increment == TRUE && private$normalized == FALSE)) {
         norm.factors <<- switch(norm.method,
                                 "tmm" = .self$.normByTmm(count),
-                                "deseq" = .self$.normByDeseq(count),
                                 "deseq2" = .self$.normByDeseq2(count),
                                 stop(paste("\nTCC::ERROR: The normalization method of ", 
                                 norm.method, " doesn't supported.\n")))
@@ -164,7 +163,6 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
             private$stat <<- list()
             switch(test.method,
                    "edger" = .self$.testByEdger(...),
-                   "deseq" = .self$.testByDeseq(...),
                    "deseq2" = .self$.testByDeseq2(...),
                    "bayseq" = .self$.testByBayseq(...),
                    "voom" = .self$.testByLimmavoom(...),
@@ -224,7 +222,6 @@ TCC$methods(calcNormFactors = function(norm.method = NULL,
             ## The last X of X-Y-X pipeline.
             norm.factors <<- switch(norm.method,
                                     "tmm" = .self$.normByTmm(count.ndeg),
-                                    "deseq" = .self$.normByDeseq(count.ndeg),
                                     "deseq2" = .self$.normByDeseq2(count.ndeg)
             )
             ## Standarlize normalization factors.

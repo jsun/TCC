@@ -54,13 +54,5 @@ tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
 result <- getResult(tcc, sort = TRUE)
 head(result)
 
-# Obtaining DE results by an negative binomial test in DESeq
-# coupled with the iterative DEGES/DESeq normalization method.
-tcc <- new("TCC", hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "deseq", FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
 }
 \keyword{methods}

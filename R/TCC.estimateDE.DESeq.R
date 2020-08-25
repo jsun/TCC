@@ -1,3 +1,5 @@
+if (FALSE) {
+
 TCC$methods(.testByDeseq = function(full = NULL, reduced = NULL,
                                     paired = NULL, ... ) {
 
@@ -167,3 +169,4 @@ switch(test.approach,
 
 })
 
+}

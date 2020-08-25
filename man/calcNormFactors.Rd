@@ -20,23 +20,15 @@ The procedure can generally be described as the
     \item{norm.method}{character specifying a normalization method used in
           both the \eqn{STEP1} and \eqn{STEP3}. Possible values are
           \code{"tmm"} for the TMM normalization method implemented in the
-          edgeR package, \code{"edger"} (same as \code{"tmm"}), \code{"deseq2"}
-          and \code{"deseq"} for the method implemented in the DESeq package.
-          The default is \code{"tmm"}
-          when analyzing the count data with multiple replicates
-          (i.e., \code{min(table(tcc$group[, 1])) > 1}) 
-          and \code{"deseq"} when analyzing the count data without replicates
-          \cr(i.e., \code{min(table(tcc$group[, 1])) == 1}).}
+          edgeR package, \code{"edger"} (same as \code{"tmm"}), and \code{"deseq2"}
+          for the method implemented in the DESeq2 package.
+          The default is \code{"tmm"}.}
     \item{test.method}{character specifying a method for identifying
           differentially expressed genes (DEGs) used in \eqn{STEP2}:
-          one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
+          one of \code{"edger"}, \code{"deseq2"},
           \code{"bayseq"}, \code{"voom"} and \code{"wad"}.
           See the "Details" filed in \code{\link{estimateDE}} for detail.
-          The default is \code{"edger"} when analyzing the count data with
-          multiple replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}),
-          and \code{"deseq"} (2 group) and \code{"deseq2"} (more than 2 group)
-          when analyzing the count data without replicates 
-          (i.e., \code{min(table(tcc$group[, 1])) == 1}.)}
+          The default is \code{"edger"}.}
     \item{iteration}{logical or numeric value specifying the number of
           iteration (\eqn{n}) in the proposed normalization pipeline: the
           \eqn{STEP1-(STEP2-STEP3)_{n}}{STEP1-(STEP2-STEP3)n} pipeline.
@@ -75,12 +67,6 @@ according to the specified value.
     \item \code{norm.method = "deseq2"}\cr
           The \code{\link[DESeq2]{estimateSizeFactors}} function 
           implemented in DESeq2 is used for obetaining the size factors
-          at both \eqn{STEP1} and \eqn{STEP3}.
-          The size factors are internally converted to normalization factors
-          that are comparable to the TMM normalization factors.
-    \item \code{norm.method = "deseq"}\cr
-          The \code{\link[DESeq]{estimateSizeFactors}} function 
-          implemented in DESeq is used for obetaining the size factors
           at both \eqn{STEP1} and \eqn{STEP3}.
           The size factors are internally converted to normalization factors
           that are comparable to the TMM normalization factors.
@@ -148,9 +134,4 @@ tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 3, FDR = 0.1, floorPDEG = 0.05)
 tcc$norm.factors
 
-# Calculating normalization factors for simulation data without replicates.
-tcc <- simulateReadCounts(replicates = c(1, 1))
-tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
-tcc$norm.factors
 }

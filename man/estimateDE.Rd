@@ -3,7 +3,7 @@
 \title{Estimate degrees of differential expression (DE) for individual genes}
 \usage{
 estimateDE(tcc, test.method, FDR, paired,
-           full, reduced,                   # for DESeq, DESeq2
+           full, reduced,                   # for DESeq2
            design, contrast,                # for edgeR, DESeq2, voom
            coef,                            # for edgeR, voom
            group, cl,                       # for baySeq
@@ -23,14 +23,10 @@ implemented in other R packages.
     \item{tcc}{\link{TCC-class} object.}
 
     \item{test.method}{character string specifying a method for identifying
-          DEGs: one of \code{"edger"}, \code{"deseq"}, \code{"deseq2"},
+          DEGs: one of \code{"edger"}, \code{"deseq2"},
           \code{"bayseq"}, \code{"voom"}, and \code{"wad"}.
           See the "Details" field for detail.
-          The default is \code{"edger"} when analyzing the count data with
-          replicates (i.e., \code{min(table(tcc$group[, 1])) > 1}), and
-          \code{"deseq"} (2 group) and \code{"deseq2"} (more than 2 group)
-          when analyzing the count data without replicates 
-          (i.e., \code{min(table(tcc$group[, 1])) == 1}).}
+          The default is \code{"edger"}.}
 
     \item{FDR}{numeric value (between 0 and 1) specifying the threshold
           for determining DEGs.}
@@ -39,17 +35,15 @@ implemented in other R packages.
           (two-group) paired samples. If \code{FALSE}, the input data are
           regarded as unpaired samples. The default is \code{FALSE}.}
 
-    \item{full}{a formula for creating full model described in DESeq and
+    \item{full}{a formula for creating full model described in
           DESeq2. The right hand side can involve any column of \code{tcc$group}
           is used as the model frame.
-          See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
-          for details, or \code{\link[DESeq2]{nbinomLRT}} function in DESeq2.}
+          See the \code{\link[DESeq2]{nbinomLRT}} function in DESeq2 for details.}
 
-    \item{reduced}{a formula for creating reduced model described in DESeq.
+    \item{reduced}{a formula for creating reduced model described in DESeq2.
           The right hand side can involve any column of \code{tcc$group} is
           used as the model frame.
-          See the \code{\link[DESeq]{fitNbinomGLMs}} function in DESeq 
-          for details, or \code{\link[DESeq2]{nbinomLRT}} function in DESeq2.}
+          See the \code{\link[DESeq2]{nbinomLRT}} function in DESeq2 for details.}
 
     \item{design}{the argument is used in edgeR, voom (limma) and DESeq2.
           For edgeR and voom, it should be the numeric matrix giving the
@@ -127,21 +121,6 @@ packages are internally called according to the specified
           \code{\link[edgeR]{glmFit}}, and
           \code{\link[edgeR]{glmLRT}}
           are internally called.
-    \item \code{test.method = "deseq"}\cr
-          DESeq supports two approach (i.e. an exact test and 
-          GLM approach) for identifying DEGs. As a default,
-          the exact test is used for two-group data,
-          and GLM approach is used for multi-group or multi-factor data.
-          However, if \code{full} and \code{reduced} are given, the GLM approach
-          will be used for two-group data.\cr
-          If the exact test is used, 
-          \code{\link[DESeq]{estimateDispersions}} and
-          \code{\link[DESeq]{nbinomTest}} are internally called.\cr
-          If the GLM approach is used, 
-          \code{\link[DESeq]{estimateDispersions}},
-          \code{\link[DESeq]{fitNbinomGLMs}}, and
-          \code{\link[DESeq]{nbinomGLMTest}}
-          are internally called.
     \item \code{test.method = "deseq2"}\cr
           \code{\link[DESeq2]{estimateDispersions}}, and 
           \code{\link[DESeq2]{nbinomWaldTest}} are internally called for 
@@ -202,16 +181,5 @@ head(tcc$stat$q.value)
 head(tcc$estimatedDEG)
 result <- getResult(tcc)
 
-
-# Analyzing a simulation data for comparing two groups
-# (G1 vs. G2) without replicates
-# The DE analysis is performed by an negative binomial (NB) test
-# in DESeq coupled with the DEGES/DESeq normalization factors.
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "deseq", test.method = "deseq",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "deseq", FDR = 0.1)
 }
 \keyword{methods}

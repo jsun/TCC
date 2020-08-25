@@ -95,11 +95,7 @@ TCC$methods(estimateDE = function (test.method = NULL,
     ## Initialize 'test.method'.
     if (is.null(test.method)) {
         if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1)) {
-            if (length(as.numeric(table(.self$group))) == 2) {
-                test.method = "deseq"
-            } else {
-                test.method = "deseq2"
-            }
+            test.method = "deseq2"
         } else {
             test.method = "edger"
         }
@@ -120,10 +116,6 @@ TCC$methods(estimateDE = function (test.method = NULL,
                                         coef     = coef, 
                                         contrast = contrast,  
                                         paired   = paired,
-                                        ...),
-           "deseq" = .self$.testByDeseq(full    = full, 
-                                        reduced = reduced,
-                                        paired  = paired,
                                         ...),
            "deseq2" = .self$.testByDeseq2(design   = design, 
                                           full     = full,

@@ -32,7 +32,7 @@ The estimated normalization factors obtained by using the
 \code{\link{calcNormFactors}} function are used within the statistical
 model for differential analysis in the \code{\link{estimateDE}} function.
 Both two functions internally call functions from other packages
-(edgeR, DESeq, baySeq, and EBSeq) when specified.
+(edgeR, baySeq, and EBSeq) when specified.
 TCC also provides some useful functions: \code{\link{simulateReadCounts}}
 for generating simulation data with various experimental designs,
 \code{\link{plot}} for depicting a M-A plot,

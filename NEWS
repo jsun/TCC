@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.29.1
+-------------------------
+
+  - delete 'deseq' option, since DESeq is deprecated and will be removed from Bioconductor
+
+
+
 CHANGES IN VERSION 1.21.6
 -------------------------
 

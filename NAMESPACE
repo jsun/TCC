@@ -39,16 +39,6 @@ importFrom(baySeq, getLikelihoods.NB)
 importFrom(baySeq, topCounts)
 
 
-# import methods from DESeq
-importFrom(DESeq, newCountDataSet)
-importFrom(DESeq, sizeFactors)
-importFrom(DESeq, estimateDispersions)
-importFrom(DESeq, estimateSizeFactors)
-importFrom(DESeq, nbinomTest)
-importFrom(DESeq, fitNbinomGLMs)
-importFrom(DESeq, nbinomGLMTest)
-
-
 # import methods from DESeq2
 importFrom(DESeq2, DESeqDataSetFromMatrix)
 importFrom(DESeq2, sizeFactors)
