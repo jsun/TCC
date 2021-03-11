@@ -43,7 +43,7 @@ with robust normalization strategies}
 \begin{abstract}
 The R/Bioconductor package, \Rpackage{TCC}, provides users with a
 robust and accurate framework to perform differential expression (DE)
-analysis of tag count data. We recently developed a multi-step
+analysis of tag count data. We developed a multi-step
 normalization method  (TbT; Kadota et al., 2012) for
 two-group RNA-seq data. The strategy (called DEGES) is to remove data
 that are potential differentially expressed genes (DEGs) before
@@ -52,10 +52,10 @@ for accurate normalization of tag count data, especially when the up-
 and down-regulated DEGs in one of the groups are extremely biased in
 their number. A major characteristic of \Rpackage{TCC} is to provide
 the DEGES-based normalization methods for several kinds of count data
-(two-group with or without replicates, multi-group, and so on)
+(two-group, multi-group, and so on)
 by virtue of the use of combinations of functions in other sophisticated
-packages (especially \Rpackage{edgeR}, and
-\Rpackage{baySeq}). The appropriate combination provided by \Rpackage{TCC}
+packages (especially \Rpackage{edgeR}, and \Rpackage{baySeq}).
+The appropriate combination provided by \Rpackage{TCC}
 allows a more robust and accurate estimation to be performed more easily
 than directly using original packages and \Rpackage{TCC} provides a simple
 unified interface to perform the robust normalization.
@@ -108,8 +108,8 @@ et al., 2012), in which the TMM normalization method
 (Robinson and Oshlack, 2010) is used in steps 1 and 3 
 and an empirical Bayesian method implemented 
 in the \Rpackage{baySeq} package 
-(Hardcastle and Kelly, 2010) is used in 
-step 2. Although this multi-step DEG elimination strategy (called "DEGES" 
+(Hardcastle and Kelly, 2010) is used in step 2.
+Although this multi-step DEG elimination strategy (called "DEGES" 
 for short) can successfully remove potential DE entities identified in 
 step 2 prior to the estimation of the normalization factors using the TMM 
 normalization method in step 3, the \Rpackage{baySeq} package used in step 
@@ -124,7 +124,7 @@ This package provides tools to perform multi-step normalization methods
 based on DEGES and enables differential expression analysis of tag count 
 data without having to worry much about biased distributions of DEGs. 
 The DEGES-based normalization function implemented in \Rpackage{TCC} includes 
-the TbT method based on DEGES for two-group data with or without replicates, 
+the TbT method based on DEGES for two-group data, 
 much faster method, and methods for multi-group comparison. \Rpackage{TCC} 
 provides a simple unified interface to perform data normalization with 
 combinations of functions provided by \Rpackage{baySeq}, \Rpackage{DESeq2},
@@ -179,21 +179,16 @@ when you publish your results.
 \subsection{Quick start}
 \label{section-1-3}
 
-Let us begin by showing a example (Case 1) of identifying DEGs 
+Let us begin by showing a example of identifying DEGs 
 between two groups from tag count data consisting of $1,000$ 
 genes and a total of six samples 
 (each group has three biological replicates). The hypothetical 
 count data (termed "\Robject{hypoData}") is stored in this package 
-(for details, see section \ref{section-2-1}). We then describe the 
-DE analysis of count data without replicates (i.e., two samples), 
-using the data of the first and the fourth 
-column of \Robject{hypoData} (Case 2).
+(for details, see section \ref{section-2-1}).
 
-
-\textbf{Case 1}:
 DE analysis for two-group count data with replicates by using 
-the exact test coupled with iterative DEGES/edgeR 
-normalization (i.e., the iDEGES/edgeR-edgeR 
+the F-test (see \Rfunction{glmQLFTest} in \Rpackage{edgeR} package) coupled with
+iterative DEGES/edgeR normalization (i.e., the iDEGES/edgeR-edgeR 
 combination). This is an alternative pipeline designed to reduce 
 the runtime (approx. $20$ sec.), yet its performance is comparable to 
 the above pipeline. Accordingly, we recommend using this pipeline as 
@@ -203,7 +198,6 @@ normalization strategy only needs the methods
 implemented in the \Rpackage{edgeR} package. The suggested citations are as 
 follows: \Rpackage{TCC} (Sun et al., 2013), 
 TMM (Robinson and Oshlack, 2010), 
-the exact test (Robinson and Smyth, 2008), 
 and \Rpackage{edgeR} (Robinson et al., 2010). 
 For details, see section \ref{section-3-1-3} and \ref{section-4-1-1}.
 
@@ -213,30 +207,6 @@ data(hypoData)
 group <- c(1, 1, 1, 2, 2, 2)
 tcc <- new("TCC", hypoData, group)
 tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger", 
-                       iteration = 3, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-@
-
-\textbf{Case 2}:
-DE analysis for two-group count data without replicates by using 
-the exact test in \Rpackage{edgeR} coupled with 
-iDEGES/edgeR normalization 
-(i.e., the iDEGES/edgeR-edgeR combination). 
-A procedure using the data of the first and fourth columns of 
-\Robject{hypoData} is shown here. This pipeline entirely 
-consists of methods implemented in the \Rpackage{edgeR} package. Suggested 
-citations are as follows: \Rpackage{TCC} (Sun et al., 2013) 
-and \Rpackage{edgeR} (Robinson et al, 2010). For details, 
-see section \ref{section-3-2}.
-
-<<4301933845>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[,c(1,4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
                        iteration = 3, FDR = 0.1, floorPDEG = 0.05)
 tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
 result <- getResult(tcc, sort = TRUE)
@@ -349,8 +319,7 @@ tcc <- filterLowCountGenes(tcc)
 dim(tcc$count)
 @
 
-It can be seen that $\Sexpr{nrow(hypoData) - nrow(tcc$count)}
- (= \Sexpr{nrow(hypoData)} -\Sexpr{ nrow(tcc$count)})$ 
+It can be seen that $\Sexpr{nrow(hypoData) - nrow(tcc$count)} (= \Sexpr{nrow(hypoData)} -\Sexpr{ nrow(tcc$count)})$ 
 genes were filtered as non-expressed. 
 The same procedure can be performed without 
 the \Rfunction{filterLowCountGenes} function,
@@ -603,10 +572,11 @@ d <- DGEList(counts = hypoData, group = group)
 ### STEP 1 ###
 d <- calcNormFactors(d)
 ### STEP 2 ###
-d <- estimateCommonDisp(d)
-d <- estimateTagwiseDisp(d)
-result <- exactTest(d)
-pval <- result$table$PValue
+design <- model.matrix(~group)
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+out <- glmQLFTest(fit, coef = 2)
+pval <- out$table$PValue
 qval <- p.adjust(pval, method = "BH")
 if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
   is.DEG <- as.logical(qval < FDR)
@@ -714,81 +684,6 @@ norm.factors
 @
 
 
-\subsection{Normalization of two-group count data without replicates}
-\label{section-3-2}
-
-It is important to keep in mind that most R packages
-(including \Rpackage{edgeR}, \Rpackage{DESeq2}, and \Rpackage{baySeq})
-are primarily for analyzing data including biological replications
-because the biological variability has to be accurately estimated
-to avoid spurious DE calls (Glaus et al., 2012).
-Similar to \ref{ss_norm_twogroup_reps},
-users can select a total of six combinations
-(two normalization methods $\times$ three DEG identification methods)
-when obtaining normalization factors from two-group count data without
-replicates.
-
-We here describe DEGES-based normalization pipelines DEGES/edgeR
-using the subset of \Robject{hypoData}
-consisting of the first and the fourth columns, i.e.,
-
-<<9308283201>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-head(tcc$count)
-tcc$group
-@
-
-The DEGES/edgeR pipeline for two-group data without replicates
-can be performed as follows:
-
-<<4352419012>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-iteration = 1, FDR = 0.1, floorPDEG = 0.05)
-tcc$norm.factors
-@
-
-For \Rpackage{edgeR} users, we provide commands,
-consisting of functions in \Rpackage{edgeR},
-to perform the DEGES/edgeR pipeline without \Rpackage{TCC}.
-The \Robject{calcNormFactors} function together with the above parameter
-settings can be regarded as a wrapper function for the following commands.
-
-<<5670112812>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-FDR <- 0.1
-floorPDEG <- 0.05
-d <- DGEList(counts = hypoData[, c(1, 4)], group = group)
-### STEP 1 ###
-d <- calcNormFactors(d)
-### STEP 2 ###
-d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
-result <- exactTest(d)
-pval <- result$table$PValue
-qval <- p.adjust(pval, method = "BH")
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <=
-                       nrow(hypoData) * floorPDEG)
-}
-### STEP 3 ###
-d <- DGEList(counts = hypoData[!is.DEG, c(1, 4)], group = group)
-d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors * 
-                colSums(hypoData[!is.DEG, c(1, 4)]) / colSums(hypoData[, c(1, 4)])
-norm.factors <- norm.factors / mean(norm.factors)
-norm.factors
-@
-
 
 
 \subsection{Normalization of two-group count data without replicates (paired)}
@@ -864,12 +759,10 @@ d <- DGEList(counts = hypoData, group = group)
 ### STEP 1 ###
 d <- calcNormFactors(d)
 ### STEP 2 ###
-d <- estimateGLMCommonDisp(d, design)
-d <- estimateGLMTrendedDisp(d, design)
-d <- estimateGLMTagwiseDisp(d, design)
-fit <- glmFit(d, design)
-lrt <- glmLRT(fit, coef = coef)
-pval <- lrt$table$PValue
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+out <- glmQLFTest(fit, coef = coef)
+pval <- out$table$PValue
 qval <- p.adjust(pval, method = "BH")
 if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))){
   is.DEG <- as.logical(qval < FDR)
@@ -996,19 +889,17 @@ tcc <- new("TCC", hypoData_mg, group)
 FDR <- 0.1
 floorPDEG <- 0.05
 design <- model.matrix(~ as.factor(group))
-coef <- 2:length(unique(group))
+coef <- 2:ncol(design)
 d <- DGEList(counts = hypoData_mg, group = group)
 ### STEP 1 ###
 d <- calcNormFactors(d)
 ### STEP 2 ###
-d <- estimateGLMCommonDisp(d, design)
-d <- estimateGLMTrendedDisp(d, design)
-d <- estimateGLMTagwiseDisp(d, design)
-fit <- glmFit(d, design)
-lrt <- glmLRT(fit, coef = coef)
-result <- as.data.frame(topTags(lrt, n = nrow(hypoData_mg)))
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+out <- glmQLFTest(fit, coef = coef)
+result <- as.data.frame(topTags(out, n = nrow(hypoData_mg)))
 result <- result$table[rownames(hypoData_mg), ]
-pval <- lrt$table$PValue
+pval <- out$table$PValue
 qval <- p.adjust(pval, method = "BH")
 if (sum(qval < FDR) > (floorPDEG * nrow(hypoData_mg))) {
   is.DEG <- as.logical(qval < FDR)
@@ -1404,11 +1295,12 @@ procedure in \Rpackage{edgeR} can be obtained as follows.
 library(TCC)
 data(hypoData)
 group <- c(1, 1, 1, 2, 2, 2)
+design <- model.matrix(~ as.factor(group))
 d <- DGEList(count = hypoData, group = group)
 d <- calcNormFactors(d)
-d <- estimateCommonDisp(d)
-d <- estimateTagwiseDisp(d)
-out <- exactTest(d)
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+out <- glmQLFTest(fit, coef = 2)
 result <- as.data.frame(topTags(out, n = nrow(hypoData), sort.by = "PValue"))
 head(result)
 @
@@ -1474,6 +1366,11 @@ library(ROC)
 truth <- c(rep(1, 200), rep(0, 800))
 AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
 @
+
+
+
+\subsubsection{DESeq2 coupled with iDEGES/DESeq2 normalization}
+\label{section-4-1-2}
 
 For comparison, the DE results from the original procedure in
 \Rpackage{DESeq2} can be obtained as follows.
@@ -1567,125 +1464,6 @@ truth <- c(rep(1, 200), rep(0, 800))
 result$pvalue[is.na(result$pvalue)] <- 1
 AUC(rocdemo.sca(truth = truth, data = -rank(result$pvalue)))
 @
-
-
-\subsection{DE analysis for two-group data without replicates}
-\label{section-4-2}
-
-It is important to keep in mind that most R packages
-(including \Rpackage{edgeR}and \Rpackage{baySeq}) are primarily for analyzing data including
-biological replications because the biological variability has to
-be accurately estimated to avoid spurious DE calls (Glaus et al., 2012).
-We here describe two DE analysis pipelines using the subset of
-\Robject{hypoData} consisting of the first and the fourth columns, i.e.,
-
-<<4893438912>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-head(tcc$count)
-tcc$group
-@
-
-We give a procedure for DE analysis using the exact test implemented
-in \Rpackage{edgeR} together with iDEGES/edgeR normalization factors
-(i.e., the iDEGES/edgeR-edgeR combination) for the hypothetical
-two-group count data without replicates (i.e., the \Robject{hypoData} object).
-If the user wants to determine the genes having an FDR threshold
-of $< 10$\% as DEGs, one can do as follows.
-
-<<8439100943>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-                       iteration = 3, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-@
-
-The results of the DE analysis are stored in the \Robject{TCC} class object.
-The summary statistics for top-ranked genes can be retrieved by using the
-\Rfunction{getResult} function.
-
-<<4390087612>>=
-result <- getResult(tcc, sort = TRUE)
-head(result)
-@
-
-The DE results can be broken down as follows.
-
-<<0238735032>>=
-table(tcc$estimatedDEG)
-@
-<<0233731032, echo = FALSE>>=
-tb <- table(tcc$estimatedDEG)
-@
-
-This means $\Sexpr{as.numeric(tb[["0"]])}$ non-DEGs and
-$\Sexpr{as.numeric(tb[["1"]])}$ DEGs satisfy FDR $< 0.1$.
-The \Rfunction{plot} function generates an M-A plot,
-where "M" indicates the log-ratio
-(i.e., $\mbox{M} = \log_{2}\mbox{G2} - \log_{2}\mbox{G1}$)
-and "A" indicates average read count
-(i.e., $\mbox{A} = (\log_{2}\mbox{G2} + \log_{2}\mbox{G1}) / 2$), 
-from the normalized count data.
-The magenta points indicate the identified DEGs at FDR $< 0.1$.
-
-\begin{center}
-<<3489320103, fig = TRUE, size = 0.4, png = TRUE, pdf = FALSE, eps = FALSE>>=
-plot(tcc)
-@
-\end{center}
-
-Since we know the true information for \Robject{hypoData}
-(i.e., 200 DEGs and 800 non-DEGs), we can calculate the area
-under the ROC curve (i.e., AUC; $0 \le$ AUC $\le 1$) between
-the ranked gene list and the truth and thereby evaluate the
-sensitivity and specificity simultaneously.
-A well-ranked gene list should have a high AUC value
-(i.e., high sensitivity and specificity).
-
-<<5702784221>>=
-library(ROC)
-truth <- c(rep(1, 200), rep(0, 800))
-AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
-@
-
-For comparison, the DE results from the original procedure in
-\Rpackage{edgeR} can be obtained as follows.
-
-<<4890357892>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-d <- DGEList(counts = hypoData[, c(1, 4)], group = group)
-d <- calcNormFactors(d)
-d <- estimateGLMCommonDisp(d, method = "deviance", robust = TRUE, subset = NULL)
-out <- exactTest(d)
-result <- as.data.frame(topTags(out, n = nrow(hypoData), sort.by = "PValue"))
-head(result)
-@
-
-This is the same as
-
-<<4741957232>>=
-library(TCC)
-data(hypoData)
-group <- c(1, 2)
-tcc <- new("TCC", hypoData[, c(1, 4)], group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0)
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-library(ROC)
-truth <- c(rep(1, 200), rep(0, 800))
-AUC(rocdemo.sca(truth = truth, data = -tcc$stat$rank))
-@
-
-
-
 
 
 \subsection{DE analysis for two-group data without replicates (paired)}
@@ -1799,13 +1577,12 @@ design <- model.matrix(~ group + pair)
 coef <- 2
 d <- DGEList(counts = hypoData, group = group)
 d <- calcNormFactors(d)
-d <- estimateGLMCommonDisp(d, design)
-d <- estimateGLMTrendedDisp(d, design)
-d <- estimateGLMTagwiseDisp(d, design)
-fit <- glmFit(d, design)
-lrt <- glmLRT(fit, coef = coef)
-topTags(lrt, n = 6)
-p.value <- lrt$table$PValue
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+out <- glmQLFTest(fit, coef=2)
+
+topTags(out, n = 6)
+p.value <- out$table$PValue
 library(ROC)
 truth <- c(rep(1, 200), rep(0, 800))
 AUC(rocdemo.sca(truth = truth, data = -rank(p.value)))
@@ -2041,13 +1818,14 @@ calcAUCValue(tcc)
 The following is an alternative procedure for \Rpackage{edgeR} users.
 
 <<calc_AUC_of_tmm_org>>=
+design <- model.matrix(~ as.factor(tcc$group$group))
 d <- DGEList(counts = tcc$count, group = tcc$group$group)
 d <- calcNormFactors(d)
 d$samples$norm.factors <- d$samples$norm.factors / 
                           mean(d$samples$norm.factors)
-d <- estimateCommonDisp(d)
-d <- estimateTagwiseDisp(d)
-result <- exactTest(d)
+d <- estimateDisp(d, design)
+fit <- glmQLFit(d, design)
+result <- glmQLFTest(fit, coef = 2)
 result$table$PValue[is.na(result$table$PValue)] <- 1
 AUC(rocdemo.sca(truth = as.numeric(tcc$simulation$trueDEG != 0),
                 data = -rank(result$table$PValue)))
@@ -2079,63 +1857,6 @@ calcAUCValue(tcc)
 @
 
 
-\subsection{Two-group data without replicates}
-\label{section-5-2}
-
-Let us generate tag count data without replicates, 
-such as those used in section \ref{section-3-2} For simplicity, 
-we first generate simulation data whose conditions are essentially 
-the same as those in the previous section (i.e., \ref{section-5-1}), 
-except for the number of replicates in each group: (i) the number of 
-genes is $1,000$ (i.e., \Robject{Ngene = 1000}), 
-(ii) the first $20\%$ of genes 
-are DEGs (\Robject{PDEG = 0.2}), 
-(iii) the first $90\%$ of the DEGs 
-are up-regulated in G1, and the remaining $10\%$ are up-regulated in 
-G2 (\Robject{DEG.assign = c(0.9, 0.1)}), 
-(iv) the levels of DE are four-fold 
-in both groups (\Robject{DEG.foldchange = c(4, 4)}), 
-and (v) there are a total 
-of two samples (one from G1 and the other from G2) 
-(\Robject{replicates = c(1, 1)}).
-
-<<generate_simulation_data_without_replicate>>=
-set.seed(1000)
-library(TCC)
-tcc <- simulateReadCounts(Ngene = 1000, PDEG = 0.2, 
-                              DEG.assign = c(0.9, 0.1),
-                              DEG.foldchange = c(4, 4), 
-                              replicates = c(1, 1))
-dim(tcc$count)
-head(tcc$count)
-tcc$group
-@
-
-Now let us see how the DEGES/edgeR-edgeR combination 
-with the original edgeR-edgeR combination 
-performs. First, we calculate the AUC value for the ranked 
-gene list obtained from the DEGES/edgeR-edgeR combination.
-
-<<analysis_without_replicate_simulation_data>>=
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-                       iteration = 1, FDR = 0.1, floorPDEG = 0.05)
-tcc <- estimateDE(tcc, test.method = "edger")
-calcAUCValue(tcc)
-@
-
-Next, we calculate the corresponding value 
-using the original \Rpackage{edgeR} procedure.
-
-<<calc_AUC_of_deseq_tcc>>=
-tcc <- calcNormFactors(tcc, norm.method = "tmm", iteration = 0)
-tcc <- estimateDE(tcc, test.method = "edger")
-calcAUCValue(tcc)
-@
-
-
-This procedure is completely the same as the one in \Rpackage{TCC} that 
-gives normalization factors corresponding to those in \Rpackage{edgeR} 
-for different packages.
 
 
 

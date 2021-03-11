@@ -4,6 +4,7 @@ setMethod(
     definition = function(tcc, norm.method = NULL, test.method = NULL, 
                           iteration = TRUE, FDR = NULL, floorPDEG = NULL,
                           increment = FALSE, ...) {
+        #obj <- tcc$clone(deep = TRUE)
         obj <- tcc$copy()
         obj$calcNormFactors(norm.method = norm.method, 
                             test.method = test.method, 
@@ -21,6 +22,7 @@ estimateDE <- function(tcc, test.method = NULL, FDR = NULL, paired = NULL,
                        group = NULL, cl = NULL,
                        samplesize = NULL,
                        logged = NULL, floor = NULL, ...) {
+    #obj <- tcc$clone(deep = TRUE)
     obj <- tcc$copy()
     obj$estimateDE(test.method = test.method, FDR = FDR, paired = paired,
                    full = full, reduced = reduced, 
@@ -87,6 +89,7 @@ getResult <- function(tcc, sort = FALSE, ...) {
 }
 
 filterLowCountGenes <- function(tcc, low.count = 0) {
+    #obj <- tcc$clone(deep = TRUE)
     obj <- tcc$copy()
     
     gene.keep = (rowSums(obj$count) > low.count)

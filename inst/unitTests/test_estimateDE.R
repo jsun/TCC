@@ -11,18 +11,14 @@ test_estimateDE_crossvalidate <- function() {
                         replicates = c(3, 3),
                         Ngene = 1000, PDEG  = 0.20,
                         DEG.assign = c(0.8, 0.2)),
-            "TGN" = simulateReadCounts(
-                        replicates = c(1, 1),
-                        Ngene = 1000, PDEG  = 0.20,
-                        DEG.assign = c(0.8, 0.2)),
             "MGY" = simulateReadCounts(
                         replicates = c(3, 3, 3),
                         Ngene = 1000, PDEG  = 0.20,
                         DEG.assign = c(0.6, 0.2, 0.2)),
-            "MGN" = simulateReadCounts(
-                        replicates = c(1, 1, 1),
-                        Ngene = 1000, PDEG  = 0.20,
-                        DEG.assign = c(0.6, 0.2, 0.2)),
+            #"MGN" = simulateReadCounts(
+            #            replicates = c(1, 1, 1),
+            #            Ngene = 1000, PDEG  = 0.20,
+            #            DEG.assign = c(0.6, 0.2, 0.2)),
             "TGNP" = simulateReadCounts(
                         group = data.frame(
                         group  = c("normal", "normal", "normal", "normal",

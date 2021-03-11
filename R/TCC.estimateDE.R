@@ -95,7 +95,8 @@ TCC$methods(estimateDE = function (test.method = NULL,
     ## Initialize 'test.method'.
     if (is.null(test.method)) {
         if ((ncol(.self$group) == 1) && (min(as.numeric(table(.self$group))) == 1)) {
-            test.method = "deseq2"
+            warning('The function for comparison without replicate in TCC will be removed.')
+            test.method = "edger"
         } else {
             test.method = "edger"
         }

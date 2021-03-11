@@ -14,17 +14,29 @@ TCC$methods(.testByEdger = function(
                                          group  = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
     d$samples$norm.factors <- .self$norm.factors
+
     if (is.null(design)) {
-        if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
-            suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
-                                  method = "deviance", robust = TRUE,
-                                  subset = NULL))
-        } else {
-            suppressMessages(d <- edgeR::estimateCommonDisp(d))
-            suppressMessages(d <- edgeR::estimateTagwiseDisp(d))
-        }
-        suppressMessages(d <- edgeR::exactTest(d))
-        p <- d$table$PValue
+        # ----------------------
+        # The following code is the legacy version of eadgeR for two-group test.
+        # We changed the deafult two-group test approach from exactTest to GLM based method. 2020.12.
+        ##
+        ## if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
+        ##     suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
+        ##                           method = "deviance", robust = TRUE,
+        ##                           subset = NULL))
+        ## } else {
+        ##     suppressMessages(d <- edgeR::estimateCommonDisp(d))
+        ##     suppressMessages(d <- edgeR::estimateTagwiseDisp(d))
+        ## }
+        ## suppressMessages(d <- edgeR::exactTest(d))
+        ## p <- d$table$PValue
+        # ----------------------
+        
+        design <- model.matrix(~ .self$group[, 1])
+        suppressMessages(d <- estimateDisp(d, design))
+        suppressMessages(fit <- glmQLFit(d, design))
+        suppressMessages(out <- glmQLFTest(fit, coef = 2))
+        p <- out$table$PValue
     } else {
         if (length(unique(.self$group[, 1])) == nrow(.self$group)) {
             suppressMessages(d <- edgeR::estimateGLMCommonDisp(d,
@@ -32,13 +44,17 @@ TCC$methods(.testByEdger = function(
                                   subset = NULL))
         } else {
             if (is.null(coef) && is.null(contrast)) coef <- 2
-            suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
-            suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
-            suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+            suppressMessages(d <- estimateDisp(d, design))
+            #suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+            #suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+            #suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
         }
-        suppressMessages(fit <- glmFit(d, design))
-        suppressMessages(lrt <- glmLRT(fit, coef = coef, contrast = contrast))
-        p <- lrt$table$PValue
+        #suppressMessages(fit <- glmFit(d, design))
+        #suppressMessages(lrt <- glmLRT(fit, coef = coef, contrast = contrast))
+        #p <- lrt$table$PValue
+        suppressMessages(fit <- glmQLFit(d, design))
+        suppressMessages(out <- glmQLFTest(fit, coef = coef))
+        p <- out$table$PValue
     }
     p[is.na(p)] <- 1
     private$stat$p.value <<- p
@@ -63,13 +79,17 @@ TCC$methods(.testByEdger = function(
                               method = "deviance", robust = TRUE,
                               subset = NULL))
     } else {
-        suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
-        suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
-        suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+        suppressMessages(d <- estimateDisp(d, design))
+        #suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+        #suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+        #suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
     }
-    suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
-    p <- lrt$table$PValue
+    suppressMessages(fit <- glmQLFit(d, design))
+    suppressMessages(out <- glmQLFTest(fit, coef = coef))
+    p <- out$table$PValue
+    #suppressMessages(fit <- edgeR::glmFit(d, design))
+    #suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
+    #p <- lrt$table$PValue
     p[is.na(p)] <- 1
     private$stat$p.value <<- p
     private$stat$rank <<- rank(p)
@@ -88,12 +108,16 @@ TCC$methods(.testByEdger = function(
                                          group = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
     d$samples$norm.factors <- .self$norm.factors
-    suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
-    suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
-    p <- lrt$table$PValue
+    #suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+    #suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+    #suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+    #suppressMessages(fit <- edgeR::glmFit(d, design))
+    #suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef, contrast = contrast))
+    #p <- lrt$table$PValue
+    suppressMessages(d <- estimateDisp(d, design))
+    suppressMessages(fit <- glmQLFit(d, design))
+    suppressMessages(out <- glmQLFTest(fit, coef = 2))
+    p <- out$table$PValue
     p[is.na(p)] <- 1
     private$stat$p.value <<- p
     private$stat$rank <<- rank(p)
@@ -111,12 +135,16 @@ TCC$methods(.testByEdger = function(
                                   group = .self$group[, 1]))
     suppressMessages(d <- edgeR::calcNormFactors(d))
     d$samples$norm.factors <- .self$norm.factors
-    suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
-    suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
-    suppressMessages(fit <- edgeR::glmFit(d, design))
-    suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef,  contrast = contrast))
-    p <- lrt$table$PValue
+    #suppressMessages(d <- edgeR::estimateGLMCommonDisp(d, design))
+    #suppressMessages(d <- edgeR::estimateGLMTrendedDisp(d, design))
+    #suppressMessages(d <- edgeR::estimateGLMTagwiseDisp(d, design))
+    #suppressMessages(fit <- edgeR::glmFit(d, design))
+    #suppressMessages(lrt <- edgeR::glmLRT(fit, coef = coef,  contrast = contrast))
+    #p <- lrt$table$PValue
+    suppressMessages(d <- estimateDisp(d, design))
+    suppressMessages(fit <- glmQLFit(d, design))
+    suppressMessages(out <- glmQLFTest(fit, coef = 2))
+    p <- out$table$PValue
     p[is.na(p)] <- 1
     private$stat$p.value <<-p
     private$stat$rank <<- rank(p)

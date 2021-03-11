@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.31.1
+-------------------------
+
+  - changed default DE estimation method from exactTest to GLM-based test (glmQLFit, glmQLFTest) when using edgeR.
+  - removed DE estimation method for no-replicates dataset.
+
+
+
 CHANGES IN VERSION 1.29.1
 -------------------------
 
