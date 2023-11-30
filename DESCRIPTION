@@ -2,7 +2,7 @@ Package: TCC
 Type: Package
 Title: TCC: Differential expression analysis for tag count data with
         robust normalization strategies
-Version: 1.43.0
+Version: 1.43.1
 Author: Jianqiang Sun, Tomoaki Nishiyama, Kentaro Shimizu, and Koji Kadota
 Maintainer: Jianqiang Sun <wukong@bi.a.u-tokyo.ac.jp>, Tomoaki
         Nishiyama <tomoakin@staff.kanazawa-u.ac.jp>
@@ -20,9 +20,8 @@ Description: This package provides a series of functions for performing
         without replicates, multi-group/multi-factor, and so on) by
         virtue of the use of combinations of functions in depended
         packages.
-Depends: R (>= 3.0), methods, DESeq2, edgeR, baySeq, ROC
+Depends: R (>= 3.0), methods, DESeq2, edgeR, ROC
 Suggests: RUnit, BiocGenerics
-Enhances: snow
 License: GPL-2
 Copyright: Authors listed above
 biocViews: ImmunoOncology, Sequencing, DifferentialExpression, RNASeq

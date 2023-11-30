@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.43.1
+-------------------------
+
+  - deleted 'baySeq' from Depends.
+
+
+
 CHANGES IN VERSION 1.31.1
 -------------------------
 
