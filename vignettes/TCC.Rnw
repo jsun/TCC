@@ -30,7 +30,7 @@
 \author {\small Jianqiang Sun$^{1\S}$, Tomoaki Nishiyama$^{2\S}$, Kentaro Shimizu$^1$, and Koji Kadota$^1$\\
 \texttt{\footnotesize $^1$ The University of Tokyo, Tokyo, Japan}\\
 \texttt{\footnotesize $^2$ Kanazawa University, Kanazawa, Japan}\\
-\texttt{\footnotesize $^\S$ Maintainer: Jianqiang Sun (wukong@bi.a.u-tokyo.ac.jp),}\\
+\texttt{\footnotesize $^\S$ Maintainer: Jianqiang Sun (sun@biunit.dev),}\\
 \texttt{\footnotesize Tomoaki Nishiyama (tomoakin@staff.kanazawa-u.ac.jp)}
 }
 \title{TCC: Differential expression analysis for tag count data
@@ -54,7 +54,7 @@ their number. A major characteristic of \Rpackage{TCC} is to provide
 the DEGES-based normalization methods for several kinds of count data
 (two-group, multi-group, and so on)
 by virtue of the use of combinations of functions in other sophisticated
-packages (especially \Rpackage{edgeR}, and \Rpackage{baySeq}).
+packages (especially \Rpackage{edgeR}).
 The appropriate combination provided by \Rpackage{TCC}
 allows a more robust and accurate estimation to be performed more easily
 than directly using original packages and \Rpackage{TCC} provides a simple
@@ -76,7 +76,7 @@ Sun et al., 2013) provides users with a robust and accurate
 framework to perform differential expression analysis of tag count data. 
 \Rpackage{TCC} provides integrated analysis pipelines with improved 
 data normalization steps, compared with other packages such as 
-\Rpackage{edgeR}, and \Rpackage{baySeq}, 
+\Rpackage{edgeR}
 by appropriately combining their functionalities. 
 The package incorporates multi-step normalization methods whose strategy
 is to remove data that are potential DEGs before performing 
@@ -85,8 +85,7 @@ the data normalization.
 Kadota et al. (2012) recently reported that 
 the normalization methods implemented in R packages 
 (such as \Rpackage{edgeR} (Robinson et al., 2010), 
-\Rpackage{DESeq} (Anders and Huber, 2010), 
-and \Rpackage{baySeq} (Hardcastle and Kelly, 2010)) for 
+and \Rpackage{DESeq} (Anders and Huber, 2010) for
 differential expression (DE) analysis between samples 
 are inadequate when the up- and down-regulated DEGs in one of the samples 
 are extremely biased in their number (i.e., biased DE). This is because the 
@@ -107,12 +106,12 @@ and biased DE), we recently proposed a multi-step normalization strategy
 et al., 2012), in which the TMM normalization method 
 (Robinson and Oshlack, 2010) is used in steps 1 and 3 
 and an empirical Bayesian method implemented 
-in the \Rpackage{baySeq} package 
+in the baySeq package 
 (Hardcastle and Kelly, 2010) is used in step 2.
 Although this multi-step DEG elimination strategy (called "DEGES" 
 for short) can successfully remove potential DE entities identified in 
 step 2 prior to the estimation of the normalization factors using the TMM 
-normalization method in step 3, the \Rpackage{baySeq} package used in step 
+normalization method in step 3, the baySeq package used in step 
 2 of the TbT method is much more computationally intensive than competing 
 packages like \Rpackage{edgeR} and \Rpackage{DESeq2}. While the three-step 
 TbT normalization method performed best on simulated and real tag count data, 
@@ -127,7 +126,7 @@ The DEGES-based normalization function implemented in \Rpackage{TCC} includes
 the TbT method based on DEGES for two-group data, 
 much faster method, and methods for multi-group comparison. \Rpackage{TCC} 
 provides a simple unified interface to perform data normalization with 
-combinations of functions provided by \Rpackage{baySeq}, \Rpackage{DESeq2},
+combinations of functions provided by \Rpackage{DESeq2}
 and \Rpackage{edgeR}. Functions to produce simulation data under various 
 conditions and to plot the data are also provided.
 
@@ -340,8 +339,8 @@ dim(tcc$count)
 
 This chapter describes the details of our robust normalization strategy
 (i.e., DEGES) implemented in \Rpackage{TCC}. Alternative DEGES procedures
-consisting of functions in other packages (\Rpackage{edgeR}, \Rpackage{DESeq2},
-and \Rpackage{baySeq}) are also provided,
+consisting of functions in other packages (\Rpackage{edgeR} and \Rpackage{DESeq2})
+are also provided,
 enabling {\it advanced} users familiar with the existing packages can easily
 learn what is done in \Rpackage{TCC}.
 Note that {\it end} users, who just want to perform robust
@@ -427,100 +426,11 @@ normalization pipeline. We show some of the practical combinations
 below.
 
 Since the three-step TbT normalization method was originally designed 
-for normalizing tag count data with (biological) replicates, we will 
-first explain the TbT method (\ref{section-3-1-1} DEGES/TbT). 
-In relation to the other DEGES-based methods, we will call the method 
-"DEGES/TbT" for convenience. As mentioned in the original study, 
-DEGES/TbT needs a long computation time. Accordingly, we present 
-three shorter alternatives (\ref{section-3-1-2} DEGES/edgeR, 
+for normalizing tag count data with (biological) replicates,
+we present three shorter alternatives (\ref{section-3-1-2} DEGES/edgeR, 
 \ref{section-3-1-3} iDEGES/edgeR, and \ref{section-3-1-4} 
 DEGES/DESeq2).
 
-
-\subsubsection{DEGES/TbT}
-\label{section-3-1-1}
-
-The DEGES/TbT (Kadota et al., 2012) with default parameter 
-settings can be performed as follows.
-
-<<run_tbt_tcc>>=
-set.seed(1000)
-library(TCC)
-data(hypoData)
-samplesize <- 100
-group <- c(1, 1, 1, 2, 2, 2)
-tcc <- new("TCC", hypoData, group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "bayseq",
-                       iteration = 1, samplesize = samplesize)
-@
-
-Note that a smaller sampling size (i.e., \Robject{samplesize = 100}) 
-is used here to reduce the computation time when performing 
-the empirical Bayesian method in step 2, 
-but a larger sampling size of around $10,000$ 
-(i.e., \Robject{samplesize = 10000}) is recommended 
-(Hardcastle and Kelly, 2010). 
-This method estimates an empirical distribution of the parameters 
-of the NB distribution by bootstrapping from the input data. 
-While the sampling size can be made smaller to reduce the 
-computation time (e.g., \Robject{samplesize = 40}), the resulting 
-normalization factors will vary from trial to trial. 
-In this vignette, we will call the \Rfunction{set.seed} 
-function for obtaining reproducible results 
-(i.e., the \Robject{tcc\$norm.factors} values) when 
-using any random function. The calculated normalization factors 
-and the computation time can be retrieved with the following commands.
-
-<<check_tbt_execution_time>>=
-tcc$norm.factors
-tcc$DEGES$execution.time
-@
-
-Of course, the procedure can be performed by using functions 
-in \Rpackage{edgeR} and \Rpackage{baySeq}, 
-instead of using the \Rfunction{calcNormFactors} 
-function in \Rpackage{TCC}. The \Rfunction{calcNormFactors} function 
-together with the above parameter settings can be regarded as a wrapper 
-function for the following commands.
-
-<<run_tbt_org>>=
-set.seed(1000)
-library(TCC)
-data(hypoData)
-samplesize <- 100
-group <- c(1, 1, 1, 2, 2, 2)
-floorPDEG <- 0.05
-FDR <- 0.1
-### STEP 1 ###
-d <- DGEList(count = hypoData, group = group)
-d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors
-norm.factors <- norm.factors / mean(norm.factors)
-### STEP 2 ###
-cD <- new("countData", data = hypoData, replicates = group,
-          groups = list(NDE = rep(1, length = length(group)), DE = group),
-          libsizes = colSums(hypoData) * norm.factors)
-cD@annotation <- data.frame(rowID = 1:nrow(hypoData))
-cD <- getPriors.NB(cD, samplesize = samplesize, estimation = "QL", cl = NULL)
-cD <- getLikelihoods(cD, pET = "BIC", cl = NULL)
-result <- topCounts(cD, group = "DE", number = nrow(hypoData))
-result <- result[order(result$rowID), ]
-pval <- result$FWER.DE
-qval <- result$FDR.DE
-if (sum(qval < FDR) > (floorPDEG * nrow(hypoData))) {
-  is.DEG <- as.logical(qval < FDR)
-} else {
-  is.DEG <- as.logical(rank(pval, ties.method = "min") <= 
-                       nrow(hypoData) * floorPDEG)
-}
-### STEP 3 ###
-d <- DGEList(count = hypoData[!is.DEG, ], group = group)
-d <- calcNormFactors(d)
-norm.factors <- d$samples$norm.factors * colSums(hypoData[!is.DEG, ]) / 
-                colSums(hypoData)
-norm.factors <- norm.factors / mean(norm.factors)
-norm.factors
-@
 
 
 \subsubsection{DEGES/edgeR}
@@ -784,8 +694,8 @@ norm.factors
 \subsection{Normalization of multi-group count data with replicates}
 \label{ss_norm_multifactor_reps}
 
-Many R packages (including \Rpackage{edgeR}, 
-and \Rpackage{baySeq}) support DE analysis for multi-group tag count data. 
+Many R packages (including \Rpackage{edgeR})
+support DE analysis for multi-group tag count data. 
 \Rpackage{TCC} provides some prototypes of DEGES-based pipelines for 
 such data. Here, we analyze another hypothetical three-group count matrix, 
 the \Robject{hypoData\_mg} object, provided in \Rpackage{TCC}. 
@@ -1209,12 +1119,10 @@ Specifically, the function internally uses the corresponding functions
 implemented in three packages.
 Similar to the usage in the \Rfunction{calcNormFactors} function 
 with the \Rfunction{test.method} argument in \Rpackage{TCC}, 
-those DE methods in \Rpackage{edgeR}, 
-and \Rpackage{baySeq} can be performed 
+those DE methods in \Rpackage{edgeR} can be performed 
 by using the \Rfunction{estimateDE} function with 
-\Rfunction{test.method = "edger"}, \Rfunction{"deseq2"}, 
-and \Rfunction{"bayseq"}, respectively. Here, we show some 
-examples of DE analysis for two-group data with replicates 
+\Rfunction{test.method = "edger"}, and \Rfunction{"deseq2"}, respectively.
+Here, we show some  examples of DE analysis for two-group data with replicates 
 (\ref{section-4-1}), two-group data without replicates (\ref{section-4-2}), 
 paired two-group data without replicates (\ref{ss_de_2gnr_p}), 
 and multi-group data with replicates (\ref{section-4-3}).
@@ -1618,41 +1526,6 @@ data with replicates, i.e., the \Robject{hypoData\_mg} object.
 The use of the DEGES/edgeR normalization 
 factors is simply for reducing the computation time.
 
-
-\subsubsection{baySeq coupled with DEGES/edgeR normalization}
-\label{section-4-3-1}
-
-The empirical Bayesian method implemented in \Rpackage{baySeq} 
-after executing the DEGES/edgeR normalization 
-(i.e., the DEGES/edgeR-baySeq combination) 
-can be performed as follows.
-
-<<degerEdegr_tcc_multigroup_summary>>=
-library(TCC)
-data(hypoData_mg)
-group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
-tcc <- new("TCC", hypoData_mg, group)
-###  Normalization  ###
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "edger",
-                       iteration = 1)
-###  DE analysis  ###
-set.seed(1000)
-samplesize <- 100
-tcc <- estimateDE(tcc, test.method = "bayseq", 
-                  FDR = 0.1, samplesize = samplesize)
-result <- getResult(tcc, sort = TRUE)
-head(result)
-table(tcc$estimatedDEG)
-@
-
-It can be seen that the \Rpackage{baySeq} method identified 
-$\Sexpr{sum(tcc$estimatedDEG == TRUE)}$ DEGs 
-having FDR $< 0.1$. One can obtain the number of DEGs with another 
-threshold (e.g., FDR $< 0.2$) from the result object as follows.
-
-<<num_of_fdr_less_than_2>>=
-sum(result$q.value < 0.2)
-@
 
 
 \subsubsection{edgeR coupled with DEGES/edgeR normalization}
@@ -2175,11 +2048,6 @@ Glaus P, Honkela A, and Rattray M. 2012.
 Identifying differentially expressed transcripts from RNA-seq
 data with biological variation.
 Bioinformatics 28: 1721-1728.
-\bibitem{hardcastle}
-Hardcastle TJ and Kelly KA. 2010.
-baySeq: empirical Bayesian methods for identifying differential
-expression in sequence count data.
-BMC Bioinformatics 11: 422.
 \bibitem{wad}
 Kadota K, Nakai Y, Shimizu K. 2008.
 A weighted average difference method for detecting differentially expressed

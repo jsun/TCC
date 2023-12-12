@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.43.3
+-------------------------
+
+  - deleted 'baySeq' dependency codes from vignette and other code.
+
+
+
 CHANGES IN VERSION 1.43.1
 -------------------------
 

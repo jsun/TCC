@@ -2,7 +2,7 @@ Package: TCC
 Type: Package
 Title: TCC: Differential expression analysis for tag count data with
         robust normalization strategies
-Version: 1.43.2
+Version: 1.43.3
 Author: Jianqiang Sun, Tomoaki Nishiyama, Kentaro Shimizu, and Koji Kadota
 Maintainer: Jianqiang Sun <sun@biunit.dev>,
         Tomoaki Nishiyama <tomoakin@staff.kanazawa-u.ac.jp>

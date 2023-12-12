@@ -33,12 +33,6 @@ importFrom(edgeR, glmLRT)
 importFrom(edgeR, topTags)
 
 
-# import methods from baySeq
-importFrom(baySeq, getPriors.NB)
-importFrom(baySeq, getLikelihoods.NB)
-importFrom(baySeq, topCounts)
-
-
 # import methods from DESeq2
 importFrom(DESeq2, DESeqDataSetFromMatrix)
 importFrom(DESeq2, sizeFactors)
