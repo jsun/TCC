@@ -714,30 +714,9 @@ dim(tcc$count)
 Of the $1,000$ genes, the first $200$ genes are DEGs and the remaining $800$
 genes are non-DEGs. The breakdowns for the $200$ DEGs are as follows: 
 $140$, $40$, and $20$ DEGs are up-regulated in Groups 1, 2, and 3. 
-Below, we show some DEGES-based normalization pipelines for this 
-multi-group data (\ref{section-3-3-1} DEGES/TbT, and \ref{section-3-3-2} DEGES/edgeR).
+Below, we show a DEGES-based normalization pipeline for this 
+multi-group data here.
 
-\subsubsection{DEGES/TbT}
-\label{section-3-3-1}
-
-The DEGES/TbT pipeline for multi-group data is essentially the same as 
-those for two-group data with or without replicates. Note that a smaller 
-sampling size (i.e., \Robject{samplesize = 100}) is used here to reduce 
-the computation time, but a larger sampling size of around $10,000$ (i.e., 
-\Robject{samplesize = 10000}) is recommended 
-(Hardcastle and Kelly, 2010).
-
-<<degesTbt_multigroup_tcc>>=
-set.seed(1000)
-library(TCC)
-data(hypoData_mg)
-samplesize <- 100
-group <- c(1, 1, 1, 2, 2, 2, 3, 3, 3)
-tcc <- new("TCC", hypoData_mg, group)
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "bayseq",
-                       iteration = 1, samplesize = samplesize)
-tcc$norm.factors
-@
 
 \subsubsection{DEGES/edgeR}
 \label{section-3-3-2}
@@ -1703,32 +1682,6 @@ result$table$PValue[is.na(result$table$PValue)] <- 1
 AUC(rocdemo.sca(truth = as.numeric(tcc$simulation$trueDEG != 0),
                 data = -rank(result$table$PValue)))
 @
-<<calc_AUC_of_degesTbt_tcc_hide, echo = FALSE>>=
-set.seed(1000)
-samplesize <- 100
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "bayseq",
-                       iteration = 1, samplesize = samplesize)
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-auc.degestbt <- calcAUCValue(tcc)
-@
-
-As can be expected from the similarity of the normalization 
-factors of DEGES/TbT (\ref{section-3-1-1}) and DEGES/edgeR 
-(\ref{section-3-1-2}), 
-the AUC value ($\Sexpr{sprintf("%.7f", auc.degesedger)}$) of 
-DEGES/edgeR is quite similar 
-to the AUC value ($\Sexpr{sprintf("%.7f", auc.degestbt)}$) of the 
-original TbT method (i.e., DEGES/TbT):
-
-<<calc_AUC_of_degesTbt_tcc>>=
-set.seed(1000)
-samplesize <- 100
-tcc <- calcNormFactors(tcc, norm.method = "tmm", test.method = "bayseq",
-                       iteration = 1, samplesize = samplesize)
-tcc <- estimateDE(tcc, test.method = "edger", FDR = 0.1)
-calcAUCValue(tcc)
-@
-
 
 
 
