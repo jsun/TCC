@@ -74,12 +74,11 @@ TCC <- setRefClass(
             private$paired <<- FALSE
             private$available$norm.method <<- c("tmm", "deseq2")
             private$available$test.method <<- data.frame(
-                TGY  = c(T, T, T, T),  # ID:1 (two-group)
-                TGNP = c(T, T, T, T),  # ID:4 (paired two-group)
-                MGY  = c(T, T, T, T),  # ID:2 (three-group)
-                #MGN  = c(T, F, T, F),  # ID:2 (three-group without replicate)
-                MF   = c(T, T, T, T),  # ID:3 (multi-factors)
-                row.names = c("bayseq", "deseq2", "edger", "voom")
+                TGY  = c(T, T),  # ID:1 (two-group)
+                TGNP = c(T, T),  # ID:4 (paired two-group)
+                MGY  = c(T, T),  # ID:2 (three-group)
+                MF   = c(T, T),  # ID:3 (multi-factors)
+                row.names = c("deseq2", "edger")
             )
         }
     )

@@ -1,13 +1,8 @@
-CHANGES IN VERSION 1.43.3
+CHANGES IN VERSION 1.43.4
 -------------------------
 
+  - deleted test code related with deprecated functions.
   - deleted 'baySeq' dependency codes from vignette and other code.
-
-
-
-CHANGES IN VERSION 1.43.1
--------------------------
-
   - deleted 'baySeq' from Depends.
 
 
